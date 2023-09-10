@@ -52,6 +52,9 @@ import {
 
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
+
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -98,7 +101,11 @@ const Expenses = ({ navigation }) => {
  
   const [service, setService] = React.useState("");
   const [dataspro, setDataspro] = useState([]);
-
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
   //Modals
   const [showModal, setShowModal] = useState(false);
   const [showAddModal, setAddShowModal] = useState(false);
@@ -312,7 +319,7 @@ const Expenses = ({ navigation }) => {
               fontFamily: "Poppins-Regular",
             }}
           >
-            Type: {expense_name} Date: {time}{" "}
+           {t('type')}: {expense_name} {t('date')}: {time}{" "}
           </Text>
 
           <Text
@@ -556,7 +563,7 @@ const Expenses = ({ navigation }) => {
                       fontFamily: "Poppins-Bold",
                     }}
                   >
-                    Total Expenses Amount:{" "}
+                    {t('totexpe')}:{" "}
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "RWF",
@@ -574,8 +581,8 @@ const Expenses = ({ navigation }) => {
                 },
               ]}
             >
-              All {all_expense.length}{" "}
-              {all_expense.length == 1 ? "expense" : "expenses"} list
+              {t('all')} {all_expense.length}{" "}
+              {all_expense.length == 1 ? "expense" : "expenses"} {t('list')}
             </Text>
 
             <TouchableOpacity
@@ -589,7 +596,7 @@ const Expenses = ({ navigation }) => {
               onPress={() => setAddShowModal(true)}
             >
               <MaterialIcons name="add-to-photos" size={24} color="white" />
-              <Text style={styles.itemBtnText}>Add New Expense</Text>
+              <Text style={styles.itemBtnText}>{t('addexp')}</Text>
             </TouchableOpacity>
 
             <Center>
@@ -611,7 +618,7 @@ const Expenses = ({ navigation }) => {
                     color="muted.600"
                   />
                 }
-                placeholder="Search..."
+                placeholder={t('search')}
               />
             </Center>
           </View>
@@ -621,7 +628,7 @@ const Expenses = ({ navigation }) => {
           <View>
             <Center>
               <ActivityIndicator size="large" color={currenttheme.secondary} />
-              <Text style={styles.textInGFuc}>Loading Please Wait...</Text>
+              <Text style={styles.textInGFuc}>{t('loading-wait')}</Text>
             </Center>
           </View>
         ) : (
@@ -668,10 +675,10 @@ const Expenses = ({ navigation }) => {
             >
               <Modal.Content maxWidth="500px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>Add New</Modal.Header>
+                <Modal.Header>{t('addnew')}</Modal.Header>
                 <Modal.Body>
                   <FormControl mt="3">
-                    <FormControl.Label>Expense name</FormControl.Label>
+                    <FormControl.Label>{t('expname')}</FormControl.Label>
                     <Input
                       value={exp_name}
                       onChangeText={setexp_name}
@@ -679,7 +686,7 @@ const Expenses = ({ navigation }) => {
                     />
                   </FormControl>
 
-                  <FormControl.Label>Type</FormControl.Label>
+                  <FormControl.Label>{t('type')}</FormControl.Label>
                   <Select
                     selectedValue={service}
                     minWidth="200"
@@ -706,7 +713,7 @@ const Expenses = ({ navigation }) => {
                   </Select>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Amount</FormControl.Label>
+                    <FormControl.Label>{t('amount')}</FormControl.Label>
                     <Input
                       value={exp_amount}
                       onChangeText={setexp_amount}
@@ -716,7 +723,7 @@ const Expenses = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Description</FormControl.Label>
+                    <FormControl.Label>{t('description')}</FormControl.Label>
                     <TextArea
                       h={20}
                       value={exp_description}
@@ -735,9 +742,9 @@ const Expenses = ({ navigation }) => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}.</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
                     <TouchableOpacity>
@@ -750,7 +757,7 @@ const Expenses = ({ navigation }) => {
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>Save Expense</Text>
+                          <Text style={{ color: "white" }}>{t('saveexp')}</Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -768,10 +775,10 @@ const Expenses = ({ navigation }) => {
             >
               <Modal.Content maxWidth="500px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>Edit</Modal.Header>
+                <Modal.Header>{t('edit')}</Modal.Header>
                 <Modal.Body>
                   <FormControl mt="3">
-                    <FormControl.Label>Expense name</FormControl.Label>
+                    <FormControl.Label>{t('expname')}</FormControl.Label>
                     <Input
                       value={exp_name}
                       onChangeText={setexp_name}
@@ -780,7 +787,7 @@ const Expenses = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Amount</FormControl.Label>
+                    <FormControl.Label>{t('amount')}</FormControl.Label>
                     <Input
                       value={exp_amount}
                       onChangeText={setexp_amount}
@@ -790,7 +797,7 @@ const Expenses = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Description</FormControl.Label>
+                    <FormControl.Label>{t('description')}</FormControl.Label>
                     <TextArea
                       h={20}
                       value={exp_description}
@@ -809,9 +816,9 @@ const Expenses = ({ navigation }) => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
                     <TouchableOpacity>
@@ -824,7 +831,7 @@ const Expenses = ({ navigation }) => {
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>Edit Expense</Text>
+                          <Text style={{ color: "white" }}>{t('editexp')}</Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -840,10 +847,10 @@ const Expenses = ({ navigation }) => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>Sale Quick Actions</AlertDialog.Header>
+                <AlertDialog.Header>{t('mesexp')}</AlertDialog.Header>
                 <AlertDialog.Body>
                   <Text>
-                    Here are for Edit or Remove selected sale {SelectedName}.
+                  {t('expmodal')} {SelectedName}.
                   </Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
@@ -855,9 +862,9 @@ const Expenses = ({ navigation }) => {
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
 
@@ -871,7 +878,7 @@ const Expenses = ({ navigation }) => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Edit</Text>
+                        <Text style={{ color: "white" }}>{t('edit')}</Text>
                       )}
                     </Button>
 
@@ -885,7 +892,7 @@ const Expenses = ({ navigation }) => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Remove</Text>
+                        <Text style={{ color: "white" }}>{t('remove')}</Text>
                       )}
                     </Button>
                   </Button.Group>
@@ -900,9 +907,9 @@ const Expenses = ({ navigation }) => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>Delete</AlertDialog.Header>
+                <AlertDialog.Header>{t('delete')}</AlertDialog.Header>
                 <AlertDialog.Body>
-                  <Text>Are you sure to delete {SelectedName} sale now ?</Text>
+                  <Text>{t('deletemes')} {SelectedName}  {t('now')}</Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
                   <Button.Group space={2}>
@@ -913,16 +920,16 @@ const Expenses = ({ navigation }) => {
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
                     <Button colorScheme="danger" onPress={deleteExpense}>
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Delete</Text>
+                        <Text style={{ color: "white" }}>{t('delete')}</Text>
                       )}
                     </Button>
                   </Button.Group>

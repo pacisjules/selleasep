@@ -51,6 +51,8 @@ import {
 
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -125,7 +127,13 @@ const Debts = ({ navigation }) => {
   //For search products
   const [searchQuery, setSearchQuery] = useState("");
 
-  //Add Debts States
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
+  
+    //Add Debts States
   const [SelectedDueDate, setSelectedDueDate] = useState(null);
   const [person_Names, setperson_Names] = useState("");
   const [person_Phone, setperson_Phone] = useState("");
@@ -354,7 +362,7 @@ const Debts = ({ navigation }) => {
               fontFamily: "Poppins-Regular",
             }}
           >
-            Phone:{" "}
+            {t('phone')} :{" "}
             <Text
               style={{
                 color: "white",
@@ -375,10 +383,10 @@ const Debts = ({ navigation }) => {
             }}
           >
             {status == 2
-              ? `Half-Pay Created At: ${duetime}`
+              ? `${t('half-paid')} ${duetime}`
               : status == 3
-              ? `Full Paid`
-              : `Created At: ${duetime}`}
+              ? `${t('fullpaid')}`
+              : `${t('created')} ${duetime}`}
           </Text>
 
         </View>
@@ -682,13 +690,13 @@ const Debts = ({ navigation }) => {
     const diffDays = Math.round(diffHours / 24);
 
     if (diffSeconds < 60) {
-      return `${diffSeconds} seconds ago`;
+      return `${diffSeconds} ${t('secago')}`;
     } else if (diffMinutes < 60) {
-      return `${diffMinutes} minutes ago`;
+      return `${diffMinutes} ${t('minago')}`;
     } else if (diffHours < 24) {
-      return `${diffHours} hours ago`;
+      return `${diffHours} ${t('hago')}`;
     } else {
-      return `${diffDays} days ago`;
+      return `${diffDays} ${t('dayago')}`;
     }
   }
 
@@ -728,7 +736,7 @@ const Debts = ({ navigation }) => {
                       fontFamily: "Poppins-Bold",
                     }}
                   >
-                    Total Debts Amount:{" "}
+                    {t('tdbtss')} {" "}
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "RWF",
@@ -746,8 +754,8 @@ const Debts = ({ navigation }) => {
                 },
               ]}
             >
-              All {all_debt.length} {all_debt.length == 1 ? "debt" : "debts"}{" "}
-              list
+              {t('all')} {all_debt.length} {all_debt.length == 1 ? `${t('debt')}` : `${t('debts')}`}{" "}
+              {t('list')}
             </Text>
 
             {/* <TouchableOpacity
@@ -783,7 +791,7 @@ const Debts = ({ navigation }) => {
                     color="muted.600"
                   />
                 }
-                placeholder="Search..."
+                placeholder= {t('search')}
               />
             </Center>
           </View>
@@ -793,7 +801,7 @@ const Debts = ({ navigation }) => {
           <View>
             <Center>
               <ActivityIndicator size="large" color={currenttheme.secondary} />
-              <Text style={styles.textInGFuc}>Loading Please Wait...</Text>
+              <Text style={styles.textInGFuc}>{t('loading-wait')}</Text>
             </Center>
           </View>
         ) : (
@@ -844,11 +852,11 @@ const Debts = ({ navigation }) => {
             >
               <Modal.Content maxWidth="500px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>Add New</Modal.Header>
+                <Modal.Header>{t('addnew')}</Modal.Header>
 
                 <Modal.Body>
                   <FormControl mt="3">
-                    <FormControl.Label>Owner names</FormControl.Label>
+                    <FormControl.Label>{t('owner')}</FormControl.Label>
                     <Input
                       value={person_Names}
                       onChangeText={setperson_Names}
@@ -857,7 +865,7 @@ const Debts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Phone</FormControl.Label>
+                    <FormControl.Label>{t('phone')}</FormControl.Label>
                     <Input
                       value={person_Phone}
                       onChangeText={setperson_Phone}
@@ -868,7 +876,7 @@ const Debts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Location</FormControl.Label>
+                    <FormControl.Label>{t('location')}</FormControl.Label>
                     <Input
                       value={person_Location}
                       onChangeText={setperson_Location}
@@ -878,7 +886,7 @@ const Debts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Amount</FormControl.Label>
+                    <FormControl.Label>{t('amount')}</FormControl.Label>
                     <Input
                       value={debt_Amount}
                       onChangeText={setDebt_Amount}
@@ -888,7 +896,7 @@ const Debts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Due date</FormControl.Label>
+                    <FormControl.Label>{t('due')}</FormControl.Label>
                     <TouchableOpacity
                       onPress={() => {
                         setShowPicker(true);
@@ -923,13 +931,13 @@ const Debts = ({ navigation }) => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          Pick Date
+                          {t('pick')}
                         </Text>
                       </View>
                     </TouchableOpacity>
 
                     {showPickerlbl ? (
-                      <Text>Picked date: {SelectedDueDate} </Text>
+                      <Text>{t('picked')} {SelectedDueDate} </Text>
                     ) : (
                       <Text
                         style={{
@@ -939,13 +947,13 @@ const Debts = ({ navigation }) => {
                           fontFamily: "Poppins-Regular",
                         }}
                       >
-                        Please wait for set....
+                        {t('loading-wait')}
                       </Text>
                     )}
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Description</FormControl.Label>
+                    <FormControl.Label>{t('description')}</FormControl.Label>
                     <TextArea
                       h={20}
                       value={debt_Descriptions}
@@ -967,9 +975,9 @@ const Debts = ({ navigation }) => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
 
@@ -983,7 +991,7 @@ const Debts = ({ navigation }) => {
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>Save Debt</Text>
+                          <Text style={{ color: "white" }}>{t('save')}</Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -1001,11 +1009,11 @@ const Debts = ({ navigation }) => {
             >
               <Modal.Content maxWidth="500px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>Edit</Modal.Header>
+                <Modal.Header>{t('edit')}</Modal.Header>
 
                 <Modal.Body>
                   <FormControl mt="3">
-                    <FormControl.Label>Owner names</FormControl.Label>
+                    <FormControl.Label>{t('owner')}</FormControl.Label>
                     <Input
                       value={person_Names}
                       onChangeText={setperson_Names}
@@ -1014,7 +1022,7 @@ const Debts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Phone</FormControl.Label>
+                    <FormControl.Label>{t('phone')}</FormControl.Label>
                     <Input
                       value={person_Phone}
                       onChangeText={setperson_Phone}
@@ -1025,7 +1033,7 @@ const Debts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Location</FormControl.Label>
+                    <FormControl.Label>{t('location')}</FormControl.Label>
                     <Input
                       value={person_Location}
                       onChangeText={setperson_Location}
@@ -1035,7 +1043,7 @@ const Debts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Amount</FormControl.Label>
+                    <FormControl.Label>{t('amount')}</FormControl.Label>
                     <Input
                       value={debt_Amount}
                       onChangeText={setDebt_Amount}
@@ -1045,7 +1053,7 @@ const Debts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Due date</FormControl.Label>
+                    <FormControl.Label>{t('due')}</FormControl.Label>
                     <TouchableOpacity
                       onPress={() => {
                         setShowPicker(true);
@@ -1080,13 +1088,13 @@ const Debts = ({ navigation }) => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          Pick Date
+                          {t('pick')}
                         </Text>
                       </View>
                     </TouchableOpacity>
 
                     {showPickerlbl ? (
-                      <Text>Picked date: {SelectedDueDate} </Text>
+                      <Text>{t('picked')} {SelectedDueDate} </Text>
                     ) : (
                       <Text
                         style={{
@@ -1096,13 +1104,13 @@ const Debts = ({ navigation }) => {
                           fontFamily: "Poppins-Regular",
                         }}
                       >
-                        Please wait for set....
+                        {t('loading-wait')}
                       </Text>
                     )}
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Description</FormControl.Label>
+                    <FormControl.Label>{t('description')}</FormControl.Label>
                     <TextArea
                       h={20}
                       value={debt_Descriptions}
@@ -1131,9 +1139,9 @@ const Debts = ({ navigation }) => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
                     <TouchableOpacity>
@@ -1146,7 +1154,7 @@ const Debts = ({ navigation }) => {
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>Edit Debt</Text>
+                          <Text style={{ color: "white" }}>{t('edit')}</Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -1163,10 +1171,10 @@ const Debts = ({ navigation }) => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>Debt Quick Actions</AlertDialog.Header>
+                <AlertDialog.Header>{t('debtquick')}</AlertDialog.Header>
                 <AlertDialog.Body>
                   <Text>
-                    Here are for Edit or Remove selected debt {SelectedName}.
+                  {t('debtmes')}  {SelectedName}.
                   </Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
@@ -1194,7 +1202,7 @@ const Debts = ({ navigation }) => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Edit</Text>
+                        <Text style={{ color: "white" }}>{t('edit')}</Text>
                       )}
                     </Button>
 
@@ -1208,7 +1216,7 @@ const Debts = ({ navigation }) => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Remove</Text>
+                        <Text style={{ color: "white" }}>{t('remove')}</Text>
                       )}
                     </Button>
 
@@ -1223,7 +1231,7 @@ const Debts = ({ navigation }) => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Payment</Text>
+                        <Text style={{ color: "white" }}>{t('payment')}</Text>
                       )}
                     </Button>
 
@@ -1246,9 +1254,9 @@ const Debts = ({ navigation }) => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>Delete</AlertDialog.Header>
+                <AlertDialog.Header>{t('delete')}</AlertDialog.Header>
                 <AlertDialog.Body>
-                  <Text>Are you sure to delete {SelectedName} debt now ?</Text>
+                  <Text>{t('delmes')} {SelectedName} {t('now')}</Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
                   <Button.Group space={2}>
@@ -1259,9 +1267,9 @@ const Debts = ({ navigation }) => {
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
 
@@ -1269,7 +1277,7 @@ const Debts = ({ navigation }) => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Delete</Text>
+                        <Text style={{ color: "white" }}>{t('delete')}</Text>
                       )}
                     </Button>
                   </Button.Group>
@@ -1284,12 +1292,12 @@ const Debts = ({ navigation }) => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>Payment</AlertDialog.Header>
+                <AlertDialog.Header>{t('payment')}</AlertDialog.Header>
                 <AlertDialog.Body>
-                  <Text>Choose how to pay debt of {person_Names} now ?</Text>
+                  <Text>{t('choose')} {person_Names} {t('now')}</Text>
 
                   <Text>
-                    Current debt Amount{" "}
+                  {t('current')}{" "}
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "RWF",
@@ -1297,7 +1305,7 @@ const Debts = ({ navigation }) => {
                   </Text>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Enter paid amount</FormControl.Label>
+                    <FormControl.Label>{t('enterp')}</FormControl.Label>
                     <Input
                       value={debt_AmountPay}
                       onChangeText={setDebt_AmountPay}
@@ -1305,7 +1313,7 @@ const Debts = ({ navigation }) => {
                       inputMode="numeric"
                     />
 
-                    <FormControl.Label>Due date</FormControl.Label>
+                    <FormControl.Label>{t('due')}</FormControl.Label>
                     <TouchableOpacity
                       onPress={() => {
                         setShowPicker(true);
@@ -1340,13 +1348,13 @@ const Debts = ({ navigation }) => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          Pick Date
+                          {t('pick')}
                         </Text>
                       </View>
                     </TouchableOpacity>
 
                     {showPickerlbl ? (
-                      <Text>Picked date: {SelectedDueDate} </Text>
+                      <Text>{t('picked')} {SelectedDueDate} </Text>
                     ) : (
                       <Text
                         style={{
@@ -1356,7 +1364,7 @@ const Debts = ({ navigation }) => {
                           fontFamily: "Poppins-Regular",
                         }}
                       >
-                        Please wait for set....
+                        {t('loading-wait')}
                       </Text>
                     )}
 
@@ -1385,7 +1393,7 @@ const Debts = ({ navigation }) => {
                             />
                           </Text>
                           <Text style={{ color: "white", marginLeft: 10 }}>
-                            Half Payment
+                          {t('halfp')} 
                           </Text>
                         </View>
                       )}
@@ -1401,9 +1409,9 @@ const Debts = ({ navigation }) => {
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')} </Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')} </Text>
                       )}
                     </Button>
 
@@ -1426,7 +1434,7 @@ const Debts = ({ navigation }) => {
                             />
                           </Text>
                           <Text style={{ color: "white", marginLeft: 10 }}>
-                            Full Payment
+                          {t('fullp')} 
                           </Text>
                         </View>
                       )}

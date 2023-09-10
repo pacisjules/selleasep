@@ -58,6 +58,12 @@ import {
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
+
+
+
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -113,6 +119,12 @@ const Shopping = ({ navigation }) => {
 
   const [IssalePaid, setIssalePaid] = useState(true);
 
+  
+const {t} = useTranslation();
+const changeLng = lng => {
+    i18next.changeLanguage(lng);
+    setVisible(false);
+  };
   //Normal
   const [refreshing, setRefreshing] = useState(false);
   const [datas, setDatas] = useState([]);
@@ -647,7 +659,7 @@ const Shopping = ({ navigation }) => {
                   fontFamily: "Poppins-Bold",
                 }}
               >
-                Selling
+                {t('selling')}
               </Text>
             </LinearGradient>
           </View>
@@ -703,7 +715,7 @@ const Shopping = ({ navigation }) => {
                 marginLeft: 5,
               }}
             >
-              Selling Basket ({CARTs_array.length}{" "}
+             {t('selling-basket')} ({CARTs_array.length}{" "}
               {CARTs_array.length == 1 ? "Item" : "Items"})
             </Text>
 
@@ -820,12 +832,12 @@ const Shopping = ({ navigation }) => {
                             "Are you sure to remove this item",
                             [
                               {
-                                text: "Cancel",
+                                text: `${t('cancel')}`,
                                 onPress: () => console.log("Cancel Pressed"),
                                 style: "cancel",
                               },
                               {
-                                text: "OK",
+                                text: `${t('ok')}`,
                                 onPress: () => handleRemoveItem(item.id),
                               },
                             ]
@@ -853,7 +865,7 @@ const Shopping = ({ navigation }) => {
                     fontFamily: "Poppins-Bold",
                   }}
                 >
-                  Show if this paid ?
+                {t('ispaid')}
                 </Text>
                 <View
                   style={{
@@ -891,13 +903,13 @@ const Shopping = ({ navigation }) => {
                     fontFamily: "Poppins-Bold",
                   }}
                 >
-                  Payment Status:{" "}
+                   {t('paystat')}:{" "}
                   <Text
                     style={{
                       color: IssalePaid ? "green" : "red",
                     }}
                   >
-                    {IssalePaid ? "Paid" : "Not Paid"}
+                    {IssalePaid ? `${t('paid')}` : `${t('no-paid')}`}
                   </Text>
                 </Text>
               
@@ -934,15 +946,15 @@ const Shopping = ({ navigation }) => {
 
                       Alert.alert(
                         "SELLEASEP",
-                        "Are you sure to clear of all items",
+                        `${t('clearmes')}`,
                         [
                           {
-                            text: "Cancel",
+                            text: `${t('cancel')}`,
                             onPress: () => console.log("Cancel Pressed"),
                             style: "cancel",
                           },
                           {
-                            text: "OK",
+                            text: `${t('ok')}`,
                             onPress: () => dispatch(clearCart()),
                           },
                         ]
@@ -965,7 +977,7 @@ const Shopping = ({ navigation }) => {
                         fontSize: 11,
                       }}
                     >
-                      Clear Basket
+                     {t('clearbas')} 
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -985,7 +997,7 @@ const Shopping = ({ navigation }) => {
                       marginRight: 5,
                     }}
                   >
-                    Total{" "}
+                    {t('total')} {" "}
                     <Text
                       style={{
                         textAlign: "left",
@@ -1016,7 +1028,7 @@ const Shopping = ({ navigation }) => {
                         marginRight: 10,
                       }}
                     >
-                      Benefit{" "}
+                      {t('benefit')} {" "}
                       <Text
                         style={{
                           textAlign: "left",
@@ -1171,7 +1183,7 @@ const Shopping = ({ navigation }) => {
                   },
                 ]}
               >
-                All {all_products.length}{" "}
+                {t('all')}  {all_products.length}{" "}
                 {all_products.length == 1 ? "Product" : "Products"} list
               </Text>
 
@@ -1211,7 +1223,7 @@ const Shopping = ({ navigation }) => {
                       color="muted.600"
                     />
                   }
-                  placeholder="Search..."
+                  placeholder={t('search')}
                 />
               </Center>
 
@@ -1224,7 +1236,7 @@ const Shopping = ({ navigation }) => {
                       color={currenttheme.secondary}
                     />
                     <Text style={styles.textInGFuc}>
-                      Loading Please Wait...
+                    {t('loading-wait')}
                     </Text>
                   </Center>
                 </View>
@@ -1260,12 +1272,12 @@ const Shopping = ({ navigation }) => {
                         }).format(item.benefit)}
                         quantity={
                           item.current_quantity == 0
-                            ? "No Stock"
+                            ? `${t('no-stock')}`
                             : item.current_quantity
                         }
                         alertQuantity={
                           item.alert_quantity == 0
-                            ? "No Stock"
+                            ? `${t('no-stock')}`
                             : item.alert_quantity
                         }
                         time={timeAgo(item.created_at)}
@@ -1311,11 +1323,11 @@ const Shopping = ({ navigation }) => {
                     fontSize: 15,
                   }}
                 >
-                  Set Quantity of {pro_name}
+                 {t('setqty')} {pro_name}
                 </Text>
 
                 <FormControl mt="3">
-                  <FormControl.Label>Quantity</FormControl.Label>
+                  <FormControl.Label>{t('quantity')}</FormControl.Label>
                   <Input
                     value={pro_qty}
                     onChangeText={setPro_qty}
@@ -1343,7 +1355,7 @@ const Shopping = ({ navigation }) => {
                       fontSize:9
                     }}
                   >
-                    Total:{" "}
+                    {t('total')}:{" "}
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "RWF",
@@ -1368,14 +1380,14 @@ const Shopping = ({ navigation }) => {
                       fontSize:9
                     }}
                   >
-                    Total:{" "}
+                    {t('total')}:{" "}
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "RWF",
                     }).format(parseFloat(pro_price) * parseFloat(pro_qty))}{", "}
                     Current stock: {pro_cqty},
                     {usertype == "BOSS"
-                      ? ` Benefit: ${new Intl.NumberFormat("en-US", {
+                      ? ` ${t('benefit')}: ${new Intl.NumberFormat("en-US", {
                           style: "currency",
                           currency: "RWF",
                         }).format(
@@ -1399,7 +1411,7 @@ const Shopping = ({ navigation }) => {
                     fontFamily: "Poppins-Bold",
                   }}
                 >
-                  Set custom price here.
+                  {t('setprice')}
                 </Text>
                 <View
                   style={{
@@ -1451,7 +1463,7 @@ const Shopping = ({ navigation }) => {
                         color: "black",
                       }}
                     >
-                      Cancel
+                      {t('cancel')}
                     </Text>
                   </TouchableOpacity>
 
@@ -1472,7 +1484,7 @@ const Shopping = ({ navigation }) => {
                         color: "white",
                       }}
                     >
-                      Add Product
+                      {t('add-product')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -1513,11 +1525,11 @@ const Shopping = ({ navigation }) => {
                     fontSize: 15,
                   }}
                 >
-                  Set debts information's
+                  {t('setbdt')}
                 </Text>
 
                 <FormControl mt="3">
-                  <FormControl.Label>Customer Names</FormControl.Label>
+                  <FormControl.Label>{t('custname')}</FormControl.Label>
                   <Input
                     value={pro_client}
                     onChangeText={setPro_Client}
@@ -1526,7 +1538,7 @@ const Shopping = ({ navigation }) => {
                 </FormControl>
 
                 <FormControl mt="3">
-                  <FormControl.Label>Phone</FormControl.Label>
+                  <FormControl.Label>{t('phone')}</FormControl.Label>
                   <Input
                     value={pro_Cphone}
                     onChangeText={setPro_Cphone}
@@ -1562,7 +1574,7 @@ const Shopping = ({ navigation }) => {
                         color: "black",
                       }}
                     >
-                      Cancel
+                      {t('cancel')}
                     </Text>
                   </TouchableOpacity>
 
@@ -1583,7 +1595,7 @@ const Shopping = ({ navigation }) => {
                         color: "white",
                       }}
                     >
-                      Finish
+                      {t('finish')}
                     </Text>
                   </TouchableOpacity>
                 </View>
