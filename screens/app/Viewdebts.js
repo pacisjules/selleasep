@@ -50,6 +50,8 @@ import {
 
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -73,6 +75,12 @@ const Viewdebts = ({ navigation }) => {
   const [currenttheme, setcurrenttheme] = useState(
     useSelector((state) => state.userInfos.current_theme)
   );
+  
+const {t} = useTranslation();
+const changeLng = lng => {
+    i18next.changeLanguage(lng);
+    setVisible(false);
+  };
 
   const [currentCompany, setcurrentCompany] = useState(
     useSelector((state) => state.userInfos.currentCompanyID)
@@ -376,7 +384,7 @@ const Viewdebts = ({ navigation }) => {
               fontFamily: "Poppins-Regular",
             }}
           >
-            Quantity:{" "}
+            {t('quantity')} :{" "}
             <Text
               style={{
                 color: "white",
@@ -397,10 +405,10 @@ const Viewdebts = ({ navigation }) => {
             }}
           >
             {status == 2
-              ? `Half-Due Date: ${duetime}`
+              ? `${t('halfduedate')} : ${duetime}`
               : status == 3
-              ? `Full Paid`
-              : `Pay Due Date: ${duetime}`}
+              ? `${t('fullpaid')}`
+              : `${t('payduedate')} : ${duetime}`}
           </Text>
 
           <Text
@@ -815,7 +823,7 @@ const Viewdebts = ({ navigation }) => {
                         fontFamily: "Poppins-Bold",
                       }}
                     >
-                      Debt of {debtPerson_Names}
+                      {t('debtof')} {debtPerson_Names}
                     </Text>
                     <Text style={{
                         textAlign: "center",
@@ -826,7 +834,7 @@ const Viewdebts = ({ navigation }) => {
                         
                       }}>
                       {" "}
-                      Total Amount:{" "}
+                      {t('total')} {t('amount')} :{" "}
                       {new Intl.NumberFormat("en-US", {
                         style: "currency",
                         currency: "RWF",
@@ -845,8 +853,8 @@ const Viewdebts = ({ navigation }) => {
                 },
               ]}
             >
-              All {all_debtIn.length}{" "}
-              {all_debtIn.length == 1 ? "debt" : "debts"} list
+              {t('all')} {all_debtIn.length}{" "}
+              {all_debtIn.length == 1 ? `${t('debt')}` : `${t('debts')}`} {t('list')}
             </Text>
 
             {/* <TouchableOpacity
@@ -901,11 +909,11 @@ const Viewdebts = ({ navigation }) => {
                   onPress={() => {
                     Alert.alert("SELLEASEP", "Are sure to pay full debts", [
                       {
-                        text: "Cancel",
+                        text: `${t('cancel')}`,
                         onPress: () => console.log("Cancel Pressed"),
                         style: "cancel",
                       },
-                      { text: "OK", onPress: () => SessionPayFull() },
+                      { text: `${t('ok')}`, onPress: () => SessionPayFull() },
                     ]);
                   }}
                 >
@@ -914,7 +922,7 @@ const Viewdebts = ({ navigation }) => {
                     size={30}
                     color="white"
                   />
-                  <Text style={styles.itemBtnText}>Pay all Debt</Text>
+                  <Text style={styles.itemBtnText}>{t('payall')}</Text>
                 </TouchableOpacity>
                 :null
 
@@ -1010,11 +1018,11 @@ const Viewdebts = ({ navigation }) => {
             >
               <Modal.Content maxWidth="500px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>Add New</Modal.Header>
+                <Modal.Header>{t('addnew')}</Modal.Header>
 
                 <Modal.Body>
                   <FormControl mt="3">
-                    <FormControl.Label>Owner names</FormControl.Label>
+                    <FormControl.Label>{t('owner')}</FormControl.Label>
                     <Input
                       value={person_Names}
                       onChangeText={setperson_Names}
@@ -1023,7 +1031,7 @@ const Viewdebts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Phone</FormControl.Label>
+                    <FormControl.Label>{t('phone')}</FormControl.Label>
                     <Input
                       value={person_Phone}
                       onChangeText={setperson_Phone}
@@ -1034,7 +1042,7 @@ const Viewdebts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Location</FormControl.Label>
+                    <FormControl.Label>{t('location')}</FormControl.Label>
                     <Input
                       value={person_Location}
                       onChangeText={setperson_Location}
@@ -1044,7 +1052,7 @@ const Viewdebts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Amount</FormControl.Label>
+                    <FormControl.Label>{t('amount')}</FormControl.Label>
                     <Input
                       value={debt_Amount}
                       onChangeText={setDebt_Amount}
@@ -1054,7 +1062,7 @@ const Viewdebts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Due date</FormControl.Label>
+                    <FormControl.Label>{t('due')}</FormControl.Label>
                     <TouchableOpacity
                       onPress={() => {
                         setShowPicker(true);
@@ -1089,13 +1097,13 @@ const Viewdebts = ({ navigation }) => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          Pick Date
+                          {t('pick')}
                         </Text>
                       </View>
                     </TouchableOpacity>
 
                     {showPickerlbl ? (
-                      <Text>Picked date: {SelectedDueDate} </Text>
+                      <Text>{t('picked')} {SelectedDueDate} </Text>
                     ) : (
                       <Text
                         style={{
@@ -1105,13 +1113,13 @@ const Viewdebts = ({ navigation }) => {
                           fontFamily: "Poppins-Regular",
                         }}
                       >
-                        Please wait for set....
+                        {t('loading-wait')}
                       </Text>
                     )}
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Description</FormControl.Label>
+                    <FormControl.Label>{t('description')}</FormControl.Label>
                     <TextArea
                       h={20}
                       value={debt_Descriptions}
@@ -1133,9 +1141,9 @@ const Viewdebts = ({ navigation }) => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
 
@@ -1149,7 +1157,7 @@ const Viewdebts = ({ navigation }) => {
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>Save Debt</Text>
+                          <Text style={{ color: "white" }}>{t('save')}</Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -1167,11 +1175,11 @@ const Viewdebts = ({ navigation }) => {
             >
               <Modal.Content maxWidth="500px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>Edit</Modal.Header>
+                <Modal.Header>{t('edit')}</Modal.Header>
 
                 <Modal.Body>
                   <FormControl mt="3">
-                    <FormControl.Label>Owner names</FormControl.Label>
+                    <FormControl.Label>{t('owner')}</FormControl.Label>
                     <Input
                       value={person_Names}
                       onChangeText={setperson_Names}
@@ -1180,7 +1188,7 @@ const Viewdebts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Phone</FormControl.Label>
+                    <FormControl.Label>{t('phone')}</FormControl.Label>
                     <Input
                       value={person_Phone}
                       onChangeText={setperson_Phone}
@@ -1191,7 +1199,7 @@ const Viewdebts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Location</FormControl.Label>
+                    <FormControl.Label>{t('loaction')}</FormControl.Label>
                     <Input
                       value={person_Location}
                       onChangeText={setperson_Location}
@@ -1201,7 +1209,7 @@ const Viewdebts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Amount</FormControl.Label>
+                    <FormControl.Label>{t('amount')}</FormControl.Label>
                     <Input
                       value={debt_Amount}
                       onChangeText={setDebt_Amount}
@@ -1211,7 +1219,7 @@ const Viewdebts = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Due date</FormControl.Label>
+                    <FormControl.Label>{t('due')}</FormControl.Label>
                     <TouchableOpacity
                       onPress={() => {
                         setShowPicker(true);
@@ -1246,13 +1254,13 @@ const Viewdebts = ({ navigation }) => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          Pick Date
+                          {t('pick')}
                         </Text>
                       </View>
                     </TouchableOpacity>
 
                     {showPickerlbl ? (
-                      <Text>Picked date: {SelectedDueDate} </Text>
+                      <Text>{t('picked')} {SelectedDueDate} </Text>
                     ) : (
                       <Text
                         style={{
@@ -1262,13 +1270,13 @@ const Viewdebts = ({ navigation }) => {
                           fontFamily: "Poppins-Regular",
                         }}
                       >
-                        Please wait for set....
+                        {t('loading')}
                       </Text>
                     )}
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Description</FormControl.Label>
+                    <FormControl.Label>{t('description')}</FormControl.Label>
                     <TextArea
                       h={20}
                       value={debt_Descriptions}
@@ -1297,9 +1305,9 @@ const Viewdebts = ({ navigation }) => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
                     <TouchableOpacity>
@@ -1312,7 +1320,7 @@ const Viewdebts = ({ navigation }) => {
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>Edit Debt</Text>
+                          <Text style={{ color: "white" }}>{t('edit')}</Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -1329,10 +1337,10 @@ const Viewdebts = ({ navigation }) => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>Debt Quick Actions</AlertDialog.Header>
+                <AlertDialog.Header>{t('debtquick')}</AlertDialog.Header>
                 <AlertDialog.Body>
                   <Text>
-                    Here are for Edit or Remove selected debt {SelectedName}.
+                  {t('debtmes')} {SelectedName}.
                   </Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
@@ -1360,7 +1368,7 @@ const Viewdebts = ({ navigation }) => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Edit</Text>
+                        <Text style={{ color: "white" }}>{t('edit')}</Text>
                       )}
                     </Button>
 
@@ -1374,7 +1382,7 @@ const Viewdebts = ({ navigation }) => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Remove</Text>
+                        <Text style={{ color: "white" }}>{t('remove')}</Text>
                       )}
                     </Button>
 
@@ -1389,7 +1397,7 @@ const Viewdebts = ({ navigation }) => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Payment</Text>
+                        <Text style={{ color: "white" }}>{t('payment')}</Text>
                       )}
                     </Button>
 
@@ -1412,9 +1420,9 @@ const Viewdebts = ({ navigation }) => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>Delete</AlertDialog.Header>
+                <AlertDialog.Header>{t('delete')}</AlertDialog.Header>
                 <AlertDialog.Body>
-                  <Text>Are you sure to delete {SelectedName} debt now ?</Text>
+                  <Text>{t('delmes')} {SelectedName} {t('now')}</Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
                   <Button.Group space={2}>
@@ -1425,9 +1433,9 @@ const Viewdebts = ({ navigation }) => {
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
 
@@ -1435,7 +1443,7 @@ const Viewdebts = ({ navigation }) => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Delete</Text>
+                        <Text style={{ color: "white" }}>{t('delete')}</Text>
                       )}
                     </Button>
                   </Button.Group>
@@ -1450,12 +1458,12 @@ const Viewdebts = ({ navigation }) => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>Payment</AlertDialog.Header>
+                <AlertDialog.Header>{t('payment')}</AlertDialog.Header>
                 <AlertDialog.Body>
-                  <Text>Pay debt of {person_Names} on this item ?</Text>
+                  <Text>{t('askpay')} {person_Names}? </Text>
 
                   <Text>
-                    Current debt Amount{" "}
+                  {t('current')}{" "}
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "RWF",
@@ -1567,9 +1575,9 @@ const Viewdebts = ({ navigation }) => {
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
                     
@@ -1593,7 +1601,7 @@ const Viewdebts = ({ navigation }) => {
                             />
                           </Text>
                           <Text style={{ color: "white", marginLeft: 10 }}>
-                            Full Payment
+                          {t('payfull')}
                           </Text>
                         </View>
                       )}

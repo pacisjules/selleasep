@@ -46,6 +46,8 @@ import { useSelector, useDispatch } from "react-redux";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Calendar, Permissions } from "expo";
 import * as Font from "expo-font";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
 
 function Reports({ navigation }) {
   const dispatch = useDispatch();
@@ -74,7 +76,12 @@ function Reports({ navigation }) {
 
   const [showPickerInventory, setShowPickerInventory] = useState(false);
   const [showPickerUsers, setShowPickerUsers] = useState(false);
-
+ 
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
   const [cuser, setcUser] = useState(
     useSelector((state) => state.userInfos.currentUser)
   );
@@ -601,7 +608,7 @@ table[class=col] td { text-align: left !important; }
               fontFamily: "Poppins-Bold",
             }}
           >
-            Report functions
+            {t('funcreport')}
           </Text>
 
           <View
@@ -615,7 +622,7 @@ table[class=col] td { text-align: left !important; }
             <TouchableOpacity onPress={() => navigation.navigate("Yesterday")}>
               <View style={styles.fucs}>
                 <AntDesign name="back" size={24} color={currenttheme.primary} />
-                <Text style={styles.textInGFuc}>Yesterday</Text>
+                <Text style={styles.textInGFuc}>{t('yest')}</Text>
               </View>
             </TouchableOpacity>
 
@@ -626,7 +633,7 @@ table[class=col] td { text-align: left !important; }
                   size={24}
                   color={currenttheme.primary}
                 />
-                <Text style={styles.textInGFuc}>Pick Date</Text>
+                <Text style={styles.textInGFuc}>{t('pick')}</Text>
               </View>
             </TouchableOpacity>
 
@@ -637,7 +644,7 @@ table[class=col] td { text-align: left !important; }
                   size={24}
                   color={currenttheme.primary}
                 />
-                <Text style={styles.textInGFuc}>Week</Text>
+                <Text style={styles.textInGFuc}>{t('week')}</Text>
               </View>
             </TouchableOpacity>
 
@@ -652,7 +659,7 @@ table[class=col] td { text-align: left !important; }
                   size={24}
                   color={currenttheme.primary}
                 />
-                <Text style={styles.textInGFuc}>From To</Text>
+                <Text style={styles.textInGFuc}>{t('fromto')}</Text>
               </View>
             </TouchableOpacity>
 
@@ -663,7 +670,7 @@ table[class=col] td { text-align: left !important; }
                   size={24}
                   color={currenttheme.primary}
                 />
-                <Text style={styles.textInGFuc}>Monthly</Text>
+                <Text style={styles.textInGFuc}>{t('monthly')}</Text>
               </View>
             </TouchableOpacity>
 
@@ -674,7 +681,7 @@ table[class=col] td { text-align: left !important; }
                   size={24}
                   color={currenttheme.primary}
                 />
-                <Text style={styles.textInGFuc}>Pick Year</Text>
+                <Text style={styles.textInGFuc}>{t('picky')}</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -712,7 +719,7 @@ table[class=col] td { text-align: left !important; }
                 fontFamily: "Poppins-Bold",
               }}
             >
-              Users daily sales Report
+             {t('dailyuser')} 
             </Text>
           </TouchableOpacity>
 
@@ -752,7 +759,7 @@ table[class=col] td { text-align: left !important; }
                 fontFamily: "Poppins-Bold",
               }}
             >
-              Remain stock Report
+              {t('remainstock')}
             </Text>
           </TouchableOpacity>
 
@@ -790,7 +797,7 @@ table[class=col] td { text-align: left !important; }
                 fontFamily: "Poppins-Bold",
               }}
             >
-              Inventory In
+              {t('instock')}
             </Text>
           </TouchableOpacity>
 
@@ -820,7 +827,7 @@ table[class=col] td { text-align: left !important; }
                 fontFamily: "Poppins-Bold",
               }}
             >
-              Inventory Alert
+              {t('alertinv')}
             </Text>
           </TouchableOpacity>
 
@@ -850,7 +857,7 @@ table[class=col] td { text-align: left !important; }
                 fontFamily: "Poppins-Bold",
               }}
             >
-              Incidental Report
+              {t('incereport')}
             </Text>
           </TouchableOpacity>
 
@@ -880,7 +887,7 @@ table[class=col] td { text-align: left !important; }
                 fontFamily: "Poppins-Bold",
               }}
             >
-              Debts Report
+              {t('debtrep')}
             </Text>
           </TouchableOpacity>
         </Center>
@@ -945,7 +952,7 @@ table[class=col] td { text-align: left !important; }
         >
           <Modal.Content maxWidth="600px" width="340px">
             <Modal.CloseButton />
-            <Modal.Header>Year Report</Modal.Header>
+            <Modal.Header>{t('yearrep')}</Modal.Header>
             <Modal.Body>
               <Select
                 selectedValue={service}
@@ -983,9 +990,9 @@ table[class=col] td { text-align: left !important; }
                   }}
                 >
                   {isLoading ? (
-                    <Text style={{ color: "gray" }}>Please wait..</Text>
+                    <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                   ) : (
-                    <Text style={{ color: "gray" }}>Cancel</Text>
+                    <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                   )}
                 </Button>
                 <TouchableOpacity>
@@ -998,7 +1005,7 @@ table[class=col] td { text-align: left !important; }
                     {isLoading ? (
                       <ActivityIndicator size="small" color="white" />
                     ) : (
-                      <Text style={{ color: "white" }}>Continue</Text>
+                      <Text style={{ color: "white" }}>{t('continue')}</Text>
                     )}
                   </Button>
                 </TouchableOpacity>
@@ -1017,7 +1024,7 @@ table[class=col] td { text-align: left !important; }
         >
           <Modal.Content maxWidth="600px" width="340px">
             <Modal.CloseButton />
-            <Modal.Header>Year Report</Modal.Header>
+            <Modal.Header>{t('monthrep')}</Modal.Header>
             <Modal.Body>
               <Select
                 selectedValue={serviceMonth}
@@ -1059,9 +1066,9 @@ table[class=col] td { text-align: left !important; }
                   }}
                 >
                   {isLoading ? (
-                    <Text style={{ color: "gray" }}>Please wait..</Text>
+                    <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                   ) : (
-                    <Text style={{ color: "gray" }}>Cancel</Text>
+                    <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                   )}
                 </Button>
                 <TouchableOpacity>
@@ -1074,7 +1081,7 @@ table[class=col] td { text-align: left !important; }
                     {isLoading ? (
                       <ActivityIndicator size="small" color="white" />
                     ) : (
-                      <Text style={{ color: "white" }}>Continue</Text>
+                      <Text style={{ color: "white" }}>{t('continue')}</Text>
                     )}
                   </Button>
                 </TouchableOpacity>

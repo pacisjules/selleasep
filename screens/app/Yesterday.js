@@ -53,6 +53,8 @@ import {
 
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -113,7 +115,12 @@ const Yesterday = ({ navigation }) => {
 
   //For search products
   const [searchQuery, setSearchQuery] = useState("");
-
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
+  
   //Sales Data
 
   const { all_sale_error, all_sales, all_sales_isLoading } = useSelector(
@@ -309,9 +316,9 @@ const Yesterday = ({ navigation }) => {
               fontFamily: "Poppins-Regular",
             }}
           >
-            Sales Qty: {quantity}
+            {t('quantity')}: {quantity}
             {"   "}
-            Remain:{remainqty} {"   "}{" "}
+            {t('remain')}:{remainqty} {"   "}{" "}
           </Text>
 
           <Text
