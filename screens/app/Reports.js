@@ -622,7 +622,7 @@ table[class=col] td { text-align: left !important; }
             <TouchableOpacity onPress={() => navigation.navigate("Yesterday")}>
               <View style={styles.fucs}>
                 <AntDesign name="back" size={24} color={currenttheme.primary} />
-                <Text style={styles.textInGFuc}>{t('yest')}</Text>
+                <Text style={styles.textInGFuc}>{t('yests')}</Text>
               </View>
             </TouchableOpacity>
 
