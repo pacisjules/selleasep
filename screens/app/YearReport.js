@@ -26,6 +26,8 @@ import {
 } from "@expo/vector-icons";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
 
 import {
   Button,
@@ -102,6 +104,12 @@ const YearReport = ({ navigation }) => {
   //Infos
   const [pro_name, setPro_name] = useState("");
   const [edit, setEdit] = useState(true);
+
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
 
   //Notifications
   const [expoPushToken, setExpoPushToken] = useState("");
@@ -402,9 +410,9 @@ const [company_Logo, setcompany_Logo] = useState(
               fontFamily: "Poppins-Regular",
             }}
           >
-            Sales Qty: {quantity}
+            {t('sales')} {t('quantity')}: {quantity}
             {"   "}
-            Remain:{remainqty} {"   "}{" "}
+            {t('remain')}:{remainqty} {"   "}{" "}
           </Text>
 
           <Text
@@ -414,7 +422,7 @@ const [company_Logo, setcompany_Logo] = useState(
               fontFamily: "Poppins-Regular",
             }}
           >
-            {currentusertype == "BOSS" ? "Benefit: " + benefit : ""}
+            {currentusertype == `BOSS` ? `${t('benefit')}: ` + benefit : ""}
           </Text>
         </View>
 
@@ -536,13 +544,13 @@ const [company_Logo, setcompany_Logo] = useState(
     const diffDays = Math.round(diffHours / 24);
 
     if (diffSeconds < 60) {
-      return `${diffSeconds} seconds ago`;
+      return `${diffSeconds} ${t('secago')}`;
     } else if (diffMinutes < 60) {
-      return `${diffMinutes} minutes ago`;
+      return `${diffMinutes} ${t('minago')}`;
     } else if (diffHours < 24) {
-      return `${diffHours} hours ago`;
+      return `${diffHours} ${t('hago')}`;
     } else {
-      return `${diffDays} days ago`;
+      return `${diffDays} ${t('dayago')}`;
     }
   }
 
@@ -750,13 +758,13 @@ table[class=col] td { text-align: left !important; }
 
                   <tr>
                       <td style="padding-top:20px; font-size: 18px; color: #5b5b5b; font-family: 'Open Sans', sans-serif;   vertical-align: top; text-align: left;">
-                      Manager, ${Usernames}
+                      ${t('namager')}, ${Usernames}
                     </td>
                       </tr>
 
                       <tr>
                       <td style="font-size: 12px; color: ${company_Color}; font-family: 'Open Sans', sans-serif;   vertical-align: top; text-align: left;">
-                      ${location_Spt} Sales Point
+                      ${location_Spt} ${t('spt')}
                     </td>
                       </tr>
                 </tbody>
@@ -771,7 +779,7 @@ table[class=col] td { text-align: left !important; }
                   </tr>
                   <tr>
                     <td style="font-size: 26px; color: ${company_Color}; letter-spacing: 1px; font-family: 'Open Sans', sans-serif; font-weight:bold;  vertical-align: top; text-align: right;">
-                      Year Sales Report
+                    ${t('yearlysp')}
                     </td>
                   </tr>
                   <tr>
@@ -819,28 +827,28 @@ table[class=col] td { text-align: left !important; }
             <tbody>
               <tr>
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 10px 7px 0;" align="left" width="150">
-                  Item
+                ${t('item')}
                 </th>
               <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="100">
-                Qty
+              ${t('quantity')}
               </th>
 
                
 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="100">
-                  Price
+                ${t('price')}
                 </th> 
                 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="150">
-                Paid status
+                ${t('paidst')}
                 </th>
 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="right" width="150">
-                Time
+                ${t('time')}
                 </th>
 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="right" width="100">
-                 Total
+                ${t('total')}
                 </th>
               </tr>
               <tr height='20px' width="600">
@@ -901,7 +909,7 @@ table[class=col] td { text-align: left !important; }
                   
                 </td>
                 <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
-                  <strong>Total Amount:  ${new Intl.NumberFormat("en-US", {
+                  <strong>${t('total')} ${t('amount')}:  ${new Intl.NumberFormat("en-US", {
                     style: "currency",
                     currency: "RWF",
                   }).format(
@@ -935,7 +943,7 @@ table[class=col] td { text-align: left !important; }
                       </tr>
                       <tr>
                         <td style="font-size: 11px; font-family: 'Open Sans', sans-serif; color: #5b5b5b; line-height: 1; vertical-align: top; ">
-                          <strong>Manager name: ${Usernames}</strong>
+                          <strong>${t('manager')} ${t('name')}: ${Usernames}</strong>
                         </td>
                       </tr>
                       <tr>
@@ -943,7 +951,7 @@ table[class=col] td { text-align: left !important; }
                       </tr>
                       <tr>
                         <td style="font-size: 11px; font-family: 'Open Sans', sans-serif; font-weight:100; color: #5b5b5b; line-height: 1; vertical-align: top; ">
-                          <strong>Stamp & Signature</strong>
+                          <strong>${t('stamp')}</strong>
                         </td>
                       </tr>
 
@@ -1001,7 +1009,7 @@ table[class=col] td { text-align: left !important; }
         <tbody>
           <tr>
             <td style="font-size: 12px; color: #5b5b5b; font-family: 'Open Sans', sans-serif; line-height: 18px; vertical-align: top; text-align: left;">
-              Have a nice day.
+              
             </td>
           </tr>
         </tbody>
@@ -1077,7 +1085,7 @@ table[class=col] td { text-align: left !important; }
                       fontFamily: "Poppins-Bold",
                     }}
                   >
-                    Total sales:{" "}
+                    {t('total')} {t('sales')}:{" "}
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "RWF",
@@ -1100,7 +1108,7 @@ table[class=col] td { text-align: left !important; }
                       fontFamily: "Poppins-Bold",
                     }}
                   >
-                    Benefit:{" "}
+                    {t('benefit')}:{" "}
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "RWF",
@@ -1120,8 +1128,8 @@ table[class=col] td { text-align: left !important; }
                 },
               ]}
             >
-              All {all_sales.length} {all_sales.length == 1 ? "sale" : "sales"}{" "}
-              list
+              {t('all')} {all_sales.length} {all_sales.length == 1 ? `${t('sale')}` : `${t('sales')}`}{" "}
+              {t('list')}
             </Text>
 
             <Center>
@@ -1154,7 +1162,7 @@ table[class=col] td { text-align: left !important; }
                       marginLeft: 20,
                     }}
                   >
-                    Export pdf to print
+                  {t('expdf')}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1184,7 +1192,7 @@ table[class=col] td { text-align: left !important; }
                     color="muted.600"
                   />
                 }
-                placeholder="Search..."
+                placeholder={t('search')}
               />
             </Center>
           </View>
@@ -1194,7 +1202,7 @@ table[class=col] td { text-align: left !important; }
           <View>
             <Center>
               <ActivityIndicator size="large" color={currenttheme.secondary} />
-              <Text style={styles.textInGFuc}>Loading Please Wait...</Text>
+              <Text style={styles.textInGFuc}>{t('loading-wait')}</Text>
             </Center>
           </View>
         ) : (

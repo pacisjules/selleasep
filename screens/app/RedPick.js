@@ -16,6 +16,9 @@ import {
   //Modal,
 } from "react-native";
 import * as Font from "expo-font";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
+
 import {
   MaterialCommunityIcons,
   AntDesign,
@@ -82,6 +85,11 @@ const RedPick = ({ navigation }) => {
     useSelector((state) => state.userInfos.currentUserType)
   );
 
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
   //Normal
   const [refreshing, setRefreshing] = useState(false);
   const isFocused = useIsFocused();
@@ -312,9 +320,9 @@ const RedPick = ({ navigation }) => {
               fontFamily: "Poppins-Regular",
             }}
           >
-            Sales Qty: {quantity}
+           {t('sales')} {t('quantity')}: {quantity}
             {"   "}
-            Remain:{remainqty} {"   "}{" "}
+            {t('remain')}:{remainqty} {"   "}{" "}
           </Text>
 
           <Text
@@ -324,7 +332,7 @@ const RedPick = ({ navigation }) => {
               fontFamily: "Poppins-Regular",
             }}
           >
-            {currentusertype == "BOSS" ? "Benefit: " + benefit : ""}
+            {currentusertype == `BOSS` ? `${t('benefit')}: ` + benefit : ""}
           </Text>
         </View>
 
@@ -446,13 +454,13 @@ const RedPick = ({ navigation }) => {
     const diffDays = Math.round(diffHours / 24);
 
     if (diffSeconds < 60) {
-      return `${diffSeconds} seconds ago`;
+      return `${diffSeconds} ${t('secago')}`;
     } else if (diffMinutes < 60) {
-      return `${diffMinutes} minutes ago`;
+      return `${diffMinutes} ${t('minago')}`;
     } else if (diffHours < 24) {
-      return `${diffHours} hours ago`;
+      return `${diffHours} ${t('hago')}`;
     } else {
-      return `${diffDays} days ago`;
+      return `${diffDays} ${t('dayago')}`;
     }
   }
 
@@ -662,13 +670,13 @@ table[class=col] td { text-align: left !important; }
 
                   <tr>
                       <td style="padding-top:20px; font-size: 18px; color: #5b5b5b; font-family: 'Open Sans', sans-serif;   vertical-align: top; text-align: left;">
-                      Manager, ${Usernames}
+                      ${t('manager')}, ${Usernames}
                     </td>
                       </tr>
 
                       <tr>
                       <td style="font-size: 12px; color: ${company_Color}; font-family: 'Open Sans', sans-serif;   vertical-align: top; text-align: left;">
-                      ${location_Spt} Sales Point
+                      ${location_Spt} ${t('spt')}
                     </td>
                       </tr>
                 </tbody>
@@ -683,7 +691,7 @@ table[class=col] td { text-align: left !important; }
                   </tr>
                   <tr>
                     <td style="font-size: 26px; color: ${company_Color}; letter-spacing: 1px; font-family: 'Open Sans', sans-serif; font-weight:bold;  vertical-align: top; text-align: right;">
-                      Custom Date Sales Report
+                    ${t('cust')} 
                     </td>
                   </tr>
                   <tr>
@@ -731,28 +739,28 @@ table[class=col] td { text-align: left !important; }
             <tbody>
               <tr>
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 10px 7px 0;" align="left" width="150">
-                  Item
+                ${t('item')}
                 </th>
               <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="100">
-                Qty
+              ${t('quantity')}
               </th>
 
                
 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="100">
-                  Price
+                ${t('price')}
                 </th> 
                 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="150">
-                Paid status
+                ${t('paidst')}
                 </th>
 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="right" width="150">
-                Time
+                ${t('time')}
                 </th>
 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="right" width="100">
-                 Total
+                ${t('total')}
                 </th>
               </tr>
               <tr height='20px' width="600">
@@ -813,7 +821,7 @@ table[class=col] td { text-align: left !important; }
                   
                 </td>
                 <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
-                  <strong>Total Amount:  ${new Intl.NumberFormat("en-US", {
+                  <strong>${t('total')} ${t('amount')}:  ${new Intl.NumberFormat("en-US", {
                     style: "currency",
                     currency: "RWF",
                   }).format(
@@ -847,7 +855,7 @@ table[class=col] td { text-align: left !important; }
                       </tr>
                       <tr>
                         <td style="font-size: 11px; font-family: 'Open Sans', sans-serif; color: #5b5b5b; line-height: 1; vertical-align: top; ">
-                          <strong>Manager name: ${Usernames}</strong>
+                          <strong>${t('manager')} ${t('name')}: ${Usernames}</strong>
                         </td>
                       </tr>
                       <tr>
@@ -855,7 +863,7 @@ table[class=col] td { text-align: left !important; }
                       </tr>
                       <tr>
                         <td style="font-size: 11px; font-family: 'Open Sans', sans-serif; font-weight:100; color: #5b5b5b; line-height: 1; vertical-align: top; ">
-                          <strong>Stamp & Signature</strong>
+                          <strong>${t('stamp')}</strong>
                         </td>
                       </tr>
 
@@ -913,7 +921,7 @@ table[class=col] td { text-align: left !important; }
         <tbody>
           <tr>
             <td style="font-size: 12px; color: #5b5b5b; font-family: 'Open Sans', sans-serif; line-height: 18px; vertical-align: top; text-align: left;">
-              Have a nice day.
+             
             </td>
           </tr>
         </tbody>
@@ -989,7 +997,7 @@ table[class=col] td { text-align: left !important; }
                       fontFamily: "Poppins-Bold",
                     }}
                   >
-                    Total sales:{" "}
+                    {t('total')} {t('sales')}:{" "}
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "RWF",
@@ -1012,7 +1020,7 @@ table[class=col] td { text-align: left !important; }
                       fontFamily: "Poppins-Bold",
                     }}
                   >
-                    Benefit:{" "}
+                    {t('benefit')}:{" "}
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "RWF",
@@ -1032,8 +1040,8 @@ table[class=col] td { text-align: left !important; }
                 },
               ]}
             >
-              All {all_sales.length} {all_sales.length == 1 ? "sale" : "sales"}{" "}
-              list
+              {t('all')} {all_sales.length} {all_sales.length == 1 ? `${t('sale')}` : `${t('sales')}`}{" "}
+              {t('list')}
             </Text>
 
             <Center>
@@ -1071,7 +1079,7 @@ table[class=col] td { text-align: left !important; }
                         marginLeft: 20,
                       }}
                     >
-                      Please wait.....
+                     {t('loading-wait')}
                     </Text>
                   ) : (
                     <Text
@@ -1084,7 +1092,7 @@ table[class=col] td { text-align: left !important; }
                         marginLeft: 20,
                       }}
                     >
-                      Export pdf to print
+                    {t('expdf')}
                     </Text>
                   )}
                 </View>
@@ -1115,7 +1123,7 @@ table[class=col] td { text-align: left !important; }
                     color="muted.600"
                   />
                 }
-                placeholder="Search..."
+                placeholder={t('search')}
               />
             </Center>
           </View>
@@ -1125,7 +1133,7 @@ table[class=col] td { text-align: left !important; }
           <View>
             <Center>
               <ActivityIndicator size="large" color={currenttheme.secondary} />
-              <Text style={styles.textInGFuc}>Loading Please Wait...</Text>
+              <Text style={styles.textInGFuc}>{t('loading-wait')}</Text>
             </Center>
           </View>
         ) : (
@@ -1180,10 +1188,10 @@ table[class=col] td { text-align: left !important; }
             >
               <Modal.Content maxWidth="500px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>Edit</Modal.Header>
+                <Modal.Header>{t('edit')}</Modal.Header>
                 <Modal.Body>
                   <FormControl mt="3">
-                    <FormControl.Label>Quantity</FormControl.Label>
+                    <FormControl.Label>{t('quantity')}</FormControl.Label>
                     <Input
                       value={pro_qty}
                       onChangeText={setPro_qty}
@@ -1202,9 +1210,9 @@ table[class=col] td { text-align: left !important; }
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
                     <TouchableOpacity>
@@ -1217,7 +1225,7 @@ table[class=col] td { text-align: left !important; }
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>Edit Sale</Text>
+                          <Text style={{ color: "white" }}>{t('edit')}</Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -1233,10 +1241,10 @@ table[class=col] td { text-align: left !important; }
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>Sale Quick Actions</AlertDialog.Header>
+                <AlertDialog.Header>{t('sale-quick-actions')}</AlertDialog.Header>
                 <AlertDialog.Body>
                   <Text>
-                    Here are for Edit or Remove selected sale {SelectedName}.
+                  {t('here-are-for-edit-or-remove-selected-sale')} {SelectedName}.
                   </Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
@@ -1248,9 +1256,9 @@ table[class=col] td { text-align: left !important; }
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
 
@@ -1264,7 +1272,7 @@ table[class=col] td { text-align: left !important; }
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Edit</Text>
+                        <Text style={{ color: "white" }}>{t('edit')}</Text>
                       )}
                     </Button>
 
@@ -1278,7 +1286,7 @@ table[class=col] td { text-align: left !important; }
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Remove</Text>
+                        <Text style={{ color: "white" }}>Re{t('remove')}</Text>
                       )}
                     </Button>
                   </Button.Group>
@@ -1293,9 +1301,9 @@ table[class=col] td { text-align: left !important; }
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>Delete</AlertDialog.Header>
+                <AlertDialog.Header>{t('delete')}</AlertDialog.Header>
                 <AlertDialog.Body>
-                  <Text>Are you sure to delete {SelectedName} sale now ?</Text>
+                  <Text>{t('delsale')}{SelectedName} {t('now')}</Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
                   <Button.Group space={2}>
@@ -1306,16 +1314,16 @@ table[class=col] td { text-align: left !important; }
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
                     <Button colorScheme="danger" onPress={deleteSales}>
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Delete</Text>
+                        <Text style={{ color: "white" }}>{t('delete')}</Text>
                       )}
                     </Button>
                   </Button.Group>

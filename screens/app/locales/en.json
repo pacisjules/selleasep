@@ -163,7 +163,16 @@
   "delinv":"Are you sure to delete inventory of",
   "emp":"EMPLOYEE",
   "spt":"Sales Point",
-  "stamp":"Stamp & Signature"
+  "stamp":"Stamp & Signature",
+  "yest":"Yesterday sales Report",
+  "paidst":"Paid Status",
+  "time":"Time",
+  "delsale":"Are you sure to delete sale",
+  "cust":"Custom Date Sales Report",
+  "weeksp":"Weekly Sales Report",
+  "yearlysp":"Yearly Sales Report",
+  "monthsp":"Monthly Sales report"
+
 
 
 }
