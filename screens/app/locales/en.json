@@ -171,8 +171,12 @@
   "cust":"Custom Date Sales Report",
   "weeksp":"Weekly Sales Report",
   "yearlysp":"Yearly Sales Report",
-  "monthsp":"Monthly Sales report"
-
+  "monthsp":"Monthly Sales report",
+  "selectuser":"Select user for report",
+  "incompany":"in Company",
+  "selectreport":"Select user for get daily sales report",
+  "viewreport":"View Report",
+  "askmesuser":"Are you sure to view daily user sales report of"
 
 
 }

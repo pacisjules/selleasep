@@ -43,6 +43,9 @@ import { fetchEmp } from "../../features/getallsales/getallsales";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import axios from "axios";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
+
 import { useRoute } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -64,7 +67,11 @@ const Getusers = ({ navigation }) => {
   const params = route.params;
   const SelectedDate=params.dating
 
-
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
 
   const [currenttheme, setcurrenttheme] = useState(
     useSelector((state) => state.userInfos.current_theme)
@@ -229,7 +236,7 @@ const Getusers = ({ navigation }) => {
                 fontFamily: "Poppins-Bold",
               }}
             >
-             Select user for report
+            {t('selectuser')} 
             </Text>
           </LinearGradient>
         </View>
@@ -267,7 +274,7 @@ const Getusers = ({ navigation }) => {
                   fontFamily: "Poppins-Bold",
                 }}
               >
-                {all_Emp.length} {all_Emp.length==1?"User":"Users"} in Company
+                {all_Emp.length} {all_Emp.length==1?`${t('user')}`:`${t('users')}`} {t('incompany')}
               </Text>
 
               <Text
@@ -280,7 +287,7 @@ const Getusers = ({ navigation }) => {
                   width: "85%",
                 }}
               >
-               Select user for get daily sales report  
+              {t('selectreport')}   
               </Text>
 
               {all_Emp.map((item, index) => (
@@ -309,24 +316,24 @@ const Getusers = ({ navigation }) => {
                   marginTop: 3,
                   color: "white",
                   fontFamily: "Poppins-Regular",
-                }}>Location: {item.sales_point_location}</Text>
+                }}>{t('location')}: {item.sales_point_location}</Text>
                   <Text style={{
                   textAlign: "left",
                   fontSize: 12,
                   marginTop: 3,
                   color: "white",
                   fontFamily: "Poppins-Regular",
-                }}>Phone: {item.phone}</Text>
+                }}>{t('phone')}: {item.phone}</Text>
 
 
                 <TouchableOpacity
-                onPress={()=>Alert.alert(`SELLEASEP`, `Are you sure to view daily sales report of ${item.names} `, [
+                onPress={()=>Alert.alert(`SELLEASEP`, `${t('askmesuser')} ${item.names} `, [
                     {
-                      text: 'Cancel',
+                      text: `${t('cancel')}`,
                       onPress: () => console.log('Cancel Pressed'),
                       style: 'cancel',
                     },
-                    {text: 'YES', onPress: () => {
+                    {text: `${t('ok')}`, onPress: () => {
                         navigation.navigate("Getsalesbyuser", {
                             dating: SelectedDate,
                             user_id:item.user_id
@@ -351,7 +358,7 @@ const Getusers = ({ navigation }) => {
                   marginTop: 3,
                   color: "white",
                   fontFamily: "Poppins-Regular",
-                }}>View Report</Text><Entypo name="arrow-with-circle-right" size={24} color="white" style={{
+                }}>{t('viewreport')}</Text><Entypo name="arrow-with-circle-right" size={24} color="white" style={{
                     marginLeft:10
                 }} />
                 </TouchableOpacity>
