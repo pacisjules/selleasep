@@ -211,7 +211,10 @@
   "lastfill":"Last Fill",
   "alertrep":"Alert Inventory Report.",
   "selected":"Selected",
-  "askpay":"Are sure to pay full debts"
+  "askpay":"Are sure to pay full debts",
+  "expense":"Expense",
+  "lastsales":"Last Sales",
+  "lastsale":"Last Sale"
 
 
 }

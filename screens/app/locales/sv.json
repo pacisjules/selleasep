@@ -211,7 +211,10 @@
    "riskon": "Risk på",
 "lastfill": "Senaste Fyllning",
 "alertrep": "Lagervarningsrapport",
-"selected": "Vald"
-
+"selected": "Vald",
+"askpay": "Är du säker på att du vill betala alla skulder?",
+"expense":"Kostnad",
+"lastsales": "Senaste försäljningen",
+"lastsale": "Senaste försäljning"
   
 }

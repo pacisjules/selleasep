@@ -373,7 +373,7 @@ export default Entry = ({ navigation }) => {
             fontFamily: "Poppins-Bold",
           }}
         >
-          {quantity > 1 ? "Last Sales" : "Last Sale"}
+          {quantity > 1 ? `${t('lastsales')}` : `${t('lastsales')}`}
         </Text>
       </View>
 
@@ -441,7 +441,7 @@ export default Entry = ({ navigation }) => {
               marginTop: 5,
             }}
           >
-            {quantity} {quantity > 1 ? "Items" : "Item"}
+            {quantity} {quantity > 1 ? `${t('items')}` : `${t('item')}`}
             {/* {quantity} {name} */}
           </Text>
 

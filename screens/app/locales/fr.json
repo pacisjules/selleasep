@@ -210,7 +210,11 @@
     "riskon":"Risque actif",
     "lastfill":"Dernier remplissage",
     "alertrep":"Rapport d'alerte d'inventaire",
-    "selected":"Sélectionné"
+    "selected":"Sélectionné",
+    "askpay": "Êtes-vous sûr de vouloir payer l'intégralité des dettes ?",
+    "expense":"Dépense",
+    "lastsales": "Dernières ventes",
+"lastsale": "Dernière vente"
 
   
 }

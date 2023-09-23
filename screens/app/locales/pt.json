@@ -211,5 +211,9 @@
    "riskon": "Risco Ligado",
 "lastfill": "Último Preenchimento",
 "alertrep": "Relatório de Alerta de Inventário",
-"selected": "Selecionado"
+"selected": "Selecionado",
+"askpay": "Tem certeza de que deseja pagar todas as dívidas?",
+"expense":"Despesa",
+"lastsales": "Últimas vendas",
+"lastsale": "Última venda"
 }
