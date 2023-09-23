@@ -45,6 +45,8 @@ import { shareAsync } from "expo-sharing";
 import { useSelector, useDispatch } from "react-redux";
 import { useRoute } from "@react-navigation/native";
 import { fetchInventoryAlertData, fetchInventoryAlertDataSearch } from "../../features/getallinventory/getallinventory";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
 
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
@@ -77,7 +79,11 @@ const AlertInventory = ({ navigation }) => {
   const [currentusertype, setcurrentUsertype] = useState(
     useSelector((state) => state.userInfos.currentUserType)
   );
-
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
   const [printLoad, setPrintLoad] = React.useState(false);
 
   //Normal
@@ -323,7 +329,7 @@ const [company_Logo, setcompany_Logo] = useState(
               fontFamily: "Poppins-Regular",
             }}
           >
-            Risk on {percentage}% - Remain: {quantity} Qty
+           {t('riskon')}  {percentage}% - {t('remain')}: {quantity} {t('quantity')}
           </Text>
         </View>
 
@@ -341,7 +347,7 @@ const [company_Logo, setcompany_Logo] = useState(
               fontFamily: "Poppins-Bold",
             }}
           >
-            Last Fill:
+           {t('lastfill')}:
           </Text>
 
           <Text
@@ -611,13 +617,13 @@ table[class=col] td { text-align: left !important; }
 
                   <tr>
                       <td style="padding-top:20px; font-size: 18px; color: #5b5b5b; font-family: 'Open Sans', sans-serif;   vertical-align: top; text-align: left;">
-                      Manager, ${Usernames}
+                      ${t('manager')}, ${Usernames}
                     </td>
                       </tr>
 
                       <tr>
                       <td style="font-size: 12px; color: ${company_Color}; font-family: 'Open Sans', sans-serif;   vertical-align: top; text-align: left;">
-                      ${location_Spt} Sales Point
+                      ${location_Spt} ${t('spt')}
                     </td>
                       </tr>
                 </tbody>
@@ -632,7 +638,7 @@ table[class=col] td { text-align: left !important; }
                   </tr>
                   <tr>
                     <td style="font-size: 26px; color: ${company_Color}; letter-spacing: 1px; font-family: 'Open Sans', sans-serif; font-weight:bold;  vertical-align: top; text-align: right;">
-                      Alert Inventory Report.
+                     ${t('alertrep')} 
                     </td>
                   </tr>
                   <tr>
@@ -680,19 +686,19 @@ table[class=col] td { text-align: left !important; }
             <tbody>
               <tr>
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 10px 7px 0;" align="left" width="150">
-                  Product
+                ${t('product')}
                 </th>
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;"  align="left" width="100">
-                  Risk 100%
+                ${t('riskon')} 100%
                 </th>
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="100">
-                  Qty
+                ${t('quantity')}
                 </th>
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="100">
-                  Status
+                ${t('status')}
                 </th>
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="right" width="150">
-                  Last
+                ${t('lastfill')}
                 </th>
               </tr>
               <tr height='20px' width="600">
@@ -748,7 +754,7 @@ table[class=col] td { text-align: left !important; }
               
               <tr>
                 <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
-                  <strong>Total Items: </strong>
+                  <strong> ${t('total')}  ${t('items')}: </strong>
                 </td>
                 <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
                   <strong> ${all_inventoryAlert.length}</strong>
@@ -780,7 +786,7 @@ table[class=col] td { text-align: left !important; }
                       </tr>
                       <tr>
                         <td style="font-size: 11px; font-family: 'Open Sans', sans-serif; color: #5b5b5b; line-height: 1; vertical-align: top; ">
-                          <strong>Manager name: ${Usernames}</strong>
+                          <strong> ${t('manager')}  ${t('name')}: ${Usernames}</strong>
                         </td>
                       </tr>
                       <tr>
@@ -788,7 +794,7 @@ table[class=col] td { text-align: left !important; }
                       </tr>
                       <tr>
                         <td style="font-size: 11px; font-family: 'Open Sans', sans-serif; font-weight:100; color: #5b5b5b; line-height: 1; vertical-align: top; ">
-                          <strong>Stamp & Signature</strong>
+                          <strong> ${t('stamp')}</strong>
                         </td>
                       </tr>
 
@@ -846,7 +852,7 @@ table[class=col] td { text-align: left !important; }
         <tbody>
           <tr>
             <td style="font-size: 12px; color: #5b5b5b; font-family: 'Open Sans', sans-serif; line-height: 18px; vertical-align: top; text-align: left;">
-              Have a nice day.
+           
             </td>
           </tr>
         </tbody>
@@ -908,8 +914,8 @@ table[class=col] td { text-align: left !important; }
                 },
               ]}
             >
-              All {all_inventoryAlert.length}{" "}
-              {all_inventoryAlert.length == 1 ? "product" : "products"} list
+               {t('all')} {all_inventoryAlert.length}{" "}
+              {all_inventoryAlert.length == 1 ? ` ${t('product')}` : ` ${t('products')}`}  {t('list')}
             </Text>
 
             <Center>
@@ -935,7 +941,7 @@ table[class=col] td { text-align: left !important; }
                   marginLeft: 5,
                   color: "white",
                   marginLeft:20
-                }}>Export pdf to print</Text>
+                }}>{t('expdf')}</Text>
               </View>
               </TouchableOpacity>
 
@@ -958,7 +964,7 @@ table[class=col] td { text-align: left !important; }
                     color="muted.600"
                   />
                 }
-                placeholder="Search..."
+                placeholder= {t('search')}
               />
             </Center>
           </View>
@@ -968,7 +974,7 @@ table[class=col] td { text-align: left !important; }
           <View>
             <Center>
               <ActivityIndicator size="large" color={currenttheme.secondary} />
-              <Text style={styles.textInGFuc}>Loading Please Wait...</Text>
+              <Text style={styles.textInGFuc}>{t('loading-wait')}</Text>
             </Center>
           </View>
         ) : (
@@ -980,7 +986,7 @@ table[class=col] td { text-align: left !important; }
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() =>
-                  alert("Selected "+ item.name)
+                  alert(` ${t('selected')} `+ item.name)
                 }
               >
                 <Item

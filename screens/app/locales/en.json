@@ -202,7 +202,16 @@
   "forest":"Forest Theme",
   "dark":"Dark Theme",
   "rose":"Rose Theme",
-  "mango":"Mango Theme"
+  "mango":"Mango Theme",
+  "asetlang":"Are you sure to change language",
+  "alert":"Alert Quatity",
+  "item":"item",
+  "product":"Product",
+  "riskon":"Risk on",
+  "lastfill":"Last Fill",
+  "alertrep":"Alert Inventory Report.",
+  "selected":"Selected",
+  "askpay":"Are sure to pay full debts"
 
 
 }

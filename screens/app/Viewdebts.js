@@ -890,7 +890,7 @@ const changeLng = lng => {
                     color="muted.600"
                   />
                 }
-                placeholder="Search..."
+                placeholder={t('search')}
               />
 
               {total_Amount < 1 ? (
@@ -907,7 +907,7 @@ const changeLng = lng => {
                     },
                   ]}
                   onPress={() => {
-                    Alert.alert("SELLEASEP", "Are sure to pay full debts", [
+                    Alert.alert("SELLEASEP", `${t('askpay')}`, [
                       {
                         text: `${t('cancel')}`,
                         onPress: () => console.log("Cancel Pressed"),

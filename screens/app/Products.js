@@ -292,7 +292,7 @@ const Products = ({ navigation }) => {
               fontFamily: "Poppins-Regular",
             }}
           >
-            Qty: {quantity} Alert: {alertQuantity}
+            {t('quantity')}: {quantity} {t('alert')}: {alertQuantity}
           </Text>
         </View>
 
@@ -417,13 +417,13 @@ const Products = ({ navigation }) => {
     const diffDays = Math.round(diffHours / 24);
 
     if (diffSeconds < 60) {
-      return `${diffSeconds} seconds ago`;
+      return `${diffSeconds} ${t('secago')}`;
     } else if (diffMinutes < 60) {
-      return `${diffMinutes} minutes ago`;
+      return `${diffMinutes} ${t('minago')}`;
     } else if (diffHours < 24) {
-      return `${diffHours} hours ago`;
+      return `${diffHours} ${t('hago')}`;
     } else {
-      return `${diffDays} days ago`;
+      return `${diffDays} ${t('dayago')}`;
     }
   }
 
@@ -469,7 +469,7 @@ const Products = ({ navigation }) => {
               ]}
             >
               {t('all')} {all_products.length}{" "}
-              {all_products.length == 1 ? "Product" : "Products"} {t('list')}
+              {all_products.length == 1 ? `${t('product')}` : `${t('products')}`} {t('list')}
             </Text>
 
             <Center>

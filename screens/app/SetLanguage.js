@@ -74,14 +74,14 @@ const SetLanguage = ({ navigation }) => {
     setVisible(false);
     setSelectedLg(lng);
 
-    Alert.alert("SelleasEP", "Are you sure to change language", [
+    Alert.alert("SelleasEP", `${t('asetlang')}`, [
       {
-        text: "Cancel",
+        text: `${t('cancel')}`,
         onPress: () => console.log("Cancel Pressed"),
         style: "cancel",
       },
       {
-        text: "OK",
+        text: `${t('ok')}`,
         onPress: () => {
           dispatch(setUserLanguage(lng));
           AsyncStorage.setItem("language", lng);

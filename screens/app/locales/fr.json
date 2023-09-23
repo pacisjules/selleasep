@@ -113,7 +113,6 @@
    "dayago":"il y a quelques jours",
    "tdbtss":"Montant total des dettes :",
    "debt":"dette",
-   "debts":"dettes",
    "addnew":"Ajouter un nouveau",
    "owner":"Noms du propriétaire",
    "location":"emplacement",
@@ -203,7 +202,15 @@
    "forest":"Thème forestier",
    "dark":"Thème sombre",
    "rose":"Thème rose",
-   "mango":"Thème mangue"
+   "mango":"Thème mangue",
+   "asetlang":"Êtes-vous sûr de vouloir changer de langue ?",
+   "alert":"Quantité d'Alerte",
+    "item":"article",
+    "product":"Produit",   
+    "riskon":"Risque actif",
+    "lastfill":"Dernier remplissage",
+    "alertrep":"Rapport d'alerte d'inventaire",
+    "selected":"Sélectionné"
 
   
 }

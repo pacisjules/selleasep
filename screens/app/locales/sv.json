@@ -203,7 +203,15 @@
    "forest":"Skogstema",
    "dark":"Mörkt tema",
    "rose":"Rosatema",
-   "mango":"Mangotema"
+   "mango":"Mangotema",
+   "asetlang": "Är du säker på att du vill ändra språk?",
+   "alert":"Alertkvantitet",
+   "item":"artikel",
+   "product":"Produkt",
+   "riskon": "Risk på",
+"lastfill": "Senaste Fyllning",
+"alertrep": "Lagervarningsrapport",
+"selected": "Vald"
 
   
 }

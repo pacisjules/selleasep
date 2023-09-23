@@ -38,6 +38,9 @@ import {
 
 import { useIsFocused } from "@react-navigation/native";
 import axios from "axios";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
+
 
 import { useSelector, useDispatch } from "react-redux";
 
@@ -77,7 +80,11 @@ const Inventory = ({ navigation }) => {
   const [currentusertype, setcurrentUsertype] = useState(
     useSelector((state) => state.userInfos.currentUserType)
   );
-
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
   //Normal
   const [refreshing, setRefreshing] = useState(false);
   const isFocused = useIsFocused();
@@ -274,8 +281,8 @@ const Inventory = ({ navigation }) => {
               fontFamily: "Poppins-Regular",
             }}
           >
-            Status: {(status = 1 ? "Active" : "No Active")} {"  "}
-            Alert Qty: {alert_quantity}
+            {t('status')}: {(status = 1 ? `${t('active')}` : `${t('no-active')}`)} {"  "}
+            {t('alert')}: {alert_quantity}
           </Text>
         </View>
 
@@ -404,13 +411,13 @@ const Inventory = ({ navigation }) => {
     const diffDays = Math.round(diffHours / 24);
 
     if (diffSeconds < 60) {
-      return `${diffSeconds} seconds ago`;
+      return `${diffSeconds} ${t('secago')}`;
     } else if (diffMinutes < 60) {
-      return `${diffMinutes} minutes ago`;
+      return `${diffMinutes} ${t('minago')}`;
     } else if (diffHours < 24) {
-      return `${diffHours} hours ago`;
+      return `${diffHours} ${t('hago')}`;
     } else {
-      return `${diffDays} days ago`;
+      return `${diffDays} ${t('dayago')}`;
     }
   }
 
@@ -437,8 +444,8 @@ const Inventory = ({ navigation }) => {
                 },
               ]}
             >
-              All {all_inventory.length}{" "}
-              {all_inventory.length == 1 ? "item" : "items"} list
+              {t('all')} {all_inventory.length}{" "}
+              {all_inventory.length == 1 ? `${t('item')}` : `${t('items')}`} {t('list')}
             </Text>
 
             <Center>
@@ -462,7 +469,7 @@ const Inventory = ({ navigation }) => {
                     color="muted.600"
                   />
                 }
-                placeholder="Search..."
+                placeholder= {t('search')}
               />
             </Center>
           </View>
@@ -472,7 +479,7 @@ const Inventory = ({ navigation }) => {
           <View>
             <Center>
               <ActivityIndicator size="large" color={currenttheme.secondary} />
-              <Text style={styles.textInGFuc}>Loading Please Wait...</Text>
+              <Text style={styles.textInGFuc}>{t('loading-wait')}</Text>
             </Center>
           </View>
         ) : (
@@ -518,10 +525,10 @@ const Inventory = ({ navigation }) => {
             >
               <Modal.Content maxWidth="500px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>Edit</Modal.Header>
+                <Modal.Header>{t('edit')}</Modal.Header>
                 <Modal.Body>
                   <FormControl mt="3">
-                    <FormControl.Label>Quantity</FormControl.Label>
+                    <FormControl.Label>{t('quantity')}</FormControl.Label>
                     <Input
                       value={pro_qty}
                       onChangeText={setPro_qty}
@@ -531,7 +538,7 @@ const Inventory = ({ navigation }) => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>Alert Quantity</FormControl.Label>
+                    <FormControl.Label>{t('alert')}</FormControl.Label>
                     <Input
                       value={pro_Alertqty}
                       onChangeText={setPro_Alertqty}
@@ -550,9 +557,9 @@ const Inventory = ({ navigation }) => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
                     <TouchableOpacity>
@@ -565,7 +572,7 @@ const Inventory = ({ navigation }) => {
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>Edit Inventory</Text>
+                          <Text style={{ color: "white" }}>{t('edit')}</Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -581,10 +588,10 @@ const Inventory = ({ navigation }) => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>Inventory Quick Actions</AlertDialog.Header>
+                <AlertDialog.Header>{t('invquick')}</AlertDialog.Header>
                 <AlertDialog.Body>
                   <Text>
-                    Here are for Edit or Remove selected sale {SelectedName}.
+                  {t('invmes')} {SelectedName}.
                   </Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
@@ -596,9 +603,9 @@ const Inventory = ({ navigation }) => {
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
 
@@ -612,7 +619,7 @@ const Inventory = ({ navigation }) => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Edit</Text>
+                        <Text style={{ color: "white" }}>{t('edit')}</Text>
                       )}
                     </Button>
 
@@ -626,7 +633,7 @@ const Inventory = ({ navigation }) => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Remove</Text>
+                        <Text style={{ color: "white" }}>{t('remove')}</Text>
                       )}
                     </Button>
                   </Button.Group>
@@ -641,10 +648,10 @@ const Inventory = ({ navigation }) => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>Delete</AlertDialog.Header>
+                <AlertDialog.Header>{t('delete')}</AlertDialog.Header>
                 <AlertDialog.Body>
                   <Text>
-                    Are you sure to delete {SelectedName} Inventory now ?
+                  {t('are-you-sure-to-delete-now')} {SelectedName}  ?
                   </Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
@@ -656,16 +663,16 @@ const Inventory = ({ navigation }) => {
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>Please wait..</Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>Cancel</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
                     <Button colorScheme="danger" onPress={deleteProduct}>
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>Delete</Text>
+                        <Text style={{ color: "white" }}>{t('delete')}</Text>
                       )}
                     </Button>
                   </Button.Group>

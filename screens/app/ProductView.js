@@ -994,11 +994,11 @@ const changeLng = lng => {
                       }}
                     >
                       {pro_quantity}{" "}
-                      {pro_quantity === "No Stock"
+                      {pro_quantity === `${t('no-stock')}`
                         ? ""
                         : pro_quantity == 1
-                        ? "Item"
-                        : "Items"}
+                        ? `${t('item')}`
+                        : `${t('items')}`}
                     </Text>
 
                     <Text

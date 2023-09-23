@@ -3,12 +3,17 @@ import { initReactI18next } from 'react-i18next';
 import en from '../locales/en.json';
 import sv from '../locales/sv.json';
 import fr from '../locales/fr.json';
+import sw from '../locales/sw.json';
+import pt from '../locales/pt.json';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 export const languageResources = {
   en: { translation: en },
   sv: { translation: sv },
   fr: { translation: fr },
+  sw: { translation: sw },
+  pt: { translation: pt },
+
 };
 
 async function initI18n() {

@@ -685,7 +685,7 @@ table[class=col] td { text-align: left !important; }
                   </tr>
                   <tr>
                     <td style="font-size: 26px; color: ${company_Color}; letter-spacing: 1px; font-family: 'Open Sans', sans-serif; font-weight:bold;  vertical-align: top; text-align: right;">
-                    {t('yest')}.
+                    ${t('yest')}.
                     </td>
                   </tr>
                   <tr>
@@ -746,15 +746,15 @@ table[class=col] td { text-align: left !important; }
                 </th> 
                 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="150">
-                {t('paidst')}
+                ${t('paidst')}
                 </th>
 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="right" width="150">
-                {t('time')}
+                ${t('time')}
                 </th>
 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="right" width="100">
-                {t('total')}
+                ${t('total')}
                 </th>
               </tr>
               <tr height='20px' width="600">
