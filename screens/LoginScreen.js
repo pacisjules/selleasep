@@ -13,6 +13,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import theme from "../constants/themes";
+import i18next, {languageResources} from '../screens/app/services/i18next.js';
+import {useTranslation} from 'react-i18next';
 import { useSelector } from "react-redux";
 const LoginScreen = ({ navigation }) => {
   const [webUrl, setWebUrl] = useState(
@@ -23,6 +25,12 @@ const LoginScreen = ({ navigation }) => {
   const [Message, setMessage] = useState("");
   const [edit, setEdit] = useState(true);
   const [isLoading, setIsLoading] = useState();
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
+
 
   const handleLogin = async () => {
     setMessage("");
@@ -141,7 +149,7 @@ const LoginScreen = ({ navigation }) => {
               fontWeight: "bold",
             }}
           >
-            Login
+           {t('login')} 
           </Text>
         </LinearGradient>
       </TouchableOpacity>
@@ -163,7 +171,7 @@ const LoginScreen = ({ navigation }) => {
           textAlign: "center",
         }}
       >
-        If you don't have account Click {"\n"}{" "}
+        {t('ifmes')} {"\n"}{" "}
         <TouchableOpacity onPress={() => navigation.navigate("Register")}>
           <Text
             style={{
@@ -173,7 +181,7 @@ const LoginScreen = ({ navigation }) => {
               fontSize: 16,
             }}
           >
-            Register here
+           {t('register')} 
           </Text>
         </TouchableOpacity>
       </Text>

@@ -30,6 +30,9 @@ import {
 
 import * as Font from "expo-font";
 import * as Linking from "expo-linking";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
+
 import {
   MaterialIcons,
   FontAwesome,
@@ -75,6 +78,11 @@ const Allemployees = ({ navigation }) => {
    const [notification, setNotification] = useState(false);
    const notificationListener = useRef();
    const responseListener = useRef();
+   const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
 
   //Load fonts
   async function loadFonts() {
@@ -298,7 +306,7 @@ const Allemployees = ({ navigation }) => {
                 fontFamily: "Poppins-Bold",
               }}
             >
-             Employees
+             {t('employees')}
             </Text>
           </LinearGradient>
         </View>
@@ -336,7 +344,7 @@ const Allemployees = ({ navigation }) => {
                   fontFamily: "Poppins-Bold",
                 }}
               >
-                {all_Emp.length} {all_Emp.length==1?"User":"Users"} in Company
+                {all_Emp.length} {all_Emp.length==1?`${t('user')}`:`${t('users')}`} {t('incompany')}
               </Text>
 
               <Text
@@ -349,7 +357,7 @@ const Allemployees = ({ navigation }) => {
                   width: "85%",
                 }}
               >
-                Here you can enter in any sales point for full control
+               {t('hereme')}
               </Text>
 
               {all_Emp.map((item) => (
@@ -378,14 +386,14 @@ const Allemployees = ({ navigation }) => {
                   marginTop: 3,
                   color: "white",
                   fontFamily: "Poppins-Regular",
-                }}>Location: {item.sales_point_location}</Text>
+                }}>{t('location')}: {item.sales_point_location}</Text>
                   <Text style={{
                   textAlign: "left",
                   fontSize: 12,
                   marginTop: 3,
                   color: "white",
                   fontFamily: "Poppins-Regular",
-                }}>Phone: {item.phone}</Text>
+                }}>{t('phone')}: {item.phone}</Text>
 
 
 <Text style={{
@@ -394,17 +402,17 @@ const Allemployees = ({ navigation }) => {
                   marginTop: 3,
                   color: "white",
                   fontFamily: "Poppins-Regular",
-                }}>Status: {item.emp_status==1?"Active":"Not Active"}</Text>
+                }}>{t('status')}: {item.emp_status==1?"Active":"Not Active"}</Text>
 
                 {item.emp_status==1?(
                   <TouchableOpacity
                   onPress={()=>Alert.alert(`SELLEASEP`, `Are you sure to disable this user ${item.names} `, [
                       {
-                        text: 'Cancel',
+                        text: `${t('cancel')}`,
                         onPress: () => console.log('Cancel Pressed'),
                         style: 'cancel',
                       },
-                      {text: 'YES', onPress: () => disableUser(item.user_id)
+                      {text: `${t('ok')}`, onPress: () => disableUser(item.user_id)
                       },
                     ])}
   
@@ -425,7 +433,7 @@ const Allemployees = ({ navigation }) => {
                     marginTop: 3,
                     color: "white",
                     fontFamily: "Poppins-Regular",
-                  }}>Disable user</Text>
+                  }}>{t('disuser')}</Text>
                   
   
                   <MaterialIcons
@@ -436,13 +444,13 @@ const Allemployees = ({ navigation }) => {
   
                   </TouchableOpacity>
                 ):(<TouchableOpacity
-                  onPress={()=>Alert.alert(`SELLEASEP`, `Are you sure to enable this user ${item.names} `, [
+                  onPress={()=>Alert.alert(`SELLEASEP`, `${t('dismes')} ${item.names} ? `, [
                       {
-                        text: 'Cancel',
+                        text: `${t('cancel')}`,
                         onPress: () => console.log('Cancel Pressed'),
                         style: 'cancel',
                       },
-                      {text: 'YES', onPress: () => enableUser(item.user_id)
+                      {text: `${t('ok')}`, onPress: () => enableUser(item.user_id)
                       },
                     ])}
   
@@ -463,7 +471,7 @@ const Allemployees = ({ navigation }) => {
                     marginTop: 3,
                     color: "white",
                     fontFamily: "Poppins-Regular",
-                  }}>Enable user</Text>
+                  }}>{t('enuser')}</Text>
                   
   
                   <MaterialIcons name="done-all" size={24} color="white" style={{

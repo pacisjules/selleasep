@@ -16,6 +16,9 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import theme from "../constants/themes";
+import i18next, {languageResources} from '../screens/app/services/i18next.js';
+import {useTranslation} from 'react-i18next';
+
 
 const Themechoose = ({ navigation }) => {
   const [choose, setChoose] = useState(null);
@@ -58,15 +61,21 @@ const Themechoose = ({ navigation }) => {
     AsyncStorage.removeItem("choose")
     const jsonData = JSON.stringify(theme);
     setChoose(jsonData);
-    Alert.alert("Save theme", `Are you sure to save this theme ?`, [
+    Alert.alert(`${t('savetheme')}`, `${t('asksave')}`, [
       {
-        text: "Cancel",
+        text: `${t('cancel')}`,
         onPress: () => console.log("Cancel Pressed"),
         style: "cancel",
       },
-      { text: "OK", onPress: () => navigation.navigate("LoginScreen") },
+      { text: `${t('ok')}`, onPress: () => navigation.navigate("LoginScreen") },
     ]);
   };
+
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
 
   return (
     <View style={styles.container}>
@@ -128,7 +137,7 @@ const Themechoose = ({ navigation }) => {
                   marginBottom: 20,
                 }}
               >
-                Ocean Theme
+               {t('ocean')} 
               </Text>
 
               <View
@@ -230,7 +239,7 @@ const Themechoose = ({ navigation }) => {
                   marginBottom: 20,
                 }}
               >
-                Forest Theme
+              {t('forest')}
               </Text>
 
               <View
@@ -332,7 +341,7 @@ const Themechoose = ({ navigation }) => {
                   marginBottom: 20,
                 }}
               >
-                Dark Theme
+              {t('dark')}
               </Text>
 
               <View
@@ -434,7 +443,7 @@ const Themechoose = ({ navigation }) => {
                   marginBottom: 20,
                 }}
               >
-                Rose Theme
+              {t('rose')}
               </Text>
 
               <View
@@ -536,7 +545,7 @@ const Themechoose = ({ navigation }) => {
                   marginBottom: 20,
                 }}
               >
-                Mango Theme
+               {t('mango')}
               </Text>
 
               <View

@@ -30,6 +30,9 @@ import {
 
 import * as Font from "expo-font";
 import * as Linking from "expo-linking";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
+
 import {
   MaterialIcons,
   FontAwesome,
@@ -138,6 +141,11 @@ const Aboutus = ({ navigation }) => {
     return token;
   }
 
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
   const cancelRef = React.useRef(null);
 
   const ONE_SECOND_IN_MS = 1000;
@@ -207,7 +215,7 @@ const Aboutus = ({ navigation }) => {
                 fontFamily: "Poppins-Bold",
               }}
             >
-              About Us
+             {t('aboutus')} 
             </Text>
           </LinearGradient>
         </View>
@@ -243,7 +251,7 @@ const Aboutus = ({ navigation }) => {
                   fontFamily: "Poppins-Bold",
                 }}
               >
-                About system
+               {t('aboutsystem')}
               </Text>
 
               <Text
@@ -256,8 +264,7 @@ const Aboutus = ({ navigation }) => {
                   width: "85%",
                 }}
               >
-                SellEASEP Sales point software, also known as POS software,
-                minimizes manual effort and optimizes sales processes.
+                {t('aboutmes')}
               </Text>
 
               <Text
@@ -269,7 +276,7 @@ const Aboutus = ({ navigation }) => {
                   fontFamily: "Poppins-Bold",
                 }}
               >
-                Vision
+                {t('vision')}
               </Text>
 
               <Text
@@ -282,8 +289,7 @@ const Aboutus = ({ navigation }) => {
                   width: "85%",
                 }}
               >
-                "To empower businesses with intuitive sales point software that
-                drives growth, efficiency, and customer satisfaction."
+               {t('vismes')}
               </Text>
 
               <Text
@@ -295,7 +301,7 @@ const Aboutus = ({ navigation }) => {
                   fontFamily: "Poppins-Bold",
                 }}
               >
-                Mission
+                {t('mission')}
               </Text>
 
               <Text
@@ -308,9 +314,7 @@ const Aboutus = ({ navigation }) => {
                   width: "85%",
                 }}
               >
-                "Our mission is to develop user-friendly sales point software
-                solutions that streamline operations, enhance sales performance,
-                and foster meaningful customer relationships."
+               {t('mismes')}
               </Text>
 
               <LinearGradient
@@ -409,7 +413,7 @@ const Aboutus = ({ navigation }) => {
                         marginTop: -10,
                       }}
                     >
-                      CO - Founder
+                     {t('cofounder')}
                     </Text>
 
                     <Text
@@ -421,7 +425,7 @@ const Aboutus = ({ navigation }) => {
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      Software Engineer - Kigali, Rwanda
+                     {t('softeng')} - Kigali, Rwanda
                     </Text>
                   </View>
 
@@ -618,7 +622,7 @@ const Aboutus = ({ navigation }) => {
                         marginTop: -10,
                       }}
                     >
-                      CO - Founder
+                     {t('cofounder')}
                     </Text>
 
                     <Text
@@ -630,7 +634,7 @@ const Aboutus = ({ navigation }) => {
                         fontFamily: "Poppins-Regular",
                       }}
                     >
-                      Software Engineer - Kigali, Rwanda
+                      {t('softeng')} - Kigali, Rwanda
                     </Text>
                   </View>
 

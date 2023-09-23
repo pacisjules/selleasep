@@ -30,6 +30,8 @@ import * as Font from "expo-font";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector, useDispatch } from "react-redux";
+import i18next, {languageResources} from '../screens/app/services/i18next.js';
+import {useTranslation} from 'react-i18next';
 
 export default Loading = ({ navigation }) => {
   const loadImg = require("../assets/go.jpeg");
@@ -40,6 +42,11 @@ export default Loading = ({ navigation }) => {
 
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
   // const [isLoggedIn, setIsLoggedIn] = useState();
   
   // const checkLoginStatus = async () => {
@@ -137,7 +144,7 @@ export default Loading = ({ navigation }) => {
                 fontSize: 20,
               }}
             >
-              Loading...
+             {t('loading')} 
             </Text>
           </Center>
         </ImageBackground>
@@ -217,7 +224,7 @@ export default Loading = ({ navigation }) => {
                     fontSize: 20,
                   }}
                 >
-                  Continue
+                 {t('continue')}  
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
