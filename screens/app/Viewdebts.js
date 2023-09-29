@@ -25,6 +25,7 @@ import {
   Ionicons,
 } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { FontAwesome5 } from '@expo/vector-icons'; 
 import {
   Button,
   Modal,
@@ -50,8 +51,8 @@ import {
 
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
-import i18next, {languageResources} from './services/i18next';
-import {useTranslation} from 'react-i18next';
+import i18next, { languageResources } from "./services/i18next";
+import { useTranslation } from "react-i18next";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -75,9 +76,9 @@ const Viewdebts = ({ navigation }) => {
   const [currenttheme, setcurrenttheme] = useState(
     useSelector((state) => state.userInfos.current_theme)
   );
-  
-const {t} = useTranslation();
-const changeLng = lng => {
+
+  const { t } = useTranslation();
+  const changeLng = (lng) => {
     i18next.changeLanguage(lng);
     setVisible(false);
   };
@@ -95,7 +96,6 @@ const changeLng = lng => {
   const [usertype, setusertype] = useState(
     useSelector((state) => state.userInfos.currentUserType)
   );
-
 
   const [notMessage, setNotMessage] = React.useState("");
   const [companyName, setCompanyName] = useState(
@@ -119,6 +119,9 @@ const changeLng = lng => {
   const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [pro_qty, setPro_qty] = useState(0);
+
+
+  const [showModalHalf, setShowModalHalf] = useState(false);
 
   //Infos
   const [pro_name, setPro_name] = useState("");
@@ -149,6 +152,7 @@ const changeLng = lng => {
 
   const [debtPerson_Names, setDebtPerson_Names] = useState("");
   const [total_Amount, setTotal_Amount] = useState(0);
+  const [PaidTotal_Amount, setPaidTotal_Amount] = useState(0);
 
   const route = useRoute();
   const params = route.params;
@@ -184,6 +188,7 @@ const changeLng = lng => {
     setIdent(params.id);
     setDebtPerson_Names(params.name);
     setTotal_Amount(params.amount);
+    setPaidTotal_Amount(params.mpaid);
   };
 
   const onRefresh = () => {
@@ -384,7 +389,7 @@ const changeLng = lng => {
               fontFamily: "Poppins-Regular",
             }}
           >
-            {t('quantity')} :{" "}
+            {t("quantity")} :{" "}
             <Text
               style={{
                 color: "white",
@@ -405,10 +410,10 @@ const changeLng = lng => {
             }}
           >
             {status == 2
-              ? `${t('halfduedate')} : ${duetime}`
+              ? `${t("halfduedate")} : ${duetime}`
               : status == 3
-              ? `${t('fullpaid')}`
-              : `${t('payduedate')} : ${duetime}`}
+              ? `${t("fullpaid")}`
+              : `${t("payduedate")} : ${duetime}`}
           </Text>
 
           <Text
@@ -542,9 +547,10 @@ const changeLng = lng => {
     setIsLoading(true);
 
     const data = {
+      sess_id: ident,
       status: 3,
       descriptions: "Yose arayishyuye",
-      sess_id: ident,
+      
     };
 
     const config = {
@@ -572,6 +578,64 @@ const changeLng = lng => {
         dispatch(fetchAlldebtsDatain(currentSpt, ident));
         dispatch(fetchAlldebtsDataTotals(currentSpt));
         alert("Debt payed full!");
+      })
+      .catch((error) => {
+        //console.log(error);
+        setNotMessage(`This debt ${SelectedName} has failed to be payed`);
+        schedulePushNotification();
+        Vibration.vibrate();
+        setIsLoading(false);
+        setIsOpenPay(false);
+        setSelectedName(null);
+        setSelectedID(null);
+        setIsOpen(false);
+        dispatch(fetchAlldebtsDatain(currentSpt, ident));
+        dispatch(fetchAlldebtsDataTotals(currentSpt));
+      });
+  };
+
+
+
+
+
+  const HalfPay = async () => {
+    setEdit(false);
+    setIsLoading(true);
+
+    const data = {
+      id: ident,
+      amount: debt_Amount,
+      descriptions: "paid",
+      
+    };
+
+    const config = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    };
+
+    await axios
+      .post(
+        "https://www.selleasep.shop/functions/debts/payhalfdebts.php",
+        data,
+        config
+      )
+      .then((response) => {
+        //console.log(response);
+        setNotMessage(`This debt ${SelectedName} has been  payed`);
+        schedulePushNotification();
+        setIsLoading(false);
+        Vibration.vibrate();
+        setSelectedName(null);
+        setSelectedID(null);
+        setIsOpen(false);
+        setIsOpenPay(false);
+
+        setShowModalHalf(false);
+        alert("Debt payed!");
+        dispatch(fetchAlldebtsDatain(currentSpt, ident));
+        dispatch(fetchAlldebtsDataTotals(currentSpt));
       })
       .catch((error) => {
         //console.log(error);
@@ -802,7 +866,7 @@ const changeLng = lng => {
             <View
               style={{
                 backgroundColor: "white",
-                height: 26,
+                height: 50,
                 width: "100%",
               }}
             >
@@ -810,52 +874,74 @@ const changeLng = lng => {
                 <ActivityIndicator size="small" color="#a8006e" />
               ) : (
                 TotalASll_debt.map((post) => (
-                  <View key="1" style={{
-                    marginBottom:10
-                  }}>
+                  <View
+                    key="1"
+                    style={{
+                      marginBottom: 5,
+                    }}
+                  >
                     <Text
-                      
                       style={{
                         textAlign: "center",
-                        fontSize: 15,
+                        fontSize: 13,
                         marginLeft: 5,
                         color: "black",
                         fontFamily: "Poppins-Bold",
                       }}
                     >
-                      {t('debtof')} {debtPerson_Names}
+                      {t("debtof")} {debtPerson_Names}
                     </Text>
-                    <Text style={{
+                    <Text
+                      style={{
                         textAlign: "center",
-                        fontSize: 15,
+                        fontSize: 13,
                         marginLeft: 5,
                         color: "black",
                         fontFamily: "Poppins-Bold",
-                        
-                      }}>
+                      }}
+                    >
                       {" "}
-                      {t('total')} {t('amount')} :{" "}
+                      {t("total")} {t("amount")} :{" "}
                       {new Intl.NumberFormat("en-US", {
                         style: "currency",
                         currency: "RWF",
                       }).format(total_Amount)}
                     </Text>
+
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        fontSize: 13,
+                        marginLeft: 5,
+                        color: "black",
+                        fontFamily: "Poppins-Bold",
+                      }}
+                    >
+                      {" "}
+                      {t("total")} {t("amountpaid")} :{" "}
+                      {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "RWF",
+                      }).format(PaidTotal_Amount)}
+                    </Text>
                   </View>
                 ))
               )}
-            </View>
 
-            <Text
-              style={[
-                styles.textTitle2,
-                {
-                  color: currenttheme.normal,
-                },
-              ]}
-            >
-              {t('all')} {all_debtIn.length}{" "}
-              {all_debtIn.length == 1 ? `${t('debt')}` : `${t('debts')}`} {t('list')}
-            </Text>
+              <Text
+                style={{
+                  textAlign: "center",
+                  fontSize: 13,
+                  marginLeft: 5,
+                  color: "black",
+                  fontFamily: "Poppins-Bold",
+                }}
+              >
+                {t("all")} {all_debtIn.length}{" "}
+                {all_debtIn.length == 1 ? `${t("debt")}` : `${t("debts")}`}{" "}
+                {t("list")}
+              </Text>
+            </View>
 
             {/* <TouchableOpacity
               style={[
@@ -871,7 +957,9 @@ const changeLng = lng => {
               <Text style={styles.itemBtnText}>Pay all Debt</Text>
             </TouchableOpacity> */}
 
-            <Center>
+            <Center style={{
+              marginTop:55
+            }}>
               <Input
                 w={{
                   base: "94%",
@@ -890,43 +978,67 @@ const changeLng = lng => {
                     color="muted.600"
                   />
                 }
-                placeholder={t('search')}
+                placeholder={t("search")}
               />
 
               {total_Amount < 1 ? (
                 ""
-              ) : (
-                
-                usertype == "BOSS"?
-                <TouchableOpacity
-                  style={[
-                    styles.itemBtn,
-                    {
-                      backgroundColor: currenttheme.secondary,
-                      borderColor: currenttheme.secondary,
-                    },
-                  ]}
-                  onPress={() => {
-                    Alert.alert("SELLEASEP", `${t('askpay')}`, [
+              ) : usertype == "BOSS" ? (
+                <View style={{
+                  display:"flex",
+                  justifyContent:"center",
+                  alignItems:"center",
+                  flexDirection:"row",
+                  padding:10
+                }}>
+                  <TouchableOpacity
+                    style={[
+                      styles.itemBtn,
                       {
-                        text: `${t('cancel')}`,
-                        onPress: () => console.log("Cancel Pressed"),
-                        style: "cancel",
+                        backgroundColor: currenttheme.secondary,
+                        borderColor: currenttheme.secondary,
                       },
-                      { text: `${t('ok')}`, onPress: () => SessionPayFull() },
-                    ]);
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="cash-check"
-                    size={30}
-                    color="white"
-                  />
-                  <Text style={styles.itemBtnText}>{t('payall')}</Text>
-                </TouchableOpacity>
-                :null
+                    ]}
+                    onPress={() => {
+                      Alert.alert("SELLEASEP", `${t("askpay")}`, [
+                        {
+                          text: `${t("cancel")}`,
+                          onPress: () => console.log("Cancel Pressed"),
+                          style: "cancel",
+                        },
+                        { text: `${t("ok")}`, onPress: () => SessionPayFull() },
+                      ]);
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="cash-check"
+                      size={30}
+                      color="white"
+                    />
+                    <Text style={styles.itemBtnText}>{t("payall")}</Text>
+                  </TouchableOpacity>
 
-              )}
+                  <TouchableOpacity
+                    style={[
+                      styles.itemBtn,
+                      {
+                        backgroundColor: currenttheme.secondary,
+                        borderColor: currenttheme.secondary,
+                      },
+                    ]}
+                    onPress={() => {
+                      setShowModalHalf(true);
+                    }}
+                  >
+                    <FontAwesome5
+                      name="cash-register"
+                      size={30}
+                      color="white"
+                    />
+                    <Text style={styles.itemBtnText}>{t("payhalf")}</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : null}
             </Center>
           </View>
         </ScrollView>
@@ -938,8 +1050,7 @@ const changeLng = lng => {
               <Text style={styles.textInGFuc}>Loading Please Wait...</Text>
             </Center>
           </View>
-        ) : (
-          usertype == "BOSS"?
+        ) : usertype == "BOSS" ? (
           <FlatList
             style={{
               backgroundColor: "white",
@@ -979,32 +1090,29 @@ const changeLng = lng => {
             )}
             keyExtractor={(item) => item.id}
           />
-          :
-
+        ) : (
           <FlatList
-          style={{
-            backgroundColor: "white",
-          }}
-          data={all_debtIn}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-            >
-              <Item
-                name={item.product_name}
-                id={item.id}
-                amount={new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: "RWF",
-                }).format(item.amount)}
-                expense_name={item.qty}
-                duetime={formatDate(item.due_date)}
-                status={item.status}
-              />
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item) => item.id}
-        />
-          
+            style={{
+              backgroundColor: "white",
+            }}
+            data={all_debtIn}
+            renderItem={({ item }) => (
+              <TouchableOpacity>
+                <Item
+                  name={item.product_name}
+                  id={item.id}
+                  amount={new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "RWF",
+                  }).format(item.amount)}
+                  expense_name={item.qty}
+                  duetime={formatDate(item.due_date)}
+                  status={item.status}
+                />
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item) => item.id}
+          />
         )}
 
         <Center flex={1} px="3">
@@ -1018,11 +1126,11 @@ const changeLng = lng => {
             >
               <Modal.Content maxWidth="500px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>{t('addnew')}</Modal.Header>
+                <Modal.Header>{t("addnew")}</Modal.Header>
 
                 <Modal.Body>
                   <FormControl mt="3">
-                    <FormControl.Label>{t('owner')}</FormControl.Label>
+                    <FormControl.Label>{t("owner")}</FormControl.Label>
                     <Input
                       value={person_Names}
                       onChangeText={setperson_Names}
@@ -1031,7 +1139,7 @@ const changeLng = lng => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('phone')}</FormControl.Label>
+                    <FormControl.Label>{t("phone")}</FormControl.Label>
                     <Input
                       value={person_Phone}
                       onChangeText={setperson_Phone}
@@ -1042,7 +1150,7 @@ const changeLng = lng => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('location')}</FormControl.Label>
+                    <FormControl.Label>{t("location")}</FormControl.Label>
                     <Input
                       value={person_Location}
                       onChangeText={setperson_Location}
@@ -1052,7 +1160,7 @@ const changeLng = lng => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('amount')}</FormControl.Label>
+                    <FormControl.Label>{t("amount")}</FormControl.Label>
                     <Input
                       value={debt_Amount}
                       onChangeText={setDebt_Amount}
@@ -1062,7 +1170,7 @@ const changeLng = lng => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('due')}</FormControl.Label>
+                    <FormControl.Label>{t("due")}</FormControl.Label>
                     <TouchableOpacity
                       onPress={() => {
                         setShowPicker(true);
@@ -1097,13 +1205,15 @@ const changeLng = lng => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          {t('pick')}
+                          {t("pick")}
                         </Text>
                       </View>
                     </TouchableOpacity>
 
                     {showPickerlbl ? (
-                      <Text>{t('picked')} {SelectedDueDate} </Text>
+                      <Text>
+                        {t("picked")} {SelectedDueDate}{" "}
+                      </Text>
                     ) : (
                       <Text
                         style={{
@@ -1113,13 +1223,13 @@ const changeLng = lng => {
                           fontFamily: "Poppins-Regular",
                         }}
                       >
-                        {t('loading-wait')}
+                        {t("loading-wait")}
                       </Text>
                     )}
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('description')}</FormControl.Label>
+                    <FormControl.Label>{t("description")}</FormControl.Label>
                     <TextArea
                       h={20}
                       value={debt_Descriptions}
@@ -1141,9 +1251,11 @@ const changeLng = lng => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
+                        <Text style={{ color: "gray" }}>
+                          {t("loading-wait")}
+                        </Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
+                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
                       )}
                     </Button>
 
@@ -1157,7 +1269,7 @@ const changeLng = lng => {
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>{t('save')}</Text>
+                          <Text style={{ color: "white" }}>{t("save")}</Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -1175,11 +1287,11 @@ const changeLng = lng => {
             >
               <Modal.Content maxWidth="500px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>{t('edit')}</Modal.Header>
+                <Modal.Header>{t("edit")}</Modal.Header>
 
                 <Modal.Body>
                   <FormControl mt="3">
-                    <FormControl.Label>{t('owner')}</FormControl.Label>
+                    <FormControl.Label>{t("owner")}</FormControl.Label>
                     <Input
                       value={person_Names}
                       onChangeText={setperson_Names}
@@ -1188,7 +1300,7 @@ const changeLng = lng => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('phone')}</FormControl.Label>
+                    <FormControl.Label>{t("phone")}</FormControl.Label>
                     <Input
                       value={person_Phone}
                       onChangeText={setperson_Phone}
@@ -1199,7 +1311,7 @@ const changeLng = lng => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('loaction')}</FormControl.Label>
+                    <FormControl.Label>{t("loaction")}</FormControl.Label>
                     <Input
                       value={person_Location}
                       onChangeText={setperson_Location}
@@ -1209,7 +1321,7 @@ const changeLng = lng => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('amount')}</FormControl.Label>
+                    <FormControl.Label>{t("amount")}</FormControl.Label>
                     <Input
                       value={debt_Amount}
                       onChangeText={setDebt_Amount}
@@ -1219,7 +1331,7 @@ const changeLng = lng => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('due')}</FormControl.Label>
+                    <FormControl.Label>{t("due")}</FormControl.Label>
                     <TouchableOpacity
                       onPress={() => {
                         setShowPicker(true);
@@ -1254,13 +1366,15 @@ const changeLng = lng => {
                             fontFamily: "Poppins-Regular",
                           }}
                         >
-                          {t('pick')}
+                          {t("pick")}
                         </Text>
                       </View>
                     </TouchableOpacity>
 
                     {showPickerlbl ? (
-                      <Text>{t('picked')} {SelectedDueDate} </Text>
+                      <Text>
+                        {t("picked")} {SelectedDueDate}{" "}
+                      </Text>
                     ) : (
                       <Text
                         style={{
@@ -1270,13 +1384,13 @@ const changeLng = lng => {
                           fontFamily: "Poppins-Regular",
                         }}
                       >
-                        {t('loading')}
+                        {t("loading")}
                       </Text>
                     )}
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('description')}</FormControl.Label>
+                    <FormControl.Label>{t("description")}</FormControl.Label>
                     <TextArea
                       h={20}
                       value={debt_Descriptions}
@@ -1305,9 +1419,11 @@ const changeLng = lng => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
+                        <Text style={{ color: "gray" }}>
+                          {t("loading-wait")}
+                        </Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
+                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
                       )}
                     </Button>
                     <TouchableOpacity>
@@ -1320,7 +1436,73 @@ const changeLng = lng => {
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>{t('edit')}</Text>
+                          <Text style={{ color: "white" }}>{t("edit")}</Text>
+                        )}
+                      </Button>
+                    </TouchableOpacity>
+                  </Button.Group>
+                </Modal.Footer>
+              </Modal.Content>
+            </Modal>
+
+
+            <Modal
+              isOpen={showModalHalf}
+              onClose={() => {
+                setShowModalHalf(false);
+              }}
+              animationDuration={500}
+            >
+              <Modal.Content maxWidth="500px" width="340px">
+                <Modal.CloseButton />
+                <Modal.Header>{t("payhalf")}</Modal.Header>
+
+                <Modal.Body>
+                  
+
+                  <FormControl mt="3">
+                    <FormControl.Label>{t("amount")}</FormControl.Label>
+                    <Input
+                      value={debt_Amount}
+                      onChangeText={setDebt_Amount}
+                      editable={edit}
+                      inputMode="numeric"
+                    />
+                  </FormControl>
+
+                </Modal.Body>
+
+                <Modal.Footer>
+                  <Button.Group space={2}>
+                    <Button
+                      variant="ghost"
+                      colorScheme="blueGray"
+                      onPress={() => {
+                        setShowModalHalf(false);
+                        setSelectedID(null);
+                        setDebt_Amount(0);
+
+                      }}
+                    >
+                      {isLoading ? (
+                        <Text style={{ color: "gray" }}>
+                          {t("loading-wait")}
+                        </Text>
+                      ) : (
+                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
+                      )}
+                    </Button>
+                    <TouchableOpacity>
+                      <Button
+                        style={{
+                          backgroundColor: currenttheme.secondary,
+                        }}
+                        onPress={HalfPay}
+                      >
+                        {isLoading ? (
+                          <ActivityIndicator size="small" color="white" />
+                        ) : (
+                          <Text style={{ color: "white" }}>{t("payhalf")}</Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -1337,10 +1519,10 @@ const changeLng = lng => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>{t('debtquick')}</AlertDialog.Header>
+                <AlertDialog.Header>{t("debtquick")}</AlertDialog.Header>
                 <AlertDialog.Body>
                   <Text>
-                  {t('debtmes')} {SelectedName}.
+                    {t("debtmes")} {SelectedName}.
                   </Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
@@ -1368,7 +1550,7 @@ const changeLng = lng => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>{t('edit')}</Text>
+                        <Text style={{ color: "white" }}>{t("edit")}</Text>
                       )}
                     </Button>
 
@@ -1382,7 +1564,7 @@ const changeLng = lng => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>{t('remove')}</Text>
+                        <Text style={{ color: "white" }}>{t("remove")}</Text>
                       )}
                     </Button>
 
@@ -1397,7 +1579,7 @@ const changeLng = lng => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>{t('payment')}</Text>
+                        <Text style={{ color: "white" }}>{t("payment")}</Text>
                       )}
                     </Button>
 
@@ -1420,9 +1602,11 @@ const changeLng = lng => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>{t('delete')}</AlertDialog.Header>
+                <AlertDialog.Header>{t("delete")}</AlertDialog.Header>
                 <AlertDialog.Body>
-                  <Text>{t('delmes')} {SelectedName} {t('now')}</Text>
+                  <Text>
+                    {t("delmes")} {SelectedName} {t("now")}
+                  </Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
                   <Button.Group space={2}>
@@ -1433,9 +1617,11 @@ const changeLng = lng => {
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
+                        <Text style={{ color: "gray" }}>
+                          {t("loading-wait")}
+                        </Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
+                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
                       )}
                     </Button>
 
@@ -1443,7 +1629,7 @@ const changeLng = lng => {
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>{t('delete')}</Text>
+                        <Text style={{ color: "white" }}>{t("delete")}</Text>
                       )}
                     </Button>
                   </Button.Group>
@@ -1458,12 +1644,14 @@ const changeLng = lng => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>{t('payment')}</AlertDialog.Header>
+                <AlertDialog.Header>{t("payment")}</AlertDialog.Header>
                 <AlertDialog.Body>
-                  <Text>{t('askpay')} {person_Names}? </Text>
+                  <Text>
+                    {t("askpay")} {person_Names}?{" "}
+                  </Text>
 
                   <Text>
-                  {t('current')}{" "}
+                    {t("current")}{" "}
                     {new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "RWF",
@@ -1575,17 +1763,18 @@ const changeLng = lng => {
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
+                        <Text style={{ color: "gray" }}>
+                          {t("loading-wait")}
+                        </Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
+                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
                       )}
                     </Button>
-                    
+
                     <Button colorScheme="info" onPress={PayFull}>
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        
                         <View
                           style={{
                             justifyContent: "center",
@@ -1601,13 +1790,11 @@ const changeLng = lng => {
                             />
                           </Text>
                           <Text style={{ color: "white", marginLeft: 10 }}>
-                          {t('payfull')}
+                            {t("payfull")}
                           </Text>
                         </View>
                       )}
                     </Button>
-
-
                   </Button.Group>
                 </AlertDialog.Footer>
               </AlertDialog.Content>
@@ -1704,24 +1891,25 @@ const styles = StyleSheet.create({
   },
 
   itemBtn: {
-    padding: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
     marginVertical: 2,
     marginHorizontal: 10,
     borderRadius: 10,
-    width: "94%",
     height: 55,
     textAlign: "center",
     alignItems: "center",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    marginTop: 10,
-    marginBottom: 10,
+    display:"flex",
+    justifyContent:"center",
+    alignItems:"center"
   },
 
   itemBtnText: {
     color: "white",
-    marginLeft: 10,
+    marginLeft:5
   },
 });
 

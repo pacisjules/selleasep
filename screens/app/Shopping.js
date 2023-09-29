@@ -44,7 +44,8 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   fetchAllProductsData,
   fetchSearchProductsData,
-  search_AllProductsData
+  search_AllProductsData,
+  fetchAllCustomersData
 } from "../../features/getfullproducts/getallproducts";
 
 import {
@@ -78,6 +79,7 @@ const Shopping = ({ navigation }) => {
   const dispatch = useDispatch();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [fetchedProducts, setFetchedProducts] = useState([]);
+  const [fetchedCustomers, setFetchedCustomers] = useState([]);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
@@ -86,7 +88,7 @@ const Shopping = ({ navigation }) => {
 
 
   //Get All products from redux array
-  const { all_product_error, all_products, all_products_isLoading } =
+  const { all_product_error, all_products, all_products_isLoading, all_customers_error, all_customers, all_customers_isLoading } =
     useSelector((state) => state.all_products);
 
   //Get All products from redux array
@@ -250,8 +252,13 @@ const changeLng = lng => {
 
     dispatch(fetchAllProductsData(currentCompany, currentSpt));
     setFetchedProducts(all_products);
+
+    dispatch(fetchAllCustomersData(currentSpt));
+    setFetchedCustomers(all_customers);
+
     if (isFocused) {
       dispatch(fetchAllProductsData(currentCompany, currentSpt));
+      dispatch(fetchAllCustomersData(currentSpt));
     }
 
     registerForPushNotificationsAsync().then((token) =>
@@ -393,6 +400,7 @@ const changeLng = lng => {
         style={[
           styles.item,
           {
+            
             borderColor: currenttheme.secondary,
             borderStyle: "solid",
             borderWidth: 2,
@@ -444,6 +452,69 @@ const changeLng = lng => {
             }}
           >
             {time}
+          </Text>
+        </View>
+      </View>
+    </Center>
+  );
+
+
+
+  const ItemCustomer = ({
+    names,
+    id,
+    phone,
+    location,
+  }) => (
+    <Center px="1">
+      <View
+        style={
+          {
+            borderColor: currenttheme.secondary,
+            borderStyle: "solid",
+            borderWidth: 1,
+            width:"100%",
+            marginTop:5,
+            borderRadius: 3,
+          }
+        }
+      >
+        <View
+          style={{
+            width: "100%",
+            padding: 3,
+            borderRadius: 5,
+            //backgroundColor: currenttheme.secondary,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 11,
+              color: "black",
+              fontFamily: "Poppins-Bold",
+            }}
+          >
+            {names}
+          </Text>
+
+          <Text
+            style={{
+              color: "black",
+              fontSize: 10,
+              fontFamily: "Poppins-Regular",
+            }}
+          >
+            Phone: {phone} Location: {location}
+          </Text>
+
+          <Text
+            style={{
+              color: "black",
+              fontSize: 10,
+              fontFamily: "Poppins-Regular",
+            }}
+          >
+           Location: {location}
           </Text>
         </View>
       </View>
@@ -570,6 +641,26 @@ const changeLng = lng => {
         setSearchQuery(text);
       } else {
         setFetchedProducts(all_products);
+        setSearchQuery(text);
+      }
+    };
+
+
+
+    //Functions search customer
+
+    const searchFilterCustomer = (text) => {
+      if (text) {
+        const newData = fetchedCustomers.filter((item) => {
+          const itemData = item.names ? item.names.toUpperCase() : "".toUpperCase();
+  
+          const textData = text.toUpperCase();
+          return itemData.indexOf(textData) > -1;
+        });
+        setFetchedCustomers(newData);
+        setSearchQuery(text);
+      } else {
+        setFetchedCustomers(all_customers);
         setSearchQuery(text);
       }
     };
@@ -1531,21 +1622,41 @@ const changeLng = lng => {
                 <FormControl mt="3">
                   <FormControl.Label>{t('custname')}</FormControl.Label>
                   <Input
-                    value={pro_client}
-                    onChangeText={setPro_Client}
+                    onChangeText={(text) => searchFilterCustomer(text)}
+                    value={searchQuery}
                     editable={edit}
                   />
                 </FormControl>
 
-                <FormControl mt="3">
-                  <FormControl.Label>{t('phone')}</FormControl.Label>
-                  <Input
-                    value={pro_Cphone}
-                    onChangeText={setPro_Cphone}
-                    editable={edit}
-                    inputMode="tel"
-                  />
-                </FormControl>
+                <View style={{
+                  height:220, 
+                  marginTop:10
+                }}>
+                <FlatList
+                  style={{
+                    backgroundColor: "transparent",
+                  }}
+                  data={fetchedCustomers}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIdent(item.customer_id);
+                      }}
+                    >
+
+                      <ItemCustomer
+                        names={item.names}
+                        id={item.customer_id}
+                        phone={item.phone}
+                        location={item.address}
+                      />
+
+                    </TouchableOpacity>
+                  )}
+                  keyExtractor={(item) => item.customer_id}
+                /></View>
+
+
 
                 <View
                   style={{

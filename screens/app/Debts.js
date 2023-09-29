@@ -324,6 +324,7 @@ const Debts = ({ navigation }) => {
     time,
     duetime,
     status,
+    paid
   }) => (
     <Center px="1">
       <View
@@ -352,7 +353,7 @@ const Debts = ({ navigation }) => {
               fontFamily: "Poppins-Bold",
             }}
           >
-            {name}
+            {name} {paid}
           </Text>
 
           <Text
@@ -818,9 +819,9 @@ const Debts = ({ navigation }) => {
                   navigation.navigate("Viewdebts", {
                     id: item.id,
                     name:item.person_names,
-                    amount:item.amount
+                    amount:item.amount,
+                    mpaid:item.paid
                   });
-
               }}
               >
                 <Item
@@ -833,6 +834,7 @@ const Debts = ({ navigation }) => {
                   expense_name={item.phone}
                   duetime={formatDate(item.due_date)}
                   status={item.status}
+                  //paid={item.paid}
                 />
 
               </TouchableOpacity>

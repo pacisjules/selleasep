@@ -41,6 +41,7 @@ import {
 
 import {
   fetchAllProductsData,
+  fetchAllCustomersData,
   fetchSearchProductsData,
   search_AllProductsData,
 } from "../../features/getfullproducts/getallproducts";
@@ -283,6 +284,8 @@ export default Entry = ({ navigation }) => {
     dispatch(fetchMostBenefit(salesP));
     dispatch(fetchBalance(salesP));
     dispatch(fetchCurrentProductData(salesCoi, salesP));
+    dispatch(fetchAllCustomersData(salesP));
+
     rundays();
     loadFonts();
     if (isFocused) {

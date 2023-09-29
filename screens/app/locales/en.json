@@ -146,7 +146,7 @@
   "payduedate":"Pay Due Date",
   "halfduedate":"Half-Due Date",
   "debtof":"Debt of",
-  "payall":"Pay All Debt",
+  "payall":"Pay Full",
   "askpay":"Are you sure to pay debt for",
   "payfull":"Full Payment",
   "manager":"Manager",
@@ -214,7 +214,9 @@
   "askpay":"Are sure to pay full debts",
   "expense":"Expense",
   "lastsales":"Last Sales",
-  "lastsale":"Last Sale"
+  "lastsale":"Last Sale",
+  "payhalf":"Pay Half",
+  "amountpaid":"Amount Paid"
 
 
 }
