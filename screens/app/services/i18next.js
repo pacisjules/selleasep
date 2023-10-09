@@ -5,6 +5,10 @@ import sv from '../locales/sv.json';
 import fr from '../locales/fr.json';
 import sw from '../locales/sw.json';
 import pt from '../locales/pt.json';
+import ar from '../locales/ar.json';
+import rw from '../locales/rw.json';
+import es from '../locales/es.json';
+
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 export const languageResources = {
@@ -13,6 +17,9 @@ export const languageResources = {
   fr: { translation: fr },
   sw: { translation: sw },
   pt: { translation: pt },
+  ar: { translation: ar },
+  rw: { translation: rw},
+  es: { translation: es},
 
 };
 

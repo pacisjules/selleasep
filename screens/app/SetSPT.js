@@ -44,6 +44,9 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import axios from "axios";
 import { useRoute } from "@react-navigation/native";
+import i18next, { languageResources } from "./services/i18next";
+import { useTranslation } from "react-i18next";
+
 import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 Notifications.setNotificationHandler({
@@ -71,6 +74,11 @@ const SetSPT = ({ navigation }) => {
     (state) => state.all_sales
   );
 
+  const { t } = useTranslation();
+  const changeLng = (lng) => {
+    i18next.changeLanguage(lng);
+    setVisible(false);
+  };
   //Load fonts
   async function loadFonts() {
     await Font.loadAsync({
@@ -222,7 +230,7 @@ const SetSPT = ({ navigation }) => {
                 fontFamily: "Poppins-Bold",
               }}
             >
-              Select Sales Point
+              {t("selectspt")}
             </Text>
           </LinearGradient>
         </View>
@@ -260,7 +268,7 @@ const SetSPT = ({ navigation }) => {
                   fontFamily: "Poppins-Bold",
                 }}
               >
-                {all_SPT.length} Sales Points
+                {all_SPT.length} {t("spt")}
               </Text>
 
               <Text
@@ -273,7 +281,7 @@ const SetSPT = ({ navigation }) => {
                   width: "85%",
                 }}
               >
-                Here you can enter in any sales point for full control
+                {t("setspt")}
               </Text>
 
               {all_SPT.map((item) => (
@@ -294,29 +302,29 @@ const SetSPT = ({ navigation }) => {
                   fontSize: 14,
                   color: "white",
                   fontFamily: "Poppins-Bold",
-                }}>Manager: {item.manager_name}</Text>
+                }}>{t("manager")}: {item.manager_name}</Text>
                   <Text style={{
                   textAlign: "left",
                   fontSize: 12,
                   marginTop: 3,
                   color: "white",
                   fontFamily: "Poppins-Regular",
-                }}>Location: {item.location}</Text>
+                }}>{t("location")}: {item.location}</Text>
                   <Text style={{
                   textAlign: "left",
                   fontSize: 12,
                   marginTop: 3,
                   color: "white",
                   fontFamily: "Poppins-Regular",
-                }}>Phone: {item.phone_number}</Text>
+                }}>{t("phone")}: {item.phone_number}</Text>
 
-                  <TouchableOpacity onPress={() => Alert.alert('System Change SPT', 'If you want to the Sales point press YES or press No to Cancel', [
+                  <TouchableOpacity onPress={() => Alert.alert(`${t("schange")}`, `${t("askchange")}`, [
       {
-        text: 'No',
+        text: `${t("no")}`,
         onPress: () => console.log('Cancel Pressed'),
         style: 'cancel',
       },
-      {text: 'YES', onPress: async () => {
+      {text: `${t("yes")}`, onPress: async () => {
         await AsyncStorage.removeItem("salepoint_id");
         await AsyncStorage.removeItem("mySpt_location");
         await AsyncStorage.setItem("salepoint_id", item.sales_point_id);
@@ -335,7 +343,7 @@ const SetSPT = ({ navigation }) => {
                         flexDirection:"column"
                       }}
                     >
-                      <Text>Access in {item.location} Sales point</Text>
+                      <Text>{t("accessin")} {item.location} {t("spt")}</Text>
                       <Entypo name="arrow-bold-right" size={24} color={currenttheme.primary} />
                     </View>
                   </TouchableOpacity>

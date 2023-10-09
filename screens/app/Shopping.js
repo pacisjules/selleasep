@@ -15,7 +15,6 @@ import {
   Modal,
   Alert,
   Share,
-  
 } from "react-native";
 import * as Font from "expo-font";
 import {
@@ -34,7 +33,6 @@ import {
   useToast,
   Icon,
   Switch,
-  
 } from "native-base";
 
 import { useIsFocused } from "@react-navigation/native";
@@ -45,7 +43,7 @@ import {
   fetchAllProductsData,
   fetchSearchProductsData,
   search_AllProductsData,
-  fetchAllCustomersData
+  fetchAllCustomersData,
 } from "../../features/getfullproducts/getallproducts";
 
 import {
@@ -53,17 +51,14 @@ import {
   removeCartItem,
   increaseCartItem,
   decreaseCartItem,
-  clearCart
+  clearCart,
 } from "../../features/getallsales/getallsales";
 
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 
-import i18next, {languageResources} from './services/i18next';
-import {useTranslation} from 'react-i18next';
-
-
-
+import i18next, { languageResources } from "./services/i18next";
+import { useTranslation } from "react-i18next";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -72,8 +67,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 });
-
-
 
 const Shopping = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -84,17 +77,27 @@ const Shopping = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
   const [modalVisible3, setModalVisible3] = useState(false);
-
-
-
-  //Get All products from redux array
-  const { all_product_error, all_products, all_products_isLoading, all_customers_error, all_customers, all_customers_isLoading } =
-    useSelector((state) => state.all_products);
+  const [modalVisible4, setModalVisible4] = useState(false);
+  const [modalVisible5, setModalVisible5] = useState(false);
 
   //Get All products from redux array
-  const { CARTLoad, CARTs_array, CARTError, TotalAmountView, TotalBenefitView } = useSelector(
-    (state) => state.all_sales
-  );
+  const {
+    all_product_error,
+    all_products,
+    all_products_isLoading,
+    all_customers_error,
+    all_customers,
+    all_customers_isLoading,
+  } = useSelector((state) => state.all_products);
+
+  //Get All products from redux array
+  const {
+    CARTLoad,
+    CARTs_array,
+    CARTError,
+    TotalAmountView,
+    TotalBenefitView,
+  } = useSelector((state) => state.all_sales);
 
   const [cuser, setcUser] = useState(
     useSelector((state) => state.userInfos.currentUser)
@@ -121,9 +124,8 @@ const Shopping = ({ navigation }) => {
 
   const [IssalePaid, setIssalePaid] = useState(true);
 
-  
-const {t} = useTranslation();
-const changeLng = lng => {
+  const { t } = useTranslation();
+  const changeLng = (lng) => {
     i18next.changeLanguage(lng);
     setVisible(false);
   };
@@ -155,6 +157,10 @@ const changeLng = lng => {
   const [SwitchType, setSwitchType] = useState(false);
   const [DataSwitchType, setDataSwitchType] = useState(false);
   const [Custom_Price, setPro_Custom_Price] = useState("");
+  const [ClientID, setClientID] = useState("");
+  const [ClientPhone, setClientPhone] = useState("");
+  const [ClientNames, setClientNames] = useState("");
+  const [ClientAddress, setClientAddress] = useState("");
 
   const [edit, setEdit] = useState(true);
 
@@ -165,36 +171,31 @@ const changeLng = lng => {
   const responseListener = useRef();
 
   //new set
-  const [user, setUser] = useState(null);
-  const [usernames, setusernames] = useState(null);
-  const [userphone, setuserphone] = useState(null);
-  const [company, setCompany] = useState(null);
+  //const [user, setUser] = useState(null);
+  const [CustNames, setCust_Names] = useState("");
+  const [CustPhone, setCustPhone] = useState("");
+  const [CustAddress, setCustAddress] = useState("");
+
   const [salesP, setsalesP] = useState(null);
 
   const [ctheme, settheme] = useState(null);
   const [usertype, setusertype] = useState(
     useSelector((state) => state.userInfos.currentUserType)
   );
-  
+
   const [themeset, setthemeset] = useState("");
 
   //For search products
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSwitchToggle = () => {
-    setIssalePaid(!IssalePaid)
+    setIssalePaid(!IssalePaid);
   };
-
 
   const handleSwitchToggleType = () => {
-    setSwitchType(!SwitchType)
-    setDataSwitchType(!DataSwitchType)
+    setSwitchType(!SwitchType);
+    setDataSwitchType(!DataSwitchType);
   };
-
-
-
-
-
 
   //Load fonts
   async function loadFonts() {
@@ -229,13 +230,25 @@ const changeLng = lng => {
     setModalVisible(true);
   };
 
-
   const openModal3 = () => {
     setModalVisible3(true);
   };
 
   const closeModal3 = () => {
     setModalVisible3(false);
+  };
+
+  const closeModal4 = () => {
+    setModalVisible3(true);
+    setModalVisible4(false);
+  };
+
+  const closeModal5 = () => {
+    setModalVisible3(true);
+    setModalVisible5(false);
+    setCust_Names("");
+    setCustPhone(null);
+    setCustAddress("");
   };
 
   const onRefresh = () => {
@@ -247,7 +260,6 @@ const changeLng = lng => {
   };
 
   useEffect(() => {
-
     loadFonts();
 
     dispatch(fetchAllProductsData(currentCompany, currentSpt));
@@ -353,15 +365,23 @@ const changeLng = lng => {
           product_id: ident,
           name: pro_name,
           qty: pro_qty,
-          price: SwitchType?Custom_Price:pro_price,
-          benefit: SwitchType?((parseFloat(pro_benefit)/parseFloat(pro_price))*parseFloat(Custom_Price)):pro_benefit,
-          total_amount: SwitchType?(parseFloat(Custom_Price) * parseFloat(pro_qty)):(parseFloat(pro_price) * parseFloat(pro_qty)),
-          total_benefit: SwitchType?(((parseFloat(pro_benefit)/parseFloat(pro_price))*parseFloat(Custom_Price)) * parseFloat(pro_qty)):(parseFloat(pro_benefit)*parseFloat(pro_qty)),
+          price: SwitchType ? Custom_Price : pro_price,
+          benefit: SwitchType
+            ? (parseFloat(pro_benefit) / parseFloat(pro_price)) *
+              parseFloat(Custom_Price)
+            : pro_benefit,
+          total_amount: SwitchType
+            ? parseFloat(Custom_Price) * parseFloat(pro_qty)
+            : parseFloat(pro_price) * parseFloat(pro_qty),
+          total_benefit: SwitchType
+            ? (parseFloat(pro_benefit) / parseFloat(pro_price)) *
+              parseFloat(Custom_Price) *
+              parseFloat(pro_qty)
+            : parseFloat(pro_benefit) * parseFloat(pro_qty),
         })
       );
 
-
-      setPro_Custom_Price("")
+      setPro_Custom_Price("");
       setSwitchType(false);
       setPro_cqty(0);
       setModalVisible2(false);
@@ -400,7 +420,6 @@ const changeLng = lng => {
         style={[
           styles.item,
           {
-            
             borderColor: currenttheme.secondary,
             borderStyle: "solid",
             borderWidth: 2,
@@ -458,26 +477,17 @@ const changeLng = lng => {
     </Center>
   );
 
-
-
-  const ItemCustomer = ({
-    names,
-    id,
-    phone,
-    location,
-  }) => (
+  const ItemCustomer = ({ names, id, phone, location }) => (
     <Center px="1">
       <View
-        style={
-          {
-            borderColor: currenttheme.secondary,
-            borderStyle: "solid",
-            borderWidth: 1,
-            width:"100%",
-            marginTop:5,
-            borderRadius: 3,
-          }
-        }
+        style={{
+          borderColor: currenttheme.secondary,
+          borderStyle: "solid",
+          borderWidth: 1,
+          width: "100%",
+          marginTop: 5,
+          borderRadius: 3,
+        }}
       >
         <View
           style={{
@@ -514,7 +524,7 @@ const changeLng = lng => {
               fontFamily: "Poppins-Regular",
             }}
           >
-           Location: {location}
+            Location: {location}
           </Text>
         </View>
       </View>
@@ -524,45 +534,45 @@ const changeLng = lng => {
   //Adding Command
   const Adding_information = async () => {
     setModalVisible3(false);
+    setModalVisible4(false);
     setEdit(false);
     setIsLoading(true);
-    setSaveMsg("Saving proccess.....")
+    setSaveMsg("Saving proccess.....");
 
-
-    const productIds = CARTs_array.map(item => item.product_id);
-    const quantities = CARTs_array.map(item => item.qty);
-    const Customs = CARTs_array.map(item => item.price);
+    const productIds = CARTs_array.map((item) => item.product_id);
+    const quantities = CARTs_array.map((item) => item.qty);
+    const Customs = CARTs_array.map((item) => item.price);
 
     const data = {
-      "product_id": productIds,
-      "sales_point_id": parseInt(currentSpt),
-      "cust_name": IssalePaid?"Normal Customer":pro_client,
-      "phone": IssalePaid?"123456789":pro_Cphone,
-      "quantity": quantities,
-      "sales_type": DataSwitchType?2:1,
-      "custom_price":DataSwitchType?Customs:0,
-      "paid_status":IssalePaid ? "Paid" : "Not Paid",
-      "service_amount": 10.5,
-      "user_id": cuserid
+      product_id: productIds,
+      sales_point_id: parseInt(currentSpt),
+      customer_id: IssalePaid ? 0 : ClientID,
+      quantity: quantities,
+      sales_type: DataSwitchType ? 2 : 1,
+      custom_price: DataSwitchType ? Customs : 0,
+      paid_status: IssalePaid ? "Paid" : "Not Paid",
+      service_amount: 10.5,
+      user_id: cuserid,
     };
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
 
     await axios
       .post(
-        "https://www.selleasep.shop/functions/sales/bulksales.php",
+        "https://www.selleasep.shop/functions/sales/bulksaletest.php",
         data,
         config
       )
       .then((response) => {
-
         //console.log(response);
         schedulePushNotification();
         setEdit(true);
+        setModalVisible4(false);
+        setModalVisible3(false);
         setShowModal(false);
         Vibration.vibrate();
         setIsLoading(false);
@@ -574,13 +584,20 @@ const changeLng = lng => {
         setPro_Client("");
         setPro_Cphone("");
         setDataSwitchType(false);
-        
 
-        const shareData = CARTs_array.map(item => `\n${item.id}. ${item.name} on ${item.price} by quantity: ${item.qty} = ${new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "RWF",
-        }).format(item.qty*item.price)}`).join(",\n ");
-        const totalPrice = CARTs_array.reduce((total, item) => total + (item.price * item.qty), 0);
+        const shareData = CARTs_array.map(
+          (item) =>
+            `\n${item.id}. ${item.name} on ${item.price} by quantity: ${
+              item.qty
+            } = ${new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "RWF",
+            }).format(item.qty * item.price)}`
+        ).join(",\n ");
+        const totalPrice = CARTs_array.reduce(
+          (total, item) => total + item.price * item.qty,
+          0
+        );
 
         Alert.alert("SELLEASEP App", "Done! Review Other Options", [
           {
@@ -611,7 +628,6 @@ const changeLng = lng => {
             style: "cancel",
           },
         ]);
-
       })
       .catch((error) => {
         //console.log(error)
@@ -626,44 +642,101 @@ const changeLng = lng => {
       });
   };
 
+  //Adding Command
+  const Adding_customer = async () => {
+    setModalVisible3(false);
+    setEdit(false);
+    setIsLoading(true);
 
-    //Functions search
-
-    const searchFilter = (text) => {
-      if (text) {
-        const newData = fetchedProducts.filter((item) => {
-          const itemData = item.name ? item.name.toUpperCase() : "".toUpperCase();
-  
-          const textData = text.toUpperCase();
-          return itemData.indexOf(textData) > -1;
-        });
-        setFetchedProducts(newData);
-        setSearchQuery(text);
-      } else {
-        setFetchedProducts(all_products);
-        setSearchQuery(text);
-      }
+    const data = {
+      names: CustNames,
+      phone: CustPhone,
+      address: CustAddress,
+      spt: parseInt(currentSpt),
     };
 
+    const config = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    };
 
-
-    //Functions search customer
-
-    const searchFilterCustomer = (text) => {
-      if (text) {
-        const newData = fetchedCustomers.filter((item) => {
-          const itemData = item.names ? item.names.toUpperCase() : "".toUpperCase();
-  
-          const textData = text.toUpperCase();
-          return itemData.indexOf(textData) > -1;
-        });
-        setFetchedCustomers(newData);
-        setSearchQuery(text);
-      } else {
+    await axios
+      .post(
+        "https://selleasep.shop/functions/customer/insertcustomer.php",
+        data,
+        config
+      )
+      .then((response) => {
+        //console.log(response); 
+        dispatch(fetchAllCustomersData(currentSpt));
         setFetchedCustomers(all_customers);
-        setSearchQuery(text);
-      }
-    };
+        schedulePushNotification();
+        setEdit(true);
+        setShowModal(false);
+        Vibration.vibrate();
+        setIsLoading(false);
+       
+        setModalVisible3(true);
+        setModalVisible5(false);
+        setCust_Names("");
+        setCustPhone(null);
+        setCustAddress("");
+        //setDataSwitchType(false);
+      })
+      .catch((error) => {
+        //console.log(error)
+        setEdit(true);
+        setShowModal(false);
+        Vibration.vibrate();
+        setIsLoading(false);
+        dispatch(fetchAllCustomersData(currentSpt));
+        setFetchedCustomers(all_customers);
+        setModalVisible3(true);
+        setModalVisible5(false);
+        setCust_Names("");
+        setCustPhone(null);
+        setCustAddress("");
+      });
+  };
+
+  //Functions search
+
+  const searchFilter = (text) => {
+    if (text) {
+      const newData = fetchedProducts.filter((item) => {
+        const itemData = item.name ? item.name.toUpperCase() : "".toUpperCase();
+
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setFetchedProducts(newData);
+      setSearchQuery(text);
+    } else {
+      setFetchedProducts(all_products);
+      setSearchQuery(text);
+    }
+  };
+
+  //Functions search customer
+
+  const searchFilterCustomer = (text) => {
+    if (text) {
+      const newData = fetchedCustomers.filter((item) => {
+        const itemData = item.names
+          ? item.names.toUpperCase()
+          : "".toUpperCase();
+
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setFetchedCustomers(newData);
+      setSearchQuery(text);
+    } else {
+      setFetchedCustomers(all_customers);
+      setSearchQuery(text);
+    }
+  };
 
   //Time ago function
 
@@ -690,40 +763,80 @@ const changeLng = lng => {
   return (
     <SafeAreaView style={styles.containerer}>
       <ScrollView scrollEnabled={false}>
-      <NativeBaseProvider>
-        {/* <ScrollView contentContainerStyle={{ flexGrow: 1 }}> */}
-        <View style={styles.container}>
-          <StatusBar
-            backgroundColor={currenttheme.secondary} // Set the background color of the status bar
-            barStyle="white" // Set the text color of the status bar to dark
-            hidden={false} // Show the status bar
-          />
+        <NativeBaseProvider>
+          {/* <ScrollView contentContainerStyle={{ flexGrow: 1 }}> */}
+          <View style={styles.container}>
+            <StatusBar
+              backgroundColor={currenttheme.secondary} // Set the background color of the status bar
+              barStyle="white" // Set the text color of the status bar to dark
+              hidden={false} // Show the status bar
+            />
 
-          <View
-            style={{
-              backgroundColor: currenttheme.light,
-              height: 65,
-              width: "100%",
-              marginTop: 31,
-            }}
-          >
-            <LinearGradient
-              colors={[currenttheme.secondary, currenttheme.primary]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              angle={-45}
+            <View
               style={{
+                backgroundColor: currenttheme.light,
                 height: 65,
-                backgroundColor: "blue",
-                borderTopLeftRadius: 0,
-                borderTopRightRadius: 0,
-                borderBottomLeftRadius: 45,
-                borderBottomRightRadius: 45,
-                justifyContent: "flex-start",
-                alignContent: "center",
-                flexDirection: "row",
-                paddingTop: 10,
-                paddingLeft: 20,
+                width: "100%",
+                marginTop: 31,
+              }}
+            >
+              <LinearGradient
+                colors={[currenttheme.secondary, currenttheme.primary]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                angle={-45}
+                style={{
+                  height: 65,
+                  backgroundColor: "blue",
+                  borderTopLeftRadius: 0,
+                  borderTopRightRadius: 0,
+                  borderBottomLeftRadius: 45,
+                  borderBottomRightRadius: 45,
+                  justifyContent: "flex-start",
+                  alignContent: "center",
+                  flexDirection: "row",
+                  paddingTop: 10,
+                  paddingLeft: 20,
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                  elevation: 5,
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("Home");
+                  }}
+                >
+                  <Ionicons name="caret-back" size={35} color="white" />
+                </TouchableOpacity>
+
+                <Text
+                  style={{
+                    textAlign: "left",
+                    fontSize: 23,
+                    color: "white",
+                    marginLeft: 75,
+                    fontFamily: "Poppins-Bold",
+                  }}
+                >
+                  {t("selling")}
+                </Text>
+              </LinearGradient>
+            </View>
+
+            <TouchableOpacity
+              onPress={openModal}
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                width: 70,
+                height: 70,
+                backgroundColor: currenttheme.secondary,
+                shadowColor: "#000000",
                 shadowOffset: {
                   width: 0,
                   height: 2,
@@ -731,395 +844,320 @@ const changeLng = lng => {
                 shadowOpacity: 0.25,
                 shadowRadius: 3.84,
                 elevation: 5,
+                position: "absolute",
+                borderRadius: 100,
+                right: 0,
+                marginTop: 50,
+                marginRight: 10,
+                zIndex: 2,
+                borderWidth: 3,
+                borderColor: "white",
+                borderStyle: "solid",
               }}
             >
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("Home");
-                }}
-              >
-                <Ionicons name="caret-back" size={35} color="white" />
-              </TouchableOpacity>
+              <FontAwesome name="plus" size={26} color="white" />
+            </TouchableOpacity>
 
+            <View
+              style={{
+                backgroundColor: currenttheme.light,
+                width: "100%",
+                padding: 10,
+                height: "80%",
+                borderColor: currenttheme.secondary,
+                borderStyle: "solid",
+                borderBottomWidth: 3,
+              }}
+            >
               <Text
                 style={{
                   textAlign: "left",
-                  fontSize: 23,
-                  color: "white",
-                  marginLeft: 75,
+                  fontSize: 12,
+                  marginTop: 10,
+                  color: currenttheme.secondary,
+                  fontFamily: "Poppins-Bold",
+                  marginLeft: 5,
+                }}
+              >
+                {t("selling-basket")} ({CARTs_array.length}{" "}
+                {CARTs_array.length == 1 ? "Item" : "Items"})
+              </Text>
+
+              <View
+                style={{
+                  height: 250,
+                  width: "100%",
+                }}
+              >
+                <ScrollView>
+                  <Center>
+                    {CARTs_array.map((item) => (
+                      <View
+                        style={{
+                          backgroundColor: "white",
+                          width: "98%",
+                          padding: 10,
+                          borderWidth: 1,
+                          borderColor: currenttheme.secondary,
+                          borderStyle: "solid",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          alignContent: "center",
+                          flexDirection: "row",
+                          borderRadius: 10,
+                          marginTop: 10,
+                        }}
+                        key={item.id}
+                      >
+                        <View>
+                          <Text
+                            style={{
+                              textAlign: "left",
+                              fontSize: 11,
+                              color: currenttheme.secondary,
+                              fontFamily: "Poppins-Bold",
+                              width: 120,
+                            }}
+                          >
+                            {item.id}. {item.name}
+                          </Text>
+
+                          <Text
+                            style={{
+                              textAlign: "left",
+                              fontSize: 11,
+                              color: "black",
+                              fontFamily: "Poppins-Bold",
+                              width: 120,
+                            }}
+                          >
+                            {new Intl.NumberFormat("en-US", {
+                              style: "currency",
+                              currency: "RWF",
+                            }).format(item.total_amount)}
+                          </Text>
+                        </View>
+
+                        <View
+                          style={{
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            alignContent: "center",
+                            flexDirection: "row",
+                            padding: 5,
+                            width: 130,
+                          }}
+                        >
+                          <View>
+                            <TouchableOpacity
+                              onPress={() => decraeseItem(item.id)}
+                            >
+                              <AntDesign
+                                name="minuscircle"
+                                size={34}
+                                color={currenttheme.secondary}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                          <Text
+                            style={{
+                              textAlign: "left",
+                              fontSize: 13,
+                              color: "black",
+                              fontFamily: "Poppins-Bold",
+                            }}
+                          >
+                            {item.qty}
+                          </Text>
+                          <View>
+                            <TouchableOpacity
+                              onPress={() => increaseItem(item.id)}
+                            >
+                              <AntDesign
+                                name="pluscircle"
+                                size={34}
+                                color={currenttheme.secondary}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+
+                        <View
+                          style={{
+                            backgroundColor: "red",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            alignContent: "center",
+                            flexDirection: "row",
+                            height: 40,
+                            borderRadius: 10,
+                            width: 40,
+                          }}
+                        >
+                          <TouchableOpacity
+                            onPress={() => {
+                              //setCartItemID(parseInt(item.id))
+
+                              Alert.alert(
+                                "SELLEASEP",
+                                "Are you sure to remove this item",
+                                [
+                                  {
+                                    text: `${t("cancel")}`,
+                                    onPress: () =>
+                                      console.log("Cancel Pressed"),
+                                    style: "cancel",
+                                  },
+                                  {
+                                    text: `${t("ok")}`,
+                                    onPress: () => handleRemoveItem(item.id),
+                                  },
+                                ]
+                              );
+                            }}
+                          >
+                            <AntDesign name="delete" size={24} color="white" />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    ))}
+                  </Center>
+                </ScrollView>
+              </View>
+
+              <Text
+                style={{
+                  marginLeft: 10,
+                  textAlign: "left",
+                  fontSize: 11,
+                  color: "black",
                   fontFamily: "Poppins-Bold",
                 }}
               >
-                {t('selling')}
+                {t("ispaid")}
               </Text>
-            </LinearGradient>
-          </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  width: 50,
+                  justifyContent: "center",
+                }}
+              >
+                <Switch
+                  defaultIsChecked
+                  offTrackColor="#de003b"
+                  onTrackColor="#17ab00"
+                  onThumbColor="#107800"
+                  offThumbColor="#78002c"
+                  size="lg"
+                  value={IssalePaid}
+                  onValueChange={handleSwitchToggle}
+                />
 
-          <TouchableOpacity
-            onPress={openModal}
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              width: 70,
-              height: 70,
-              backgroundColor: currenttheme.secondary,
-              shadowColor: "#000000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-              elevation: 5,
-              position: "absolute",
-              borderRadius: 100,
-              right: 0,
-              marginTop: 50,
-              marginRight: 10,
-              zIndex: 2,
-              borderWidth: 3,
-              borderColor: "white",
-              borderStyle: "solid",
-            }}
-          >
-            <FontAwesome name="plus" size={26} color="white" />
-          </TouchableOpacity>
-
-          <View
-            style={{
-              backgroundColor: currenttheme.light,
-              width: "100%",
-              padding: 10,
-              height: "80%",
-              borderColor: currenttheme.secondary,
-              borderStyle: "solid",
-              borderBottomWidth: 3,
-            }}
-          >
-            <Text
-              style={{
-                textAlign: "left",
-                fontSize: 12,
-                marginTop: 10,
-                color: currenttheme.secondary,
-                fontFamily: "Poppins-Bold",
-                marginLeft: 5,
-              }}
-            >
-             {t('selling-basket')} ({CARTs_array.length}{" "}
-              {CARTs_array.length == 1 ? "Item" : "Items"})
-            </Text>
-
-            <View style={{
-              height:250,
-              width:"100%",
-            }}>
-            <ScrollView>
-              <Center>
-                {CARTs_array.map((item) => (
-                  <View
-                    style={{
-                      backgroundColor: "white",
-                      width: "98%",
-                      padding: 10,
-                      borderWidth: 1,
-                      borderColor: currenttheme.secondary,
-                      borderStyle: "solid",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      alignContent: "center",
-                      flexDirection: "row",
-                      borderRadius: 10,
-                      marginTop: 10,
-                    }}
-                    key={item.id}
-                  >
-                    <View>
-                      <Text
-                        style={{
-                          textAlign: "left",
-                          fontSize: 11,
-                          color: currenttheme.secondary,
-                          fontFamily: "Poppins-Bold",
-                          width: 120,
-                        }}
-                      >
-                        {item.id}. {item.name}
-                      </Text>
-                      
-                      <Text  style={{
-                          textAlign: "left",
-                          fontSize: 11,
-                          color: "black",
-                          fontFamily: "Poppins-Bold",
-                          width: 120,
-                        }}>
-                        {new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency: "RWF",
-                        }).format(item.total_amount)}
-                      </Text>
-
-                    </View>
-
-                    <View
-                      style={{
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        alignContent: "center",
-                        flexDirection: "row",
-                        padding: 5,
-                        width: 130,
-                      }}
-                    >
-                      <View>
-                        <TouchableOpacity onPress={() => decraeseItem(item.id)}>
-                          <AntDesign
-                            name="minuscircle"
-                            size={34}
-                            color={currenttheme.secondary}
-                          />
-                        </TouchableOpacity>
-                      </View>
-                      <Text
-                        style={{
-                          textAlign: "left",
-                          fontSize: 13,
-                          color: "black",
-                          fontFamily: "Poppins-Bold",
-                        }}
-                      >
-                        {item.qty}
-                      </Text>
-                      <View>
-                        <TouchableOpacity onPress={() => increaseItem(item.id)}>
-                          <AntDesign
-                            name="pluscircle"
-                            size={34}
-                            color={currenttheme.secondary}
-                          />
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-
-                    <View
-                      style={{
-                        backgroundColor: "red",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        alignContent: "center",
-                        flexDirection: "row",
-                        height: 40,
-                        borderRadius: 10,
-                        width: 40,
-                      }}
-                    >
-                      <TouchableOpacity
-                        onPress={() => {
-                          //setCartItemID(parseInt(item.id))
-
-                          Alert.alert(
-                            "SELLEASEP",
-                            "Are you sure to remove this item",
-                            [
-                              {
-                                text: `${t('cancel')}`,
-                                onPress: () => console.log("Cancel Pressed"),
-                                style: "cancel",
-                              },
-                              {
-                                text: `${t('ok')}`,
-                                onPress: () => handleRemoveItem(item.id),
-                              },
-                            ]
-                          );
-                        }}
-                      >
-                        <AntDesign name="delete" size={24} color="white" />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                ))}
-              </Center>
-            </ScrollView>
-            </View>
-
-
-            
-              
-                <Text
-                  style={{
-                    marginLeft: 10,
-                    textAlign: "left",
-                    fontSize: 11,
-                    color: "black",
-                    fontFamily: "Poppins-Bold",
-                  }}
-                >
-                {t('ispaid')}
-                </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    width: 50,
-                    justifyContent: "center",
-                  }}
-                >
-                  <Switch
-                defaultIsChecked
-                offTrackColor="#de003b"
-                onTrackColor="#17ab00"
-                onThumbColor="#107800"
-                offThumbColor="#78002c"
-                size="lg"
-                value={IssalePaid}
-                onValueChange={handleSwitchToggle}
-              />
-
-                  {/* <Switch
+                {/* <Switch
                     trackColor={{ false: "#767577", true: "#81b0ff" }}
                     thumbColor={IssalePaid ? "#f5dd4b" : "#f4f3f4"}
                     ios_backgroundColor="#3e3e3e"
                     onValueChange={handleSwitchToggle}
                     value={IssalePaid}
                   /> */}
-                </View>
+              </View>
 
-                <Text
-                  style={{
-                    marginLeft: 10,
-                    marginBottom: 5,
-                    fontSize: 11,
-                    color: "black",
-                    fontFamily: "Poppins-Bold",
-                  }}
-                >
-                   {t('paystat')}:{" "}
-                  <Text
-                    style={{
-                      color: IssalePaid ? "green" : "red",
-                    }}
-                  >
-                    {IssalePaid ? `${t('paid')}` : `${t('no-paid')}`}
-                  </Text>
-                </Text>
-              
-            
-
-
-
-
-            <Center>
-              <View
+              <Text
                 style={{
-                  backgroundColor: "white",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  alignContent: "center",
-                  flexDirection: "row",
-                  height: 70,
-                  borderRadius: 10,
-                  width: "98%",
-                  borderWidth: 1,
-                  borderColor: currenttheme.secondary,
-                  borderStyle: "solid",
-                  padding: 10,
+                  marginLeft: 10,
+                  marginBottom: 5,
+                  fontSize: 11,
+                  color: "black",
+                  fontFamily: "Poppins-Bold",
                 }}
               >
-                <View
+                {t("paystat")}:{" "}
+                <Text
                   style={{
-                    width: "30%",
+                    color: IssalePaid ? "green" : "red",
                   }}
                 >
-                  <TouchableOpacity
-                    onPress={() => {
-                      //setCartItemID(parseInt(item.id))
+                  {IssalePaid ? `${t("paid")}` : `${t("no-paid")}`}
+                </Text>
+              </Text>
 
-                      Alert.alert(
-                        "SELLEASEP",
-                        `${t('clearmes')}`,
-                        [
+              <Center>
+                <View
+                  style={{
+                    backgroundColor: "white",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    alignContent: "center",
+                    flexDirection: "row",
+                    height: 70,
+                    borderRadius: 10,
+                    width: "98%",
+                    borderWidth: 1,
+                    borderColor: currenttheme.secondary,
+                    borderStyle: "solid",
+                    padding: 10,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "30%",
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={() => {
+                        //setCartItemID(parseInt(item.id))
+
+                        Alert.alert("SELLEASEP", `${t("clearmes")}`, [
                           {
-                            text: `${t('cancel')}`,
+                            text: `${t("cancel")}`,
                             onPress: () => console.log("Cancel Pressed"),
                             style: "cancel",
                           },
                           {
-                            text: `${t('ok')}`,
+                            text: `${t("ok")}`,
                             onPress: () => dispatch(clearCart()),
                           },
-                        ]
-                      );
-                    }}
+                        ]);
+                      }}
+                      style={{
+                        backgroundColor: currenttheme.secondary,
+                        height: "90%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        alignContent: "center",
+                        borderRadius: 5,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "white",
+                          fontWeight: "bold",
+                          padding: 2,
+                          fontSize: 11,
+                        }}
+                      >
+                        {t("clearbas")}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View
                     style={{
-                      backgroundColor: currenttheme.secondary,
-                      height: "90%",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      alignContent: "center",
-                      borderRadius: 5,
+                      width: "70%",
+                      alignItems: "flex-end",
                     }}
                   >
                     <Text
                       style={{
-                        color: "white",
-                        fontWeight: "bold",
-                        padding: 2,
-                        fontSize: 11,
-                      }}
-                    >
-                     {t('clearbas')} 
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                <View
-                  style={{
-                    width: "70%",
-                    alignItems: "flex-end",
-                  }}
-                >
-                  <Text
-                    style={{
-                      textAlign: "left",
-                      fontSize: 16,
-                      color: currenttheme.secondary,
-                      fontFamily: "Poppins-Bold",
-                      marginRight: 5,
-                    }}
-                  >
-                    {t('total')} {" "}
-                    <Text
-                      style={{
                         textAlign: "left",
-                        fontSize: 14,
-                        color: "black",
-                        fontFamily: "Poppins-Regular",
-                      }}
-                    >
-                      {new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        currency: "RWF",
-                      }).format(
-                        CARTs_array.reduce(
-                          (accumulator, arr) => accumulator + arr.total_amount,
-                          0
-                        )
-                      )}
-                    </Text>{" "}
-                  </Text>
-
-                  {usertype == "BOSS" ? (
-                    <Text
-                      style={{
-                        textAlign: "left",
-                        fontSize: 14,
+                        fontSize: 16,
                         color: currenttheme.secondary,
                         fontFamily: "Poppins-Bold",
-                        marginRight: 10,
+                        marginRight: 5,
                       }}
                     >
-                      {t('benefit')} {" "}
+                      {t("total")}{" "}
                       <Text
                         style={{
                           textAlign: "left",
@@ -1134,23 +1172,53 @@ const changeLng = lng => {
                         }).format(
                           CARTs_array.reduce(
                             (accumulator, arr) =>
-                              accumulator + arr.total_benefit,
+                              accumulator + arr.total_amount,
                             0
                           )
                         )}
                       </Text>{" "}
                     </Text>
-                  ) : (
-                    ""
-                  )}
+
+                    {usertype == "BOSS" ? (
+                      <Text
+                        style={{
+                          textAlign: "left",
+                          fontSize: 14,
+                          color: currenttheme.secondary,
+                          fontFamily: "Poppins-Bold",
+                          marginRight: 10,
+                        }}
+                      >
+                        {t("benefit")}{" "}
+                        <Text
+                          style={{
+                            textAlign: "left",
+                            fontSize: 14,
+                            color: "black",
+                            fontFamily: "Poppins-Regular",
+                          }}
+                        >
+                          {new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency: "RWF",
+                          }).format(
+                            CARTs_array.reduce(
+                              (accumulator, arr) =>
+                                accumulator + arr.total_benefit,
+                              0
+                            )
+                          )}
+                        </Text>{" "}
+                      </Text>
+                    ) : (
+                      ""
+                    )}
+                  </View>
                 </View>
-              </View>
-            </Center>
-          </View>
+              </Center>
+            </View>
 
-          
-
-          {/* <Text
+            {/* <Text
               style={[
                 styles.textTitle2,
                 {
@@ -1186,8 +1254,8 @@ const changeLng = lng => {
                 placeholder="Search..."
               />
             </Center> */}
-        </View>
-        {/* </ScrollView>
+          </View>
+          {/* </ScrollView>
 
 
         
@@ -1253,468 +1321,767 @@ const changeLng = lng => {
           />
         )} */}
 
-        <Center
-          flex={1}
-          px="1"
-          style={{
-            marginBottom: 20,
-          }}
-        >
-          <Modal
-            visible={modalVisible}
-            animationType="slide"
-            onRequestClose={closeModal}
+          <Center
+            flex={1}
+            px="1"
+            style={{
+              marginBottom: 20,
+            }}
           >
-            <View style={styles.modalContainer}>
-              <Text
-                style={[
-                  styles.textTitle2,
-                  {
-                    color: currenttheme.normal,
-                  },
-                ]}
-              >
-                {t('all')}  {all_products.length}{" "}
-                {all_products.length == 1 ? "Product" : "Products"} list
-              </Text>
-
-              <TouchableOpacity
-                style={{
-                  width: 40,
-                  height: 40,
-                  backgroundColor: currenttheme.secondary,
-                  justifyContent: "center",
-                  alignContent: "center",
-                  alignItems: "center",
-                  position: "absolute",
-                  right: 0,
-                  top: 0,
-                  marginRight: 10,
-                  marginTop: 10,
-                  borderRadius: 5,
-                }}
-                onPress={closeModal}
-              >
-                <MaterialIcons name="cancel" size={26} color="white" />
-              </TouchableOpacity>
-
-              <Center>
-                <Input
-                  w={{
-                    base: "94%",
-                    md: "25%",
-                  }}
-                  onChangeText={(text) => searchFilter(text)}
-                  value={searchQuery}
-                  InputLeftElement={
-                    <Icon
-                      as={<Ionicons name="ios-search-circle" />}
-                      size={5}
-                      ml="2"
-                      color="muted.600"
-                    />
-                  }
-                  placeholder={t('search')}
-                />
-              </Center>
-
-              <Text>{""}</Text>
-              {all_products_isLoading ? (
-                <View>
-                  <Center>
-                    <ActivityIndicator
-                      size="large"
-                      color={currenttheme.secondary}
-                    />
-                    <Text style={styles.textInGFuc}>
-                    {t('loading-wait')}
-                    </Text>
-                  </Center>
-                </View>
-              ) : (
-                <FlatList
-                  style={{
-                    backgroundColor: "transparent",
-                  }}
-                  data={fetchedProducts}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setModalVisible2(true);
-                        setIdent(item.product_id);
-                        setPro_price(item.price);
-                        setPro_benefit(item.benefit);
-                        setPro_name(item.name);
-                        setPro_cqty(item.current_quantity);
-                        setPro_qty(1);
-                        setCalcshow(true);
-                      }}
-                    >
-                      <Item
-                        name={item.name}
-                        id={item.product_id}
-                        price={new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency: "RWF",
-                        }).format(item.price)}
-                        benefit={new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency: "RWF",
-                        }).format(item.benefit)}
-                        quantity={
-                          item.current_quantity == 0
-                            ? `${t('no-stock')}`
-                            : item.current_quantity
-                        }
-                        alertQuantity={
-                          item.alert_quantity == 0
-                            ? `${t('no-stock')}`
-                            : item.alert_quantity
-                        }
-                        time={timeAgo(item.created_at)}
-                      />
-                    </TouchableOpacity>
-                  )}
-                  keyExtractor={(item) => item.product_id}
-                />
-              )}
-            </View>
-          </Modal>
-
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible2}
-          >
-            <Center
-              flex={1}
-              px="1"
-              style={{
-                backgroundColor: "#00000032",
-              }}
+            <Modal
+              visible={modalVisible}
+              animationType="slide"
+              onRequestClose={closeModal}
             >
-              <View
-                style={{
-                  width: "90%",
-                  padding: 20,
-                  backgroundColor: "white",
-                  borderRadius: 10,
-                  shadowColor: "#000000",
-                  shadowOffset: {
-                    width: 0,
-                    height: 2,
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                  elevation: 5,
-                }}
-              >
+              <View style={styles.modalContainer}>
                 <Text
-                  style={{
-                    fontSize: 15,
-                  }}
+                  style={[
+                    styles.textTitle2,
+                    {
+                      color: currenttheme.normal,
+                    },
+                  ]}
                 >
-                 {t('setqty')} {pro_name}
+                  {t("all")} {all_products.length}{" "}
+                  {all_products.length == 1 ? "Product" : "Products"} list
                 </Text>
 
-                <FormControl mt="3">
-                  <FormControl.Label>{t('quantity')}</FormControl.Label>
-                  <Input
-                    value={pro_qty}
-                    onChangeText={setPro_qty}
-                    editable={edit}
-                    inputMode="numeric"
-                  />
-                </FormControl>
-
-
-                {SwitchType?<FormControl mt="3">
-                  <FormControl.Label>Custom price</FormControl.Label>
-                  <Input
-                    value={Custom_Price}
-                    onChangeText={setPro_Custom_Price}
-                    editable={edit}
-                    inputMode="numeric"
-                  />
-                </FormControl>:null}
-                
-
-                {SwitchType?pro_calcshow ? (
-                  <Text
-                    style={{
-                      color: "green",
-                      fontSize:9
-                    }}
-                  >
-                    {t('total')}:{" "}
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "RWF",
-                    }).format(parseFloat(Custom_Price) * parseFloat(pro_qty))}{", "}
-                    Current stock: {pro_cqty},
-                    {usertype == "BOSS"
-                      ? ` Benefit: ${new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency: "RWF",
-                        }).format(
-                          ((parseFloat(pro_benefit)/parseFloat(pro_price))*parseFloat(Custom_Price)) * parseFloat(pro_qty)
-                        )}`
-                      : ""}
-                  </Text>
-                ) : (
-                  ""
-                ):
-                pro_calcshow ? (
-                  <Text
-                    style={{
-                      color: "green",
-                      fontSize:9
-                    }}
-                  >
-                    {t('total')}:{" "}
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "RWF",
-                    }).format(parseFloat(pro_price) * parseFloat(pro_qty))}{", "}
-                    Current stock: {pro_cqty},
-                    {usertype == "BOSS"
-                      ? ` ${t('benefit')}: ${new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency: "RWF",
-                        }).format(
-                          parseFloat(pro_benefit) * parseFloat(pro_qty)
-                        )}`
-                      : ""}
-                  </Text>
-                ) : (
-                  ""
-                )
-                }
-
-
-
-                <Text
+                <TouchableOpacity
                   style={{
-                    marginLeft: 10,
-                    textAlign: "left",
-                    fontSize: 11,
-                    color: "black",
-                    fontFamily: "Poppins-Bold",
-                  }}
-                >
-                  {t('setprice')}
-                </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    width: 50,
+                    width: 40,
+                    height: 40,
+                    backgroundColor: currenttheme.secondary,
                     justifyContent: "center",
-                  }}
-                >
-                  <Switch
-                offTrackColor="#de003b"
-                onTrackColor="#17ab00"
-                onThumbColor="#107800"
-                offThumbColor="#78002c"
-                size="lg"
-                value={SwitchType}
-                onValueChange={handleSwitchToggleType}
-              />
-
-
-
-
-
-                </View>
-
-                <View
-                  style={{
-                    marginTop: 20,
-                    width: "100%",
-                    padding: 5,
-                    justifyContent: "space-between",
+                    alignContent: "center",
                     alignItems: "center",
-                    flexDirection: "row",
+                    position: "absolute",
+                    right: 0,
+                    top: 0,
+                    marginRight: 10,
+                    marginTop: 10,
+                    borderRadius: 5,
                   }}
+                  onPress={closeModal}
                 >
-                  <TouchableOpacity
-                    onPress={closeModal2}
-                    style={{
-                      width: "40%",
-                      height: 40,
-                      backgroundColor: currenttheme.light,
-                      justifyContent: "center",
-                      alignContent: "center",
-                      alignItems: "center",
-                      borderRadius: 5,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "black",
-                      }}
-                    >
-                      {t('cancel')}
-                    </Text>
-                  </TouchableOpacity>
+                  <MaterialIcons name="cancel" size={26} color="white" />
+                </TouchableOpacity>
 
-                  <TouchableOpacity
-                    onPress={handleAddtoList}
-                    style={{
-                      width: "40%",
-                      height: 40,
-                      backgroundColor: currenttheme.secondary,
-                      justifyContent: "center",
-                      alignContent: "center",
-                      alignItems: "center",
-                      borderRadius: 5,
+                <Center>
+                  <Input
+                    w={{
+                      base: "94%",
+                      md: "25%",
                     }}
-                  >
-                    <Text
-                      style={{
-                        color: "white",
-                      }}
-                    >
-                      {t('add-product')}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                    onChangeText={(text) => searchFilter(text)}
+                    value={searchQuery}
+                    InputLeftElement={
+                      <Icon
+                        as={<Ionicons name="ios-search-circle" />}
+                        size={5}
+                        ml="2"
+                        color="muted.600"
+                      />
+                    }
+                    placeholder={t("search")}
+                  />
+                </Center>
+
+                <Text>{""}</Text>
+                {all_products_isLoading ? (
+                  <View>
+                    <Center>
+                      <ActivityIndicator
+                        size="large"
+                        color={currenttheme.secondary}
+                      />
+                      <Text style={styles.textInGFuc}>{t("loading-wait")}</Text>
+                    </Center>
+                  </View>
+                ) : (
+                  <FlatList
+                    style={{
+                      backgroundColor: "transparent",
+                    }}
+                    data={fetchedProducts}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        onPress={() => {
+                          setModalVisible2(true);
+                          setIdent(item.product_id);
+                          setPro_price(item.price);
+                          setPro_benefit(item.benefit);
+                          setPro_name(item.name);
+                          setPro_cqty(item.current_quantity);
+                          setPro_qty(1);
+                          setCalcshow(true);
+                        }}
+                      >
+                        <Item
+                          name={item.name}
+                          id={item.product_id}
+                          price={new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency: "RWF",
+                          }).format(item.price)}
+                          benefit={new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency: "RWF",
+                          }).format(item.benefit)}
+                          quantity={
+                            item.current_quantity == 0
+                              ? `${t("no-stock")}`
+                              : item.current_quantity
+                          }
+                          alertQuantity={
+                            item.alert_quantity == 0
+                              ? `${t("no-stock")}`
+                              : item.alert_quantity
+                          }
+                          time={timeAgo(item.created_at)}
+                        />
+                      </TouchableOpacity>
+                    )}
+                    keyExtractor={(item) => item.product_id}
+                  />
+                )}
               </View>
-            </Center>
-          </Modal>
+            </Modal>
 
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible3}
-          >
-            <Center
-              flex={1}
-              px="1"
-              style={{
-                backgroundColor: "#00000032",
-              }}
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible2}
             >
-              <View
+              <Center
+                flex={1}
+                px="1"
                 style={{
-                  width: "90%",
-                  padding: 20,
-                  backgroundColor: "white",
-                  borderRadius: 10,
-                  shadowColor: "#000000",
-                  shadowOffset: {
-                    width: 0,
-                    height: 2,
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                  elevation: 5,
+                  backgroundColor: "#00000032",
                 }}
               >
-                <Text
-                  style={{
-                    fontSize: 15,
-                  }}
-                >
-                  {t('setbdt')}
-                </Text>
-
-                <FormControl mt="3">
-                  <FormControl.Label>{t('custname')}</FormControl.Label>
-                  <Input
-                    onChangeText={(text) => searchFilterCustomer(text)}
-                    value={searchQuery}
-                    editable={edit}
-                  />
-                </FormControl>
-
-                <View style={{
-                  height:220, 
-                  marginTop:10
-                }}>
-                <FlatList
-                  style={{
-                    backgroundColor: "transparent",
-                  }}
-                  data={fetchedCustomers}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setIdent(item.customer_id);
-                      }}
-                    >
-
-                      <ItemCustomer
-                        names={item.names}
-                        id={item.customer_id}
-                        phone={item.phone}
-                        location={item.address}
-                      />
-
-                    </TouchableOpacity>
-                  )}
-                  keyExtractor={(item) => item.customer_id}
-                /></View>
-
-
-
                 <View
                   style={{
-                    marginTop: 20,
-                    width: "100%",
-                    padding: 5,
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    flexDirection: "row",
+                    width: "90%",
+                    padding: 20,
+                    backgroundColor: "white",
+                    borderRadius: 10,
+                    shadowColor: "#000000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    elevation: 5,
                   }}
                 >
-                  <TouchableOpacity
-                    onPress={closeModal3}
+                  <Text
                     style={{
-                      width: "40%",
-                      height: 40,
-                      backgroundColor: currenttheme.light,
-                      justifyContent: "center",
-                      alignContent: "center",
-                      alignItems: "center",
-                      borderRadius: 5,
+                      fontSize: 15,
                     }}
                   >
-                    <Text
-                      style={{
-                        color: "black",
-                      }}
-                    >
-                      {t('cancel')}
-                    </Text>
-                  </TouchableOpacity>
+                    {t("setqty")} {pro_name}
+                  </Text>
 
-                  <TouchableOpacity
-                    onPress={Adding_information}
-                    style={{
-                      width: "40%",
-                      height: 40,
-                      backgroundColor: currenttheme.secondary,
-                      justifyContent: "center",
-                      alignContent: "center",
-                      alignItems: "center",
-                      borderRadius: 5,
-                    }}
-                  >
+                  <FormControl mt="3">
+                    <FormControl.Label>{t("quantity")}</FormControl.Label>
+                    <Input
+                      value={pro_qty}
+                      onChangeText={setPro_qty}
+                      editable={edit}
+                      inputMode="numeric"
+                    />
+                  </FormControl>
+
+                  {SwitchType ? (
+                    <FormControl mt="3">
+                      <FormControl.Label>Custom price</FormControl.Label>
+                      <Input
+                        value={Custom_Price}
+                        onChangeText={setPro_Custom_Price}
+                        editable={edit}
+                        inputMode="numeric"
+                      />
+                    </FormControl>
+                  ) : null}
+
+                  {SwitchType ? (
+                    pro_calcshow ? (
+                      <Text
+                        style={{
+                          color: "green",
+                          fontSize: 9,
+                        }}
+                      >
+                        {t("total")}:{" "}
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "RWF",
+                        }).format(
+                          parseFloat(Custom_Price) * parseFloat(pro_qty)
+                        )}
+                        {", "}
+                        Current stock: {pro_cqty},
+                        {usertype == "BOSS"
+                          ? ` Benefit: ${new Intl.NumberFormat("en-US", {
+                              style: "currency",
+                              currency: "RWF",
+                            }).format(
+                              (parseFloat(pro_benefit) /
+                                parseFloat(pro_price)) *
+                                parseFloat(Custom_Price) *
+                                parseFloat(pro_qty)
+                            )}`
+                          : ""}
+                      </Text>
+                    ) : (
+                      ""
+                    )
+                  ) : pro_calcshow ? (
                     <Text
                       style={{
-                        color: "white",
+                        color: "green",
+                        fontSize: 9,
                       }}
                     >
-                      {t('finish')}
+                      {t("total")}:{" "}
+                      {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "RWF",
+                      }).format(parseFloat(pro_price) * parseFloat(pro_qty))}
+                      {", "}
+                      Current stock: {pro_cqty},
+                      {usertype == "BOSS"
+                        ? ` ${t("benefit")}: ${new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency: "RWF",
+                          }).format(
+                            parseFloat(pro_benefit) * parseFloat(pro_qty)
+                          )}`
+                        : ""}
                     </Text>
-                  </TouchableOpacity>
+                  ) : (
+                    ""
+                  )}
+
+                  <Text
+                    style={{
+                      marginLeft: 10,
+                      textAlign: "left",
+                      fontSize: 11,
+                      color: "black",
+                      fontFamily: "Poppins-Bold",
+                    }}
+                  >
+                    {t("setprice")}
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      width: 50,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Switch
+                      offTrackColor="#de003b"
+                      onTrackColor="#17ab00"
+                      onThumbColor="#107800"
+                      offThumbColor="#78002c"
+                      size="lg"
+                      value={SwitchType}
+                      onValueChange={handleSwitchToggleType}
+                    />
+                  </View>
+
+                  <View
+                    style={{
+                      marginTop: 20,
+                      width: "100%",
+                      padding: 5,
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={closeModal2}
+                      style={{
+                        width: "40%",
+                        height: 40,
+                        backgroundColor: currenttheme.light,
+                        justifyContent: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        borderRadius: 5,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "black",
+                        }}
+                      >
+                        {t("cancel")}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={handleAddtoList}
+                      style={{
+                        width: "40%",
+                        height: 40,
+                        backgroundColor: currenttheme.secondary,
+                        justifyContent: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        borderRadius: 5,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "white",
+                        }}
+                      >
+                        {t("add-product")}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            </Center>
-          </Modal>
+              </Center>
+            </Modal>
 
-          {/* <Center>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible3}
+            >
+              <Center
+                flex={1}
+                px="1"
+                style={{
+                  backgroundColor: "#00000032",
+                }}
+              >
+                <View
+                  style={{
+                    width: "90%",
+                    padding: 20,
+                    backgroundColor: "white",
+                    borderRadius: 10,
+                    shadowColor: "#000000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 15,
+                    }}
+                  >
+                    {t("setbdt")}
+                  </Text>
+
+                  <FormControl mt="3">
+                    <FormControl.Label>{t("custname")}</FormControl.Label>
+                    <Input
+                      onChangeText={(text) => searchFilterCustomer(text)}
+                      value={searchQuery}
+                      editable={edit}
+                    />
+                  </FormControl>
+
+                  <View
+                    style={{
+                      height: 220,
+                      marginTop: 10,
+                    }}
+                  >
+                    <FlatList
+                      style={{
+                        backgroundColor: "transparent",
+                      }}
+                      data={fetchedCustomers}
+                      renderItem={({ item }) => (
+                        <TouchableOpacity
+                          onPress={() => {
+                            setClientID(item.customer_id);
+                            setClientNames(item.names);
+                            setClientPhone(item.phone);
+                            setClientAddress(item.address);
+                            setModalVisible3(false);
+                            setModalVisible4(true);
+                          }}
+                        >
+                          <ItemCustomer
+                            names={item.names}
+                            id={item.customer_id}
+                            phone={item.phone}
+                            location={item.address}
+                          />
+                        </TouchableOpacity>
+                      )}
+                      keyExtractor={(item) => item.customer_id}
+                    />
+                  </View>
+
+                  <View
+                    style={{
+                      marginTop: 20,
+                      width: "100%",
+                      padding: 5,
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={closeModal3}
+                      style={{
+                        width: "40%",
+                        height: 40,
+                        backgroundColor: currenttheme.light,
+                        justifyContent: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        borderRadius: 5,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "black",
+                        }}
+                      >
+                        {t("cancel")}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => {
+                        setModalVisible3(false);
+                        setModalVisible5(true);
+                      }}
+                      style={{
+                        width: "40%",
+                        height: 40,
+                        backgroundColor: currenttheme.secondary,
+                        justifyContent: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        borderRadius: 5,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "white",
+                        }}
+                      >
+                        {t("add-new")}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Center>
+            </Modal>
+
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible4}
+            >
+              <Center
+                flex={1}
+                px="1"
+                style={{
+                  backgroundColor: "#00000032",
+                }}
+              >
+                <View
+                  style={{
+                    width: "90%",
+                    padding: 20,
+                    backgroundColor: "white",
+                    borderRadius: 10,
+                    shadowColor: "#000000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 15,
+                    }}
+                  >
+                    {t("seleted-customer")}
+                  </Text>
+                  <View
+                    style={{
+                      height: 70,
+                      marginTop: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {t("custname")}:{" "}
+                      <Text
+                        style={{
+                          fontSize: 13,
+                          fontWeight: "normal",
+                        }}
+                      >
+                        {ClientNames}
+                      </Text>
+                    </Text>
+
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {t("phone")}:{" "}
+                      <Text
+                        style={{
+                          fontSize: 13,
+                          fontWeight: "normal",
+                        }}
+                      >
+                        {ClientPhone}
+                      </Text>
+                    </Text>
+
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {t("location")}:
+                      <Text
+                        style={{
+                          fontSize: 13,
+                          fontWeight: "normal",
+                        }}
+                      >
+                        {ClientAddress}
+                      </Text>
+                    </Text>
+                  </View>
+
+                  <View
+                    style={{
+                      width: "100%",
+                      padding: 5,
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={closeModal4}
+                      style={{
+                        width: "40%",
+                        height: 40,
+                        backgroundColor: currenttheme.light,
+                        justifyContent: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        borderRadius: 5,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "black",
+                        }}
+                      >
+                        {t("back")}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={Adding_information}
+                      style={{
+                        width: "40%",
+                        height: 40,
+                        backgroundColor: currenttheme.secondary,
+                        justifyContent: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        borderRadius: 5,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "white",
+                        }}
+                      >
+                        {t("finish")}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Center>
+            </Modal>
+
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible5}
+            >
+              <Center
+                flex={1}
+                px="1"
+                style={{
+                  backgroundColor: "#00000032",
+                }}
+              >
+                <View
+                  style={{
+                    width: "90%",
+                    padding: 20,
+                    backgroundColor: "white",
+                    borderRadius: 10,
+                    shadowColor: "#000000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 15,
+                    }}
+                  >
+                    {t("addnew-cutms")}
+                  </Text>
+
+                  <View
+                    style={{
+                      height: 210,
+                      marginTop: 10,
+                    }}
+                  >
+                    <FormControl>
+                      <Input
+                        w={{
+                          base: "94%",
+                          md: "25%",
+                        }}
+                        style={{
+                          marginTop: 5,
+                        }}
+                        onChangeText={setCust_Names}
+                        value={CustNames}
+                        placeholder={t("Customer names")}
+                      />
+                    </FormControl>
+
+                    <FormControl>
+                      {" "}
+                      <Input
+                        w={{
+                          base: "94%",
+                          md: "25%",
+                        }}
+                        style={{
+                          marginTop: 5,
+                        }}
+                        onChangeText={setCustPhone}
+                        value={CustPhone}
+                        placeholder={t("Phone number")}
+                        inputMode="numeric"
+                      />
+                    </FormControl>
+
+                    <FormControl>
+                    {" "}
+                      <Input
+                        w={{
+                          base: "94%",
+                          md: "25%",
+                        }}
+                        style={{
+                          marginTop: 5,
+                        }}
+                        onChangeText={setCustAddress}
+                        value={CustAddress}
+                        placeholder={t("Address")}
+                      />
+                    </FormControl>
+                  </View>
+
+                  <View
+                    style={{
+                      width: "100%",
+                      padding: 5,
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={closeModal5}
+                      style={{
+                        width: "40%",
+                        height: 40,
+                        backgroundColor: currenttheme.light,
+                        justifyContent: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        borderRadius: 5,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "black",
+                        }}
+                      >
+                        {t("cancel")}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={Adding_customer}
+                      style={{
+                        width: "40%",
+                        height: 40,
+                        backgroundColor: currenttheme.secondary,
+                        justifyContent: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        borderRadius: 5,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "white",
+                        }}
+                      >
+                        {t("finish")}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Center>
+            </Modal>
+
+            {/* <Center>
             <Modal
               isOpen={showModal}
               onClose={() => {
@@ -1793,9 +2160,9 @@ const changeLng = lng => {
               </Modal.Content>
             </Modal>
           </Center> */}
-        </Center>
-        
-        <Center>
+          </Center>
+
+          <Center>
             {CARTs_array.length > 0 ? (
               IssalePaid ? (
                 <TouchableOpacity
@@ -1810,7 +2177,7 @@ const changeLng = lng => {
                     flexDirection: "column",
                     bottom: 0,
                     borderRadius: 100,
-                    marginTop:-30
+                    marginTop: -30,
                   }}
                 >
                   <Text
@@ -1855,7 +2222,7 @@ const changeLng = lng => {
                     flexDirection: "column",
                     bottom: 0,
                     borderRadius: 100,
-                    marginTop:-30
+                    marginTop: -30,
                   }}
                 >
                   <Text
@@ -1892,7 +2259,7 @@ const changeLng = lng => {
               ""
             )}
           </Center>
-      </NativeBaseProvider>
+        </NativeBaseProvider>
       </ScrollView>
     </SafeAreaView>
   );

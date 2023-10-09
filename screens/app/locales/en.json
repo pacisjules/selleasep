@@ -114,6 +114,7 @@
   "debt":"debt",
   "debts":"debts",
   "addnew":"Add New",
+  "addnew-cutms":"Fill full customer's information",
   "owner":"Owner names",
   "location":"location",
   "due":"Due date",
@@ -216,7 +217,18 @@
   "lastsales":"Last Sales",
   "lastsale":"Last Sale",
   "payhalf":"Pay Half",
-  "amountpaid":"Amount Paid"
+  "amountpaid":"Amount Paid",
+  "back":"Back",
+  "seleted-customer":"Selected customer's information",
+  "languages":"Languages",
+  "system-settings":"System Settings",
+  "selectspt":"Select Sales Point",
+  "setspt":"This is all Sales Point in your company and control them",
+  "accessin":"Access in",
+  "no":"No",
+  "schange":"System Change Sales Point",
+  "askchange":"Are you sure to change sales point?",
+  "yes":"Yes"
 
 
 }

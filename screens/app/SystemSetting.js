@@ -45,6 +45,10 @@ import * as Device from "expo-device";
 import axios from "axios";
 import { useRoute } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
+
+import i18next, { languageResources } from "./services/i18next";
+import { useTranslation } from "react-i18next";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -70,6 +74,13 @@ const SystemSetting = ({ navigation }) => {
   const { SPTLoad, all_SPT, SPTError } = useSelector(
     (state) => state.all_sales
   );
+
+
+  const { t } = useTranslation();
+  const changeLng = (lng) => {
+    i18next.changeLanguage(lng);
+    setVisible(false);
+  };
 
   //Load fonts
   async function loadFonts() {
@@ -215,14 +226,14 @@ const SystemSetting = ({ navigation }) => {
             <Text
               style={{
                 textAlign: "left",
-                fontSize: 20,
+                fontSize: 30,
                 color: "white",
                 marginLeft: 35,
                 fontFamily: "Poppins-Regular",
                 fontSize:10
               }}
             >
-              Select Sales Point
+              {t("system-settings")}
             </Text>
           </LinearGradient>
         </View>
@@ -267,7 +278,7 @@ const SystemSetting = ({ navigation }) => {
                   fontSize:12
                 }}
               >
-                Languages
+                {t("languages")}
               </Text>
             </TouchableOpacity>
 
@@ -285,7 +296,7 @@ const SystemSetting = ({ navigation }) => {
                 color:"white",
                 fontFamily: "Poppins-Regular",
                 fontSize:12
-              }}>Sales Point</Text>
+              }}>{t("spt")}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

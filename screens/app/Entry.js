@@ -321,7 +321,7 @@ export default Entry = ({ navigation }) => {
               style={{
                 color: "#001935",
                 fontWeight: "bold",
-                fontSize: 20,
+                fontSize: 19,
               }}
             >
               {t('loading')}
@@ -369,7 +369,7 @@ export default Entry = ({ navigation }) => {
       >
         <Text
           style={{
-            fontSize: 22,
+            fontSize: 16,
             color: "white",
             textAlign: "center",
             fontWeight: "900",
@@ -422,7 +422,7 @@ export default Entry = ({ navigation }) => {
         >
           <Text
             style={{
-              fontSize: 17,
+              fontSize: 14,
               color: "white",
               textAlign: "left",
               fontWeight: "900",
@@ -436,7 +436,7 @@ export default Entry = ({ navigation }) => {
 
           <Text
             style={{
-              fontSize: 13,
+              fontSize: 10,
               color: "white",
               textAlign: "left",
               fontFamily: "Poppins-Regular",
@@ -450,7 +450,7 @@ export default Entry = ({ navigation }) => {
 
           <Text
             style={{
-              fontSize: 11,
+              fontSize: 10,
               color: "white",
               textAlign: "left",
               fontWeight: "900",
@@ -480,7 +480,7 @@ export default Entry = ({ navigation }) => {
         >
           <Text
             style={{
-              fontSize: 15,
+              fontSize: 10,
               color: currenttheme.secondary,
               textAlign: "left",
               fontWeight: "900",
@@ -495,7 +495,7 @@ export default Entry = ({ navigation }) => {
 
           <Text
             style={{
-              fontSize: 13,
+              fontSize: 10,
               color: currenttheme.normal,
               textAlign: "left",
               fontWeight: "900",
@@ -509,7 +509,7 @@ export default Entry = ({ navigation }) => {
 
           <Text
             style={{
-              fontSize: 15,
+              fontSize: 10,
               color: currenttheme.secondary,
               textAlign: "left",
               fontWeight: "900",
@@ -524,7 +524,7 @@ export default Entry = ({ navigation }) => {
 
           <Text
             style={{
-              fontSize: 13,
+              fontSize: 10,
               color: currenttheme.normal,
               textAlign: "left",
               fontWeight: "900",
@@ -563,7 +563,7 @@ export default Entry = ({ navigation }) => {
 
             <Text
               style={{
-                fontSize: 10,
+                fontSize: 9,
                 color: "white",
                 textAlign: "left",
                 fontWeight: "900",
@@ -707,7 +707,7 @@ export default Entry = ({ navigation }) => {
                     style={[
                       styles.dates,
                       {
-                        fontSize: 16,
+                        fontSize: 15,
                         marginTop: -10,
                       },
                     ]}
@@ -718,7 +718,7 @@ export default Entry = ({ navigation }) => {
                     style={[
                       styles.dates,
                       {
-                        fontSize: 12,
+                        fontSize: 11,
                         marginTop: -10,
                       },
                     ]}
@@ -759,13 +759,13 @@ export default Entry = ({ navigation }) => {
                   paddingRight: 10,
                   paddingTop: 5,
                   paddingBottom: 5,
-                  fontSize: 12,
+                  fontSize: 11,
                 }}
               >
                 {t('on')} {date}
                 <Text
                   style={{
-                    fontSize: 10,
+                    fontSize: 9,
                     paddingTop: -15,
                     marginBottom: 10,
                   }}
@@ -1104,7 +1104,7 @@ export default Entry = ({ navigation }) => {
                   style={{
                     fontFamily: "Poppins-Bold",
                     textAlign: "left",
-                    fontSize: 16,
+                    fontSize: 14,
                     marginTop: 13,
                     marginLeft: 15,
                     color: "white",
@@ -1116,7 +1116,7 @@ export default Entry = ({ navigation }) => {
                   style={{
                     fontFamily: "Poppins-Regular",
                     textAlign: "left",
-                    fontSize: 12,
+                    fontSize: 11,
                     marginLeft: 15,
                     color: "white",
                   }}
@@ -1145,7 +1145,7 @@ export default Entry = ({ navigation }) => {
                   backgroundColor: currenttheme.secondary,
                   borderRadius: 10,
                   padding: 10,
-                  marginTop: 2,
+                  marginTop: 10,
                   borderLeftWidth: 10,
                   borderLeftColor: currenttheme.primary,
                 }}
@@ -1154,7 +1154,7 @@ export default Entry = ({ navigation }) => {
                   style={{
                     fontFamily: "Poppins-Bold",
                     textAlign: "left",
-                    fontSize: 16,
+                    fontSize: 14,
                     marginTop: 5,
                     marginLeft: 15,
                     color: "white",
@@ -1245,7 +1245,7 @@ export default Entry = ({ navigation }) => {
                     style={{
                       fontFamily: "Poppins-Bold",
                       textAlign: "left",
-                      fontSize: 16,
+                      fontSize: 14,
                       marginTop: 13,
                       marginLeft: 15,
                       color: "white",
@@ -1258,7 +1258,7 @@ export default Entry = ({ navigation }) => {
                     style={{
                       fontFamily: "Poppins-Bold",
                       textAlign: "left",
-                      fontSize: 16,
+                      fontSize: 14,
                       marginTop: 13,
                       marginLeft: 15,
                       color: "white",
