@@ -17,7 +17,14 @@ import {
   ImageBackground,
   ToastAndroid,
 } from "react-native";
-
+import {
+  LineChart,
+  BarChart,
+  PieChart,
+  ProgressChart,
+  ContributionGraph,
+  StackedBarChart
+} from "react-native-chart-kit";
 import {
   MaterialCommunityIcons,
   AntDesign,
@@ -34,9 +41,17 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchTotalsData } from "../../features/changetotals/change_total_slice";
 import { fetchCurrentProductData } from "../../features/getcurrentproducts/get_current";
 import {
+  fetchAllInventoryData,
+  fetchSearchInventoryData,
+} from "../../features/getallinventory/getallinventory";
+import {
+  fetchallCustomersData
+} from "../../features/getallcustomers/getallcustomers";
+import {
   fetchMostSold,
   fetchMostBenefit,
   fetchBalance,
+  fetchAllWeekData
 } from "../../features/getallsales/getallsales";
 
 import {
@@ -46,13 +61,20 @@ import {
   search_AllProductsData,
 } from "../../features/getfullproducts/getallproducts";
 
+import {
+  fetchAlldebtsData,
+  fetchAlldebtsDataTotals,
+  fetchAlldebtsDatain,
+} from "../../features/gettalldebts/getalldebts";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 
 import i18next, {languageResources} from './services/i18next';
 import {useTranslation} from 'react-i18next';
 import languagesList from './services/languagesList.json';
-
+import { Dimensions } from "react-native";
+const screenWidth = Dimensions.get("window").width;
 
 
 export default Entry = ({ navigation }) => {
@@ -65,6 +87,8 @@ export default Entry = ({ navigation }) => {
   const Toast = useToast();
   const loadImg = require("../../assets/go.jpeg");
 
+
+  
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
   const [userstatus, setuserstatus] = useState();
@@ -103,6 +127,19 @@ export default Entry = ({ navigation }) => {
     useSelector((state) => state.userInfos.Companylogo)
   );
 
+
+  const [MondayData, setMondayData] = useState(0);
+  const [TuesdayData, setTuesdayData] = useState(0);
+  const [WednesdayData, setWednesdayData] = useState(0);
+  const [ThursdayData, setThursdayData] = useState(0);
+  const [FridayData, setFridayData] = useState(0);
+  const [SaturdayData, setSaturdayData] = useState(0);
+  const [SundayData, setSundayData] = useState(0);
+
+
+  
+
+
   const {
     SoldLoad,
     all_MostSold,
@@ -115,6 +152,11 @@ export default Entry = ({ navigation }) => {
     BalanceLoad,
     all_Balance,
     BalanceError,
+
+
+    WEEKDATALoad,
+    WEEKDATA_array,
+    WEEKDATAError
   } = useSelector((state) => state.all_sales);
 
   const [location_Spt, setLocation_Spt] = useState(
@@ -254,6 +296,7 @@ export default Entry = ({ navigation }) => {
   };
 
   useEffect(() => {
+    
     //Check Internet
     const unsubscribe = NetInfo.addEventListener((state) => {
       setIsConnected(state.isConnected);
@@ -264,20 +307,21 @@ export default Entry = ({ navigation }) => {
     });
 
     const fetchData = async () => {
+      
       try {
         const chooseData = await AsyncStorage.getItem("choose");
         setcurrenttheme(JSON.parse(chooseData));
-
         const ustatus = await AsyncStorage.getItem("status");
         setuserstatus(ustatus);
 
-        //dispatch(setDataThemeSuccess(JSON.parse(chooseData)));
+    //dispatch(setDataThemeSuccess(JSON.parse(chooseData)));
       } catch (error) {
         console.log("Error retrieving data:", error);
       }
     };
 
     fetchData();
+    dispatch(fetchAllWeekData(salesP));
     dispatch(fetchAllProductsData(salesCoi, salesP));
     dispatch(fetchTotalsData(salesP));
     dispatch(fetchMostSold(salesP));
@@ -285,18 +329,44 @@ export default Entry = ({ navigation }) => {
     dispatch(fetchBalance(salesP));
     dispatch(fetchCurrentProductData(salesCoi, salesP));
     dispatch(fetchAllCustomersData(salesP));
-
+    dispatch(fetchAllInventoryData(salesCoi, salesP));
+    dispatch(fetchallCustomersData(salesP));
+    dispatch(fetchAlldebtsData(salesP));
+    
     rundays();
     loadFonts();
+
+    try{
+    setMondayData(WEEKDATA_array[0].Monday);
+    setTuesdayData(WEEKDATA_array[0].Tuesday);
+    setWednesdayData(WEEKDATA_array[0].Wednesday);
+    setThursdayData(WEEKDATA_array[0].Thursday);
+    setFridayData(WEEKDATA_array[0].Friday);
+    setSaturdayData(WEEKDATA_array[0].Saturday);
+    setSundayData(WEEKDATA_array[0].Sunday);
+    setRefreshing(false);
+    }catch{
+      setRefreshing(true);
+    }
+    
+
     if (isFocused) {
       fetchData();
+      dispatch(fetchAllWeekData(salesP));
       dispatch(fetchTotalsData(salesP));
       dispatch(fetchCurrentProductData(salesCoi, salesP));
       dispatch(fetchMostSold(salesP));
       dispatch(fetchMostBenefit(salesP));
       dispatch(fetchBalance(salesP));
       rundays();
+      setRefreshing(false);
     }
+
+
+    // setTimeout(() => {
+    //   dispatch(fetchAllWeekData(salesP));
+    // }, 2000);
+
   }, [isFocused, navigation]);
 
   //Check if font loaded
@@ -603,12 +673,14 @@ export default Entry = ({ navigation }) => {
 
   const onRefresh = () => {
     setRefreshing(true);
+    dispatch(fetchAllWeekData(salesP));
     dispatch(fetchTotalsData(salesP));
     dispatch(fetchCurrentProductData(salesCoi, salesP));
     setRefreshing(false);
     dispatch(fetchBalance(salesP));
     dispatch(fetchMostSold(salesP));
     dispatch(fetchMostBenefit(salesP));
+    
   };
 
   //Format Names
@@ -707,7 +779,7 @@ export default Entry = ({ navigation }) => {
                     style={[
                       styles.dates,
                       {
-                        fontSize: 15,
+                        fontSize: 13,
                         marginTop: -10,
                       },
                     ]}
@@ -718,7 +790,7 @@ export default Entry = ({ navigation }) => {
                     style={[
                       styles.dates,
                       {
-                        fontSize: 11,
+                        fontSize: 10,
                         marginTop: -10,
                       },
                     ]}
@@ -961,18 +1033,7 @@ export default Entry = ({ navigation }) => {
                   </View>
                 </TouchableOpacity>
 
-                {/* <TouchableOpacity
-                  onPress={() => navigation.navigate("Services")}
-                >
-                  <View style={styles.fucs}>
-                    <MaterialCommunityIcons
-                      name="state-machine"
-                      size={24}
-                      color={currenttheme.normal}
-                    />
-                    <Text style={styles.textInGFuc}>Services</Text>
-                  </View>
-                </TouchableOpacity> */}
+               
 
                 <TouchableOpacity
                   onPress={() => navigation.navigate("Reports")}
@@ -1076,6 +1137,78 @@ export default Entry = ({ navigation }) => {
               />
             )}
           </View>
+
+
+          <Center>
+          <Text
+              style={[
+                styles.textTitle2,
+                {
+                  color: currenttheme.secondary,
+                },
+              ]}
+            >
+              {t('weekp')}
+
+            </Text>
+
+
+            <View>
+  <LineChart
+    data={{
+      labels: [`7`,`1`, `2`, `3`, `4`, `5`, `6` ],
+      datasets: [
+        {
+          data: [
+            SundayData,
+            MondayData,
+            TuesdayData,
+            WednesdayData,
+            ThursdayData,
+            FridayData,
+            SaturdayData,
+          ]
+        }
+      ]
+    }}
+    width={(Dimensions.get("window").width)-30} // from react-native
+    height={250}
+    yAxisLabel=""
+    yAxisSuffix=""
+    yAxisInterval={1} // optional, defaults to 1
+    chartConfig={{
+      backgroundColor: "#e26a00",
+      backgroundGradientFrom: currenttheme.secondary,
+      backgroundGradientTo: currenttheme.primary,
+      decimalPlaces: 0, // optional, defaults to 2dp
+      color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+      labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+      labelFontSize: 3,
+      style: {
+        borderRadius: 16
+      },
+      propsForDots: {
+        r: "6",
+        strokeWidth: "2",
+        stroke: currenttheme.primary,
+      }
+    }}
+    bezier
+    style={{
+      marginVertical: 8,
+      borderRadius: 16
+    }}
+  />
+</View>
+
+          </Center>
+          
+          
+          
+          
+          
+          
+          
           <Center>
             <Text
               style={[
@@ -1361,14 +1494,14 @@ const styles = StyleSheet.create({
   textInH: {
     fontFamily: "Poppins-Bold",
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 12,
     marginTop: 10,
     color: "#a8006e",
   },
 
   textInG: {
     textAlign: "center",
-    fontSize: 13,
+    fontSize: 12,
     marginTop: 10,
     color: "#0a0a0a",
     fontFamily: "Poppins-Bold",
@@ -1405,9 +1538,9 @@ const styles = StyleSheet.create({
 
   textInGFuc: {
     textAlign: "center",
-    fontSize: 10,
+    fontSize: 8,
     color: "#0a0a0a",
-    fontFamily: "Poppins-Regular",
+    fontFamily: "Poppins-Bold",
   },
 
   textTitle: {
@@ -1422,7 +1555,7 @@ const styles = StyleSheet.create({
   textTitle2: {
     fontFamily: "Poppins-Bold",
     textAlign: "left",
-    fontSize: 16,
+    fontSize: 14,
     marginTop: 13,
     marginLeft: 15,
     color: "#a8006e",

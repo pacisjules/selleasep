@@ -228,6 +228,16 @@
     "no": "No",
     "schange": "Cambio de Sistema de Punto de Venta",
     "askchange": "¿Estás seguro de cambiar el punto de venta",
-    "yes":"Si"
+    "yes":"Si",
+    "customer":"Cliente",
+    "status":"Estado",
+    "weekp":"Rendimiento de Ventas Semanal",
+    "monday": "Lunes",
+    "tuesday": "Martes",
+    "wednesday": "Miércoles",
+    "thursday": "Jueves",
+    "friday": "Viernes",
+    "saturday": "Sábado",
+    "sunday": "Domingo"
   }
  

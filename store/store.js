@@ -12,6 +12,7 @@ import getallservices from '../features/getallservices/getallservices';
 import getallexpenses from '../features/getallexpenses/getallexpenses';
 import getalldebts from '../features/gettalldebts/getalldebts';
 import getllincidentals from '../features/getllincidentals/getllincidentals';
+import getallcustomers  from '../features/getallcustomers/getallcustomers';
 export const store = configureStore({
   reducer: {
     changeTotals:My_change_totals,
@@ -26,6 +27,7 @@ export const store = configureStore({
     getallinventory:getallinventory,
     getallservices:getallservices,
     getalldebts:getalldebts,
-    getllincidentals:getllincidentals
+    getllincidentals:getllincidentals,
+    getallcustomers:getallcustomers
   },
 })

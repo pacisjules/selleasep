@@ -228,6 +228,16 @@
    "no": "Hapana",
    "schange": "Badilisha Sehemu ya Mauzo ya Mfumo",
    "askchange": "Una uhakika unataka kubadilisha sehemu ya mauzo",
-   "yes":"Ndiyo"
+   "yes":"Ndiyo",
+   "customer":"Mteja",
+   "status":"Hali",
+   "weekp":"Utendaji wa Uuzaji wa Wiki",
+   "monday": "Jumatatu",
+    "tuesday": "Jumanne",
+    "wednesday": "Jumatano",
+    "thursday": "Alhamisi",
+    "friday": "Ijumaa",
+    "saturday": "Jumamosi",
+    "sunday": "Jumapili"
  }
  

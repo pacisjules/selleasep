@@ -726,7 +726,7 @@ table[class=col] td { text-align: left !important; }
 
 
           <TouchableOpacity
-            onPress={() => navigation.navigate("Inventory")}
+            onPress={() => navigation.navigate("Inventoryreport")}
             style={[
               {
                 marginTop: 10,

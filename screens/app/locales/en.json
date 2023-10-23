@@ -155,6 +155,7 @@
   "incquick":"Incident Quick Actions",
   "incmes":"Here are for Edit or Remove selected incident",
   "incdel":"Are you sure to delete incident",
+  
   "made":"Made by:",
   "invreport":"Inventory in Report",
   "record":"record",
@@ -228,7 +229,17 @@
   "no":"No",
   "schange":"System Change Sales Point",
   "askchange":"Are you sure to change sales point?",
-  "yes":"Yes"
-
-
+  "yes":"Yes",
+  "customer":"Customer",
+  "status":"Status",
+  "weekp":"Weekly Sales Performance",
+  "monday":"Monday",
+  "tuesday":"Tuesday",
+  "wensday":"Wednesday",
+  "thursday":"Thursday",
+  "friday":"Friday",
+  "saturday":"Saturday",
+  "sunday":"Sunday",
+  "barcode_scan":"Barcode Scanner",
+  "scan-bar":"Scanning with Barcode"
 }

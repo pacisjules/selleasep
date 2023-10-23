@@ -23,6 +23,11 @@ import {
   setDataCompanyColors,
   setUserLanguage
 } from "../features/userinfo/userInfos";
+
+import {
+  fetchAllWeekData
+} from "../features/getallsales/getallsales";
+
 import { LinearGradient } from "expo-linear-gradient";
 import { useIsFocused } from "@react-navigation/native";
 import { Center, NativeBaseProvider } from "native-base";
@@ -99,6 +104,8 @@ export default Loading = ({ navigation }) => {
 
         const spt = await AsyncStorage.getItem("salepoint_id");
         dispatch(setDataCurrentSPT(spt));
+        dispatch(fetchAllWeekData(spt));
+
 
         const MyuserID = await AsyncStorage.getItem("user_id");
         dispatch(setDataUserID(MyuserID));

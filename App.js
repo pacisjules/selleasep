@@ -47,6 +47,8 @@ import Getusers from "./screens/app/Getusers";
 import Getsalesbyuser from "./screens/app/Getsalesbyuser";
 import SetSPT from "./screens/app/SetSPT";
 import SetLanguage from "./screens/app/SetLanguage";
+import Customer from "./screens/app/Customer";
+import Inventoryreport from "./screens/app/Inventoryreport";
 
 import * as FileSystem from "expo-file-system";
 import { Center, NativeBaseProvider } from "native-base";
@@ -346,6 +348,25 @@ export default function App() {
               }}
             />
 
+
+            <Stack.Screen
+              name="Customer"
+              component={Customer}
+              title="Customer"
+              options={{
+                headerShown: true,
+              }}
+            />
+            
+            <Stack.Screen
+              name="Inventoryreport"
+              component={Inventoryreport}
+              title="Inventoryreport"
+              options={{
+                headerShown: true,
+              }}
+            />
+
             <Stack.Screen
               name="LoginScreen"
               component={LoginScreen}
@@ -619,6 +640,24 @@ export default function App() {
               title="SetLanguage"
               options={{
                 headerShown: false,
+              }}
+            />
+
+<Stack.Screen
+              name="Customer"
+              component={Customer}
+              title="Customer"
+              options={{
+                headerShown: true,
+              }}
+            />
+
+<Stack.Screen
+              name="Inventoryreport"
+              component={Inventoryreport}
+              title="Inventoryreport"
+              options={{
+                headerShown: true,
               }}
             />
           </Stack.Navigator>

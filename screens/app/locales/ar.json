@@ -228,6 +228,16 @@
     "no": "لا",
     "schange": "تغيير نظام نقطة البيع",
     "askchange": "هل أنت متأكد من تغيير نقطة البيع",
-    "yes":"نعم"
+    "yes":"نعم",
+    "customer":"زبون",
+    "status":"حالة (Hala)",
+    "weekp":"أداء المبيعات الأسبوعي",
+    "monday": "الاثنين (Al-ithnayn)",
+    "tuesday": "الثلاثاء (Al-thulatha)",
+    "wednesday": "الأربعاء (Al-arba'a)",
+    "thursday": "الخميس (Al-khamis)",
+    "friday": "الجمعة (Al-jumu'a)",
+    "saturday": "السبت (As-sabt)",
+    "sunday": "الأحد (Al-ahad)"
   }
   

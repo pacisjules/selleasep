@@ -70,6 +70,10 @@ const Debts = ({ navigation }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [showPickerlbl, setShowPickerlbl] = useState(false);
 
+
+  
+
+
   const [cuser, setcUser] = useState(
     useSelector((state) => state.userInfos.currentUser)
   );
@@ -124,8 +128,6 @@ const Debts = ({ navigation }) => {
   const notificationListener = useRef();
   const responseListener = useRef();
 
-  //For search products
-  const [searchQuery, setSearchQuery] = useState("");
 
   const {t} = useTranslation();
   const changeLng = lng => {
@@ -152,6 +154,12 @@ const Debts = ({ navigation }) => {
     Totaldebts_error,
   } = useSelector((state) => state.getalldebts);
 
+
+  //For search inventory
+  const [searchQuery, setSearchQuery] = useState("");
+  const [fetchedDebts, setFetchedDebts] = useState([useSelector((state) => state.getalldebts.all_debt)]);
+
+
   //Load fonts
   async function loadFonts() {
     await Font.loadAsync({
@@ -166,12 +174,31 @@ const Debts = ({ navigation }) => {
     setFontsLoaded(true);
   }
 
+  // Functions search
+  const searchFilter = (text) => {
+    if (text) {
+      const newData = fetchedDebts.filter((item) => {
+        const itemData = item.person_names ? item.person_names.toUpperCase() : "".toUpperCase();
+
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+
+      setFetchedDebts(newData);
+      setSearchQuery(text);
+    } else {
+      setFetchedDebts(all_debt);
+      setSearchQuery(text);
+    }
+  };
+
   const onRefresh = () => {
     setRefreshing(true);
     dispatch(fetchAlldebtsData(currentSpt));
     dispatch(fetchAlldebtsDataTotals(currentSpt));
+    setFetchedDebts(all_debt);
     
-    // perform your refresh logic here
+    // Perform your refresh logic here
     setRefreshing(false);
   };
 
@@ -191,7 +218,6 @@ const Debts = ({ navigation }) => {
       (montly + 1).toString().padStart(2, "0") +
       "-" +
       date.toString().padStart(2, "0");
-
     setSelectedDueDate(formattedDate);
     setShowPickerlbl(true);
   }
@@ -205,9 +231,14 @@ const Debts = ({ navigation }) => {
     loadFonts();
     dispatch(fetchAlldebtsData(currentSpt));
     dispatch(fetchAlldebtsDataTotals(currentSpt));
+    setFetchedDebts(all_debt);
+
+    //console.log(fetchedDebts);
+    
     if (isFocused) {
       dispatch(fetchAlldebtsData(currentSpt));
       dispatch(fetchAlldebtsDataTotals(currentSpt));
+      setFetchedDebts(all_debt);
     }
 
     registerForPushNotificationsAsync().then((token) =>
@@ -779,10 +810,7 @@ const Debts = ({ navigation }) => {
                   base: "94%",
                   md: "25%",
                 }}
-                onChangeText={(e) => {
-                  setSearchQuery(e);
-                  dispatch(fetchSearchSalesData(currentCompany, currentSpt, e));
-                }}
+                onChangeText={(text)=>searchFilter(text)}
                 value={searchQuery}
                 InputLeftElement={
                   <Icon
@@ -810,11 +838,10 @@ const Debts = ({ navigation }) => {
             style={{
               backgroundColor: "white",
             }}
-            data={all_debt}
+            data={fetchedDebts}
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={()=>{
-                  
                   dispatch(fetchAlldebtsDatain(currentSpt, item.id));
                   navigation.navigate("Viewdebts", {
                     id: item.id,
@@ -832,9 +859,9 @@ const Debts = ({ navigation }) => {
                     currency: "RWF",
                   }).format(item.amount)}
                   expense_name={item.phone}
-                  duetime={formatDate(item.due_date)}
+                  duetime={item.due_date}
                   status={item.status}
-                  //paid={item.paid}
+                
                 />
 
               </TouchableOpacity>
@@ -1181,6 +1208,7 @@ const Debts = ({ navigation }) => {
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
                   <Button.Group space={2}>
+                    
                     {/* <Button
                       variant="unstyled"
                       colorScheme="coolGray"

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
+import { BarCodeScanner } from "expo-barcode-scanner";
 import {
   StyleSheet,
   View,
@@ -35,9 +36,10 @@ import axios from "axios";
 import { useRoute } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
 
-
-import i18next, {languageResources} from './services/i18next';
-import {useTranslation} from 'react-i18next';
+import i18next, { languageResources } from "./services/i18next";
+import { useTranslation } from "react-i18next";
+import { Dimensions } from "react-native";
+import { Camera } from 'expo-camera';
 
 
 
@@ -56,6 +58,8 @@ const ProductView = ({ navigation }) => {
   const [datas, setDatas] = useState([]);
   const [showModal, setShowModal] = useState(false); //showModalSale
   const [showModalSale, setShowModalSale] = useState(false);
+  const [showModalBarcode, setShowModalBarcode] = useState(false);
+
   const [isOpen, setIsOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isInvOpen, setIsInvOpen] = React.useState(false);
@@ -82,20 +86,26 @@ const ProductView = ({ navigation }) => {
     useSelector((state) => state.userInfos.currentCompanyID)
   );
 
-
-  
   const [currentSpt, setcurrentSpt] = useState(
     useSelector((state) => state.userInfos.currentSalesPointID)
   );
 
-  const {t} = useTranslation();
-const changeLng = lng => {
+  const { t } = useTranslation();
+  const changeLng = (lng) => {
     i18next.changeLanguage(lng);
     setVisible(false);
   };
   const route = useRoute();
   const params = route.params;
   const toast = useToast();
+
+  //Barcode
+  const [hasPermission, setHasPermission] = useState(null);
+  const [scanned, setScanned] = useState(false);
+  const [scannedData, setScannedData] = useState("");
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off);
+  const cameraRef = useRef(null);
 
   //Infos
   const [ident, setIdent] = React.useState("");
@@ -108,6 +118,7 @@ const changeLng = lng => {
   const [pro_description, setPro_description] = React.useState("");
   const [notMessage, setNotMessage] = React.useState("");
   const [NewPro_quantity, setNewPro_quantity] = useState(0);
+  const [pro_barcode, setProBarcode] = React.useState("");
 
   //IssalePaid
   //setIssalePaid
@@ -145,6 +156,7 @@ const changeLng = lng => {
     setPro_time(params.time);
     setActive(params.status);
     setPro_description(params.description);
+    setProBarcode(params.barcode);
   };
 
   //Load fonts
@@ -169,6 +181,16 @@ const changeLng = lng => {
   useEffect(() => {
     loadFonts();
     Setparms();
+
+    (async () => {
+      const { status } = await BarCodeScanner.requestPermissionsAsync();
+      setHasPermission(status === "granted");
+    })();
+
+    (async () => {
+      const { status } = await Camera.requestPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
 
     registerForPushNotificationsAsync().then((token) =>
       setExpoPushToken(token)
@@ -253,6 +275,12 @@ const changeLng = lng => {
       ? "wait 1s, vibrate 2s, wait 3s"
       : "wait 1s, vibrate, wait 2s, vibrate, wait 3s";
 
+  const handleBarCodeScanned = ({ type, data }) => {
+    setScanned(true);
+    setScannedData(data);
+  };
+
+
   //Update Command
   const Updateinformation = async () => {
     setEdit(false);
@@ -268,7 +296,7 @@ const changeLng = lng => {
       price: pro_price,
       benefit: pro_benefit,
       description: pro_description,
-      barcode: "Testing",
+      barcode: scannedData,
     };
 
     const config = {
@@ -290,15 +318,17 @@ const changeLng = lng => {
         setShowModal(false);
         Vibration.vibrate();
         setIsLoading(false);
+        setShowModalBarcode(false);
       })
       .catch((error) => {
         setNotMessage(`This product ${pro_name} failed to be Updated`);
         schedulePushNotification();
-        
+
         setEdit(true);
         setShowModal(false);
         Vibration.vibrate();
         setIsLoading(false);
+        setShowModalBarcode(false);
       });
   };
 
@@ -317,7 +347,7 @@ const changeLng = lng => {
       sales_type: 1,
       paid_status: IssalePaid ? "Paid" : "Not Paid",
       sales_point_id: currentSpt,
-      user_id:cuserid
+      user_id: cuserid,
     };
 
     const config = {
@@ -466,18 +496,22 @@ const changeLng = lng => {
         setIsLoading(false);
 
         {
-          pro_quantity === `${t('no-stock')}`
+          pro_quantity === `${t("no-stock")}`
             ? setPro_quantity(parseInt(NewPro_quantity))
             : setPro_quantity(
                 parseInt(pro_quantity) + parseInt(NewPro_quantity)
               );
         }
         {
-          pro_alert === `${t('no-stock')}` ? setPro_alert(5) : setPro_alert(pro_alert);
+          pro_alert === `${t("no-stock")}`
+            ? setPro_alert(5)
+            : setPro_alert(pro_alert);
         }
       })
       .catch((error) => {
-        setNotMessage(`${t('this-product')} ${pro_name} ${t('has-failed-to-add-new-stock')}`);
+        setNotMessage(
+          `${t("this-product")} ${pro_name} ${t("has-failed-to-add-new-stock")}`
+        );
         Vibration.vibrate();
         setIsLoading(false);
         setIsInvOpen(false);
@@ -561,6 +595,30 @@ const changeLng = lng => {
       });
   };
 
+
+  // Toggle flash mode (on/off/auto)
+  const toggleFlashMode = () => {
+    setFlashMode((prevMode) => {
+      if (prevMode === Camera.Constants.FlashMode.off) {
+        return Camera.Constants.FlashMode.on;
+      } else if (prevMode === Camera.Constants.FlashMode.on) {
+        return Camera.Constants.FlashMode.auto;
+      } else {
+        return Camera.Constants.FlashMode.off;
+      }
+    });
+  };
+
+
+
+  if (hasPermission === null) {
+    return <Text>Requesting camera permission</Text>;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
+  
   return (
     <SafeAreaView style={styles.containerer}>
       <NativeBaseProvider>
@@ -682,7 +740,7 @@ const changeLng = lng => {
                             marginTop: 5,
                           }}
                         >
-                          {isActive ? `${t('active')}` : `${t('no-active')}`}
+                          {isActive ? `${t("active")}` : `${t("no-active")}`}
                         </Text>
                       </View>
 
@@ -716,7 +774,7 @@ const changeLng = lng => {
                                 marginLeft: 5,
                               }}
                             >
-                              {t('edit')}
+                              {t("edit")}
                             </Text>
                           </TouchableOpacity>
                         ) : null}
@@ -742,7 +800,7 @@ const changeLng = lng => {
                                 marginLeft: 5,
                               }}
                             >
-                              {t('delete')}
+                              {t("delete")}
                             </Text>
                           </TouchableOpacity>
                         ) : null}
@@ -771,7 +829,7 @@ const changeLng = lng => {
                         marginTop: 10,
                       }}
                     >
-                      {t('price')}
+                      {t("price")}
                     </Text>
                     <Text
                       style={{
@@ -798,7 +856,7 @@ const changeLng = lng => {
                           marginTop: 10,
                         }}
                       >
-                        {t('benefit')}
+                        {t("benefit")}
                       </Text>
                     ) : null}
 
@@ -831,7 +889,7 @@ const changeLng = lng => {
                       marginTop: 10,
                     }}
                   >
-                      {t('description')}
+                    {t("description")}
                   </Text>
                   <Text
                     style={{
@@ -920,7 +978,7 @@ const changeLng = lng => {
                                 marginLeft: 5,
                               }}
                             >
-                               {t('fulfillment')}
+                              {t("fulfillment")}
                             </Text>
                           </TouchableOpacity>
                         ) : null}
@@ -954,7 +1012,7 @@ const changeLng = lng => {
                               marginLeft: 5,
                             }}
                           >
-                            {t('incidental')}
+                            {t("incidental")}
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -982,7 +1040,7 @@ const changeLng = lng => {
                         marginTop: 10,
                       }}
                     >
-                       {t('stock')}
+                      {t("stock")}
                     </Text>
                     <Text
                       style={{
@@ -994,11 +1052,11 @@ const changeLng = lng => {
                       }}
                     >
                       {pro_quantity}{" "}
-                      {pro_quantity === `${t('no-stock')}`
+                      {pro_quantity === `${t("no-stock")}`
                         ? ""
                         : pro_quantity == 1
-                        ? `${t('item')}`
-                        : `${t('items')}`}
+                        ? `${t("item")}`
+                        : `${t("items")}`}
                     </Text>
 
                     <Text
@@ -1011,11 +1069,11 @@ const changeLng = lng => {
                       }}
                     >
                       {pro_alert}{" "}
-                      {pro_alert === `${t('no-stock')}`
+                      {pro_alert === `${t("no-stock")}`
                         ? ""
                         : pro_alert == 1
-                        ? `${t('alert-item')}`
-                        : `${t('alert-items')}`}
+                        ? `${t("alert-item")}`
+                        : `${t("alert-items")}`}
                     </Text>
                   </View>
                 </LinearGradient>
@@ -1023,12 +1081,10 @@ const changeLng = lng => {
                 <TouchableOpacity
                   onPress={() => {
                     isActive
-                      ? pro_quantity === `${t('no-stock')}`
-                        ? alert(`${t('no-Stock-this-product-have')}`)
+                      ? pro_quantity === `${t("no-stock")}`
+                        ? alert(`${t("no-Stock-this-product-have")}`)
                         : setShowModalSale(true)
-                      : alert(
-                        `${t('no-Stock-this-product-have')}`
-                        );
+                      : alert(`${t("no-Stock-this-product-have")}`);
                   }}
                 >
                   <LinearGradient
@@ -1067,64 +1123,63 @@ const changeLng = lng => {
                         fontSize: 15,
                       }}
                     >
-                     {t('sale-new-now')}
+                      {t("sale-new-now")}
                     </Text>
                   </LinearGradient>
                 </TouchableOpacity>
 
                 {isActive ? (
-                  usertype == "BOSS"?
-                  <TouchableOpacity onPress={disableProduct}>
-                    <LinearGradient
-                      colors={["#A70000", "#780000"]}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      angle={-45}
-                      style={{
-                        width: "100%",
-                        borderRadius: 100,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        flexDirection: "row",
-                        marginTop: 17,
-                        height: 55,
-                        shadowColor: "#000000",
-                        shadowOffset: {
-                          width: 0,
-                          height: 2,
-                        },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 3.84,
-                        elevation: 5,
-                      }}
-                    >
-                      <MaterialIcons
-                        name="remove-done"
-                        size={24}
-                        color="white"
-                      />
+                  usertype == "BOSS" ? (
+                    <TouchableOpacity onPress={disableProduct}>
+                      <LinearGradient
+                        colors={["#A70000", "#780000"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        angle={-45}
+                        style={{
+                          width: "100%",
+                          borderRadius: 100,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          flexDirection: "row",
+                          marginTop: 17,
+                          height: 55,
+                          shadowColor: "#000000",
+                          shadowOffset: {
+                            width: 0,
+                            height: 2,
+                          },
+                          shadowOpacity: 0.25,
+                          shadowRadius: 3.84,
+                          elevation: 5,
+                        }}
+                      >
+                        <MaterialIcons
+                          name="remove-done"
+                          size={24}
+                          color="white"
+                        />
 
-                      {isStatusLoading ? (
-                        <ActivityIndicator size="small" color="white" />
-                      ) : (
-                        <Text
-                          style={{
-                            color: "white",
-                            marginLeft: 10,
-                            fontFamily: "Poppins-Bold",
-                            fontSize: 15,
-                          }}
-                        >
-                          {t('disable-product')}
-                        </Text>
-                      )}
-                    </LinearGradient>
-                  </TouchableOpacity>
-                  :""
-
-                ) : (
-
-                  usertype == "BOSS"?
+                        {isStatusLoading ? (
+                          <ActivityIndicator size="small" color="white" />
+                        ) : (
+                          <Text
+                            style={{
+                              color: "white",
+                              marginLeft: 10,
+                              fontFamily: "Poppins-Bold",
+                              fontSize: 15,
+                            }}
+                          >
+                            {t("disable-product")}
+                          </Text>
+                        )}
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  ) : (
+                    ""
+                  )
+                ) : usertype == "BOSS" ? (
                   <TouchableOpacity onPress={enableProduct}>
                     <LinearGradient
                       colors={["#00A700", "#2F7800"]}
@@ -1162,16 +1217,93 @@ const changeLng = lng => {
                             fontSize: 15,
                           }}
                         >
-                          {t('enable-product')}
+                          {t("enable-product")}
                         </Text>
                       )}
                     </LinearGradient>
-                  </TouchableOpacity> :""
+                  </TouchableOpacity>
+                ) : (
+                  ""
                 )}
               </View>
+              {/* <Text
+                          style={{
+                            color: "black",
+                            marginLeft: 10,
+                            fontFamily: "Poppins-Bold",
+                            fontSize: 15,
+                          }}
+                        >
+                          {scannedData}
+                        </Text> */}
+
+
+                    <TouchableOpacity onPress={()=>{
+                      Camera.Constants.FlashMode.on
+                      setShowModalBarcode(true);
+                      }}>
+                    <LinearGradient
+                      colors={["#00A700", "#2F7800"]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      angle={-45}
+                      style={{
+                        width: "100%",
+                        borderRadius: 100,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "row",
+                        marginTop: 17,
+                        height: 55,
+                        shadowColor: "#000000",
+                        shadowOffset: {
+                          width: 0,
+                          height: 2,
+                        },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 3.84,
+                        elevation: 5,
+                      }}
+                    >
+                      <MaterialCommunityIcons name="barcode-scan" size={24} color="white" />
+                      {isStatusLoading ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <Text
+                          style={{
+                            color: "white",
+                            marginLeft: 5,
+                            marginRight: 65,
+                            fontFamily: "Poppins-Bold",
+                            fontSize: 15,
+                          }}
+                        >
+                          {t("scan-bar")}
+                        </Text>
+                      )}
+                    </LinearGradient>
+                  </TouchableOpacity>
+
+              <View>
+              
+              </View>
+
+
+
             </Center>
           </View>
         </ScrollView>
+
+        <View style={{ flex: 1 }}>
+        <Camera
+            style={{ flex: 1 }}
+            type={type}
+            flashMode={flashMode}
+            ref={cameraRef}
+          >
+            {/* Your camera view */}
+        </Camera>
+        </View>
 
         <Center flex={1} px="3">
           <Center>
@@ -1182,10 +1314,12 @@ const changeLng = lng => {
             >
               <Modal.Content maxWidth="600px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>{t('edit')} {pro_name} </Modal.Header>
+                <Modal.Header>
+                  {t("edit")} {pro_name}{" "}
+                </Modal.Header>
                 <Modal.Body>
                   <FormControl>
-                    <FormControl.Label>{t('name')}</FormControl.Label>
+                    <FormControl.Label>{t("name")}</FormControl.Label>
                     <Input
                       value={pro_name}
                       onChangeText={setPro_name}
@@ -1193,7 +1327,7 @@ const changeLng = lng => {
                     />
                   </FormControl>
                   <FormControl mt="3">
-                    <FormControl.Label>{t('price')}</FormControl.Label>
+                    <FormControl.Label>{t("price")}</FormControl.Label>
                     <Input
                       value={pro_price}
                       onChangeText={setPro_price}
@@ -1203,7 +1337,7 @@ const changeLng = lng => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('benefit')}</FormControl.Label>
+                    <FormControl.Label>{t("benefit")}</FormControl.Label>
                     <Input
                       value={pro_benefit}
                       onChangeText={setPro_benefit}
@@ -1213,7 +1347,7 @@ const changeLng = lng => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('description')}</FormControl.Label>
+                    <FormControl.Label>{t("description")}</FormControl.Label>
                     <TextArea
                       h={20}
                       value={pro_description}
@@ -1232,9 +1366,11 @@ const changeLng = lng => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
+                        <Text style={{ color: "gray" }}>
+                          {t("loading-wait")}
+                        </Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
+                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
                       )}
                     </Button>
                     <TouchableOpacity>
@@ -1247,10 +1383,83 @@ const changeLng = lng => {
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>{t('edit&save')}</Text>
+                          <Text style={{ color: "white" }}>
+                            {t("edit&save")}
+                          </Text>
                         )}
                       </Button>
                     </TouchableOpacity>
+                  </Button.Group>
+                </Modal.Footer>
+              </Modal.Content>
+            </Modal>
+
+
+            <Modal
+              isOpen={showModalBarcode}
+              onClose={() => setShowModalBarcode(false)}
+              animationDuration={500}
+            >
+              <Modal.Content width={(Dimensions.get("window").width)-20} height="820px">
+                <Modal.CloseButton />
+                <Modal.Header>
+                  {t("barcode_scan")}
+                </Modal.Header>
+                <Modal.Body>
+
+                <BarCodeScanner
+                  onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+                  style={{ width:300, height: 400 }}
+                  torchMode={true}
+                />
+
+                <Center>
+                  <Text>
+                    {scannedData}
+                  </Text>
+                </Center>
+                  
+                  
+
+                  
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button.Group space={2}>
+                    <Button
+                      variant="ghost"
+                      colorScheme="blueGray"
+                      onPress={() => {
+                       
+                        setShowModalBarcode(false);
+                      }}
+                    >
+                      {isLoading ? (
+                        <Text style={{ color: "gray" }}>
+                          {t("loading-wait")}
+                        </Text>
+                      ) : (
+                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
+                      )}
+                    </Button>
+                    
+                    <TouchableOpacity>
+                      <Button
+                        style={{
+                          backgroundColor: "#68bd00",
+                        }}
+                        onPress={Updateinformation}
+                      >
+                        {isLoading ? (
+                          <ActivityIndicator size="small" color="white" />
+                        ) : (
+                          <Text style={{ color: "white" }}>
+                            {t("edit&save")}
+                          </Text>
+                        )}
+                      </Button>
+                    </TouchableOpacity>
+
+
                   </Button.Group>
                 </Modal.Footer>
               </Modal.Content>
@@ -1263,19 +1472,21 @@ const changeLng = lng => {
             >
               <Modal.Content maxWidth="600px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>{t('sale')} {pro_name}</Modal.Header>
+                <Modal.Header>
+                  {t("sale")} {pro_name}
+                </Modal.Header>
                 <Modal.Body>
                   <FormControl>
-                    <FormControl.Label>{t('name')}</FormControl.Label>
+                    <FormControl.Label>{t("name")}</FormControl.Label>
                     <Text>{pro_name}</Text>
                   </FormControl>
                   <FormControl mt="3">
-                    <FormControl.Label>{t('price')}</FormControl.Label>
+                    <FormControl.Label>{t("price")}</FormControl.Label>
                     <Text>{pro_price}</Text>
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('quantity')}</FormControl.Label>
+                    <FormControl.Label>{t("quantity")}</FormControl.Label>
                     <Input
                       value={pro_quatity}
                       onChangeText={setQuatity}
@@ -1357,9 +1568,11 @@ const changeLng = lng => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
+                        <Text style={{ color: "gray" }}>
+                          {t("loading-wait")}
+                        </Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
+                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
                       )}
                     </Button>
 
@@ -1369,13 +1582,15 @@ const changeLng = lng => {
                           backgroundColor: "red",
                         }}
                         onPress={() => {
-                          alert(`${t('adding')}`);
+                          alert(`${t("adding")}`);
                         }}
                       >
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>{t('apply-now')}</Text>
+                          <Text style={{ color: "white" }}>
+                            {t("apply-now")}
+                          </Text>
                         )}
                       </Button>
                     ) : (
@@ -1389,9 +1604,9 @@ const changeLng = lng => {
                               parseInt(pro_quantity) < parseInt(pro_quatity)
                             ) {
                               alert(
-                                `${t('more-quantity')}`+
+                                `${t("more-quantity")}` +
                                   pro_quantity +
-                                  `${t('items')}`
+                                  `${t("items")}`
                               );
                             } else {
                               Adding_information();
@@ -1401,7 +1616,9 @@ const changeLng = lng => {
                           {isLoading ? (
                             <ActivityIndicator size="small" color="white" />
                           ) : (
-                            <Text style={{ color: "white" }}>{t('apply-now')}</Text>
+                            <Text style={{ color: "white" }}>
+                              {t("apply-now")}
+                            </Text>
                           )}
                         </Button>
                       </TouchableOpacity>
@@ -1418,12 +1635,16 @@ const changeLng = lng => {
             >
               <Modal.Content maxWidth="600px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>{t('stock-of')} {pro_name} </Modal.Header>
+                <Modal.Header>
+                  {t("stock-of")} {pro_name}{" "}
+                </Modal.Header>
                 <Modal.Body>
-                  <Text>{t('product')} {t('name')}: {pro_name}</Text>
+                  <Text>
+                    {t("product")} {t("name")}: {pro_name}
+                  </Text>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('quantity')}</FormControl.Label>
+                    <FormControl.Label>{t("quantity")}</FormControl.Label>
                     <Input
                       value={NewPro_quantity}
                       onChangeText={setNewPro_quantity}
@@ -1442,9 +1663,11 @@ const changeLng = lng => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
+                        <Text style={{ color: "gray" }}>
+                          {t("loading-wait")}
+                        </Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
+                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
                       )}
                     </Button>
                     <TouchableOpacity>
@@ -1457,7 +1680,9 @@ const changeLng = lng => {
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>{t('save-stock')}</Text>
+                          <Text style={{ color: "white" }}>
+                            {t("save-stock")}
+                          </Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -1473,12 +1698,16 @@ const changeLng = lng => {
             >
               <Modal.Content maxWidth="600px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>{t('incidental')} {t('of')}  {pro_name} </Modal.Header>
+                <Modal.Header>
+                  {t("incidental")} {t("of")} {pro_name}{" "}
+                </Modal.Header>
                 <Modal.Body>
-                  <Text>{t('product')} {t('name')}: {pro_name}</Text>
+                  <Text>
+                    {t("product")} {t("name")}: {pro_name}
+                  </Text>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('quantity')}</FormControl.Label>
+                    <FormControl.Label>{t("quantity")}</FormControl.Label>
                     <Input
                       value={IncidentalQty}
                       onChangeText={setIncidentalQty}
@@ -1488,7 +1717,7 @@ const changeLng = lng => {
                   </FormControl>
 
                   <FormControl mt="3">
-                    <FormControl.Label>{t('cause')}</FormControl.Label>
+                    <FormControl.Label>{t("cause")}</FormControl.Label>
                     <TextArea
                       h={20}
                       value={IncidentalCause}
@@ -1507,9 +1736,11 @@ const changeLng = lng => {
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>P{t('loading-wait')}</Text>
+                        <Text style={{ color: "gray" }}>
+                          P{t("loading-wait")}
+                        </Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
+                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
                       )}
                     </Button>
 
@@ -1523,7 +1754,9 @@ const changeLng = lng => {
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>{t('save')} {t('incident')}</Text>
+                          <Text style={{ color: "white" }}>
+                            {t("save")} {t("incident")}
+                          </Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -1539,9 +1772,11 @@ const changeLng = lng => {
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>{t('delete')} </AlertDialog.Header>
+                <AlertDialog.Header>{t("delete")} </AlertDialog.Header>
                 <AlertDialog.Body>
-                  <Text>{t('are-you-sure-to-delete-now')} {pro_name} ?</Text>
+                  <Text>
+                    {t("are-you-sure-to-delete-now")} {pro_name} ?
+                  </Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
                   <Button.Group space={2}>
@@ -1552,16 +1787,18 @@ const changeLng = lng => {
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
+                        <Text style={{ color: "gray" }}>
+                          {t("loading-wait")}
+                        </Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
+                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
                       )}
                     </Button>
                     <Button colorScheme="danger" onPress={deleteProduct}>
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>{t('delete')}</Text>
+                        <Text style={{ color: "white" }}>{t("delete")}</Text>
                       )}
                     </Button>
                   </Button.Group>
@@ -1573,6 +1810,7 @@ const changeLng = lng => {
       </NativeBaseProvider>
     </SafeAreaView>
   );
+                      
 };
 
 const styles = StyleSheet.create({

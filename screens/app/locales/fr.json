@@ -228,5 +228,15 @@
   "no": "Non",
   "schange": "Changer de point de vente du système",
   "askchange": "Êtes-vous sûr de vouloir changer de point de vente",
-  "yes":"Oui"
+  "yes":"Oui",
+  "customer":"Client",
+  "status":"Statut",
+  "weekp":"Performance de ventes hebdomadaires",
+  "monday": "Lundi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi",
+    "thursday": "Jeudi",
+    "friday": "Vendredi",
+    "saturday": "Samedi",
+    "sunday": "Dimanche"
 }

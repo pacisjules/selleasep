@@ -12,6 +12,8 @@ import {
   Entypo,
   FontAwesome5
 } from "@expo/vector-icons";
+
+import { AntDesign } from '@expo/vector-icons'; 
 import * as Font from "expo-font";
 import { useSelector, useDispatch } from "react-redux";
 import i18next, {languageResources} from '..';
@@ -70,7 +72,7 @@ function CustomDrawerContent({ navigation }) {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, marginBottom:50 }}>
       <Swiper autoplay={true} autoplayTimeout={3000}>
         <View
           style={{
@@ -81,7 +83,7 @@ function CustomDrawerContent({ navigation }) {
         >
           <Image
             source={{ uri: C_logo }}
-            style={{ width: "100%", height: 300 }}
+            style={{ width: "100%", height: 200 }}
             resizeMode="cover"
           />
         </View>
@@ -93,7 +95,7 @@ function CustomDrawerContent({ navigation }) {
           }}
         >
           <Image
-            style={{ width: "100%", height: 300 }}
+            style={{ width: "100%", height: 200 }}
             source={require("../assets/go.jpeg")}
             resizeMode="cover"
           />
@@ -106,7 +108,7 @@ function CustomDrawerContent({ navigation }) {
           }}
         >
           <Image
-            style={{ width: "100%", height: 300 }}
+            style={{ width: "100%", height: 200 }}
             source={require("../assets/sellbg.jpg")}
             resizeMode="cover"
           />
@@ -126,7 +128,7 @@ function CustomDrawerContent({ navigation }) {
           source={{ uri: C_logo }}
           style={{ width: 40, height: 40, borderRadius: 20, marginRight: 10 }}
         />
-        <Text style={{ fontSize: 12, fontFamily: "Poppins-SemiBold" }}>
+        <Text style={{ fontSize: 10, fontFamily: "Poppins-SemiBold" }}>
         {`${t('user')}: ${username}\n${t('shop')}: ${company._j}`}
         </Text>
       </TouchableOpacity>
@@ -141,15 +143,38 @@ function CustomDrawerContent({ navigation }) {
         }}
         onPress={() => navigation.navigate("Inventory")}
       >
-        <MaterialIcons name="inventory" size={25} color="#006eff" />
+        <MaterialIcons name="inventory" size={20} color="#00074a" />
         <Text
           style={{
-            fontSize: 14,
+            fontSize: 11,
             marginLeft: 15,
             fontFamily: "Poppins-SemiBold",
           }}
         >
           {t('my-inventory')}
+        </Text>
+      </TouchableOpacity>
+
+
+      <TouchableOpacity
+        style={{
+          width: "100%",
+          padding: 10,
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          alignItems: "center",
+        }}
+        onPress={() => navigation.navigate("Customer")}
+      >
+        <AntDesign name="team" size={20} color="#00074a" />
+        <Text
+          style={{
+            fontSize: 11,
+            marginLeft: 15,
+            fontFamily: "Poppins-SemiBold",
+          }}
+        >
+          {t('customer')}
         </Text>
       </TouchableOpacity>
 
@@ -163,10 +188,10 @@ function CustomDrawerContent({ navigation }) {
         }}
         onPress={() => navigation.navigate("Entry")}
       >
-        <Ionicons name="restaurant-sharp" size={25} color="#e84105" />
+        <Ionicons name="restaurant-sharp" size={20} color="#e84105" />
         <Text
           style={{
-            fontSize: 14,
+            fontSize: 11,
             marginLeft: 15,
             fontFamily: "Poppins-SemiBold",
           }}
@@ -185,10 +210,10 @@ function CustomDrawerContent({ navigation }) {
         }}
         onPress={() => navigation.navigate("Aboutus")}
       >
-        <Entypo name="info-with-circle" size={25} color="#00074a" />
+        <Entypo name="info-with-circle" size={20} color="#00074a" />
         <Text
           style={{
-            fontSize: 14,
+            fontSize: 11,
             marginLeft: 15,
             fontFamily: "Poppins-SemiBold",
           }}
@@ -207,10 +232,10 @@ function CustomDrawerContent({ navigation }) {
         }}
         onPress={() => navigation.navigate("Themechooseb")}
       >
-        <Ionicons name="color-palette" size={25} color="#00074a" />
+        <Ionicons name="color-palette" size={20} color="#00074a" />
         <Text
           style={{
-            fontSize: 14,
+            fontSize: 11,
             marginLeft: 15,
             fontFamily: "Poppins-SemiBold",
           }}
@@ -230,10 +255,10 @@ function CustomDrawerContent({ navigation }) {
           }}
           onPress={() => navigation.navigate("SystemSetting")}
         >
-          <Ionicons name="settings" size={25} color="#00074a" />
+          <Ionicons name="settings" size={20} color="#00074a" />
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 11,
               marginLeft: 15,
               fontFamily: "Poppins-SemiBold",
             }}
@@ -256,10 +281,10 @@ function CustomDrawerContent({ navigation }) {
           }}
           onPress={() => navigation.navigate("Allemployees")}
         >
-          <FontAwesome5 name="user-friends" size={25} color="#00074a" />
+          <FontAwesome5 name="user-friends" size={20} color="#00074a" />
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 11,
               marginLeft: 15,
               fontFamily: "Poppins-SemiBold",
             }}
@@ -287,10 +312,10 @@ function CustomDrawerContent({ navigation }) {
           AsyncStorage.removeItem("salepoint_id");
         }}
       >
-        <FontAwesome name="sign-out" size={25} color="#fc7e00" />
+        <FontAwesome name="sign-out" size={20} color="#fc7e00" />
         <Text
           style={{
-            fontSize: 14,
+            fontSize: 11,
             marginLeft: 15,
             fontFamily: "Poppins-SemiBold",
           }}
@@ -328,7 +353,7 @@ function MyDrawer() {
           },
           headerTitleStyle: {
             color: "white",
-            fontSize: 14,
+            fontSize: 11,
           },
         }}
       />

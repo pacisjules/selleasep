@@ -530,6 +530,7 @@ const Products = ({ navigation }) => {
                     time: timeAgo(item.created_at),
                     status: item.status == 1 ? true : false,
                     description: item.description,
+                    barcode: item.barcode,
                   })
                 }
               >

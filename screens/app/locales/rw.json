@@ -6,7 +6,7 @@
     "sales-functions":"Ubucuruzi",
     "products":"Ibicuruzwa",
     "selling":"Kugurisha",
-    "expenses":"Ayakoreshejwe",
+    "expenses":"Akoreshejwe",
     "debts":"Amadeni",
     "report":"Raporo",
     "current-sales":"Ibiheruka",
@@ -228,7 +228,15 @@
     "no":"Hoya",
     "schange":"System yoguhindura amaduka",
     "askchange":"Urashaka Guhindura iduka?",
-    "yes":"Yego"
-  
-  
+    "yes":"Yego",
+    "customer":"Umukiriya",
+    "status":"Imiterere",
+    "weekp":"Isesengura ry'icyumweru",
+    "monday": "Kuwa 1",
+    "tuesday": "Kuwa 2",
+    "wednesday": "Kuwa 3",
+    "thursday": "Kuwa 4",
+    "friday": "Kuwa 5",
+    "saturday": "Isabato",
+    "sunday": "Kucyumweru"
   }

@@ -60,6 +60,11 @@ import * as Device from "expo-device";
 import i18next, { languageResources } from "./services/i18next";
 import { useTranslation } from "react-i18next";
 
+//PDF
+
+import * as Print from "expo-print";
+import { shareAsync } from "expo-sharing";
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -140,6 +145,7 @@ const Shopping = ({ navigation }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [saveMsg, setSaveMsg] = useState("SAVE SALE");
+  const [printLoad, setPrintLoad] = React.useState(false);
 
   //Infos
   const [ident, setIdent] = useState("");
@@ -187,6 +193,25 @@ const Shopping = ({ navigation }) => {
 
   //For search products
   const [searchQuery, setSearchQuery] = useState("");
+
+  const [company_Logo, setcompany_Logo] = useState(
+    useSelector((state) => state.userInfos.Companylogo)
+  );
+
+  const [company_name, setcompany_name] = useState(
+    useSelector((state) => state.userInfos.currentUserCompany)
+  );
+  const [location_Spt, setLocation_Spt] = useState(
+    useSelector((state) => state.userInfos.SptLocation)
+  );
+
+  const [Usernames, setUsernames] = useState(
+    useSelector((state) => state.userInfos.currentUser)
+  );
+
+  const [company_Color, setcompany_Color] = useState(
+    useSelector((state) => state.userInfos.CompanyColors)
+  );
 
   const handleSwitchToggle = () => {
     setIssalePaid(!IssalePaid);
@@ -531,6 +556,437 @@ const Shopping = ({ navigation }) => {
     </Center>
   );
 
+  //PDF
+
+  const createDynamicTable = () => {
+    let table = "";
+    for (let i = 0; i < CARTs_array.length; i++) {
+      const item = CARTs_array[i];
+      table += `
+        <tr height="35px" >
+        <td style="font-size: 12px;font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: normal;  vertical-align: top; padding: 0 0 7px;" align="left" width="150">${
+          i + 1
+        }. ${item.name}</td>
+        <td style="font-size: 12px;font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: normal;  vertical-align: top; padding: 0 0 7px;" align="left" width="150">${
+          item.qty
+        }</td>
+        <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: normal;  vertical-align: top; padding: 0 0 7px;" align="left" width="100">${new Intl.NumberFormat(
+          "en-US",
+          {
+            style: "currency",
+            currency: "RWF",
+          }
+        ).format(item.price)}</td>
+
+      <td style="font-size: 12px;font-family: 'Open Sans', sans-serif; color: ${
+        IssalePaid ? "green" : "red"
+      }; font-weight: bold;  vertical-align: top; padding: 0 0 7px;" align="left" width="150">${
+        IssalePaid ? "Paid" : "Unpaid"
+      }</td> 
+      
+      
+      <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: normal;  vertical-align: top; padding: 0 0 7px;" align="left" width="100">${new Intl.NumberFormat(
+        "en-US",
+        {
+          style: "currency",
+          currency: "RWF",
+        }
+      ).format(item.total_amount)}</td>
+        </tr>
+
+        <tr height='20px' width="600">
+              <td height="2"  style="border-top:2px solid #e4e4e4; margin-bottom:10px"></td>
+              <td height="2"  style="border-top:2px solid #e4e4e4; margin-bottom:10px"></td>
+              <td height="2"  style="border-top:2px solid #e4e4e4; margin-bottom:10px"></td>
+              <td height="2"  style="border-top:2px solid #e4e4e4; margin-bottom:10px"></td>
+              <td height="2"  style="border-top:2px solid #e4e4e4; margin-bottom:10px"></td>
+              <td height="2"  style="border-top:2px solid #e4e4e4; margin-bottom:10px"></td>
+              
+              </tr>
+      `;
+    }
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title> Order confirmation </title>
+<meta name="robots" content="noindex,nofollow" />
+<meta name="viewport" content="width=device-width; initial-scale=1.0;" />
+
+
+<style type="text/css">
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
+body { margin: 0; padding: 0; background: white; }
+div, p, a, li, td { -webkit-text-size-adjust: none; }
+.ReadMsgBody { width: 100%; background-color: #ffffff; }
+.ExternalClass { width: 100%; background-color: #ffffff; }
+body { width: 100%; height: 100%; background-color: white; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+html { width: 100%; }
+p { padding: 0 !important; margin-top: 0 !important; margin-right: 0 !important; margin-bottom: 0 !important; margin-left: 0 !important; }
+.visibleMobile { display: none; }
+.hiddenMobile { display: block; }
+
+@media only screen and (max-width: 600px) {
+body { width: auto !important; }
+table[class=fullTable] { width: 96% !important; clear: both; }
+table[class=fullPadding] { width: 85% !important; clear: both; }
+table[class=col] { width: 45% !important; }
+.erase { display: none; }
+}
+
+@media only screen and (max-width: 420px) {
+table[class=fullTable] { width: 100% !important; clear: both; }
+table[class=fullPadding] { width: 85% !important; clear: both; }
+table[class=col] { width: 100% !important; clear: both; }
+table[class=col] td { text-align: left !important; }
+.erase { display: none; font-size: 0; max-height: 0; line-height: 0; padding: 0; }
+.visibleMobile { display: block !important; }
+.hiddenMobile { display: none !important; }
+}
+</style>
+
+
+<!-- Header -->
+<table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="white">
+<tr>
+<td height="20"></td>
+</tr>
+<tr>
+<td>
+<table width="800" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="#ffffff" style="border-radius: 10px 10px 0 0;">
+  <tr class="hiddenMobile">
+    <td height="40"></td>
+  </tr>
+  <tr class="visibleMobile">
+    <td height="30"></td>
+  </tr>
+
+  <tr>
+    <td>
+      <table width="600" border="0" cellpadding="0" cellspacing="0" align="center" class="fullPadding">
+        <tbody>
+          <tr>
+            <td>
+              <table width="240" border="0" cellpadding="0" cellspacing="0" align="left" class="col">
+                <tbody>
+                  <tr>
+                    <td align="left"> <img src="${company_Logo}" width="75" height="75" alt="logo" border="0" style="object-fit:cover;" /></td>
+                  </tr>
+                  <tr class="hiddenMobile">
+                    <td height="40"></td>
+                  </tr>
+                  <tr class="visibleMobile">
+                    <td height="20"></td>
+                  </tr>
+                  <tr>
+                    <td style="font-size: 22px; color: #5b5b5b; font-family: 'Open Sans', sans-serif; font-weight:bold;  vertical-align: top; text-align: left;">
+                      ${company_name}
+                    </td>
+                  </tr>
+
+                  <tr>
+                <td height="1" colspan="4" style="border-bottom:1px solid #e4e4e4"></td>
+              </tr>
+
+                  <tr>
+                      <td style="padding-top:20px; font-size: 18px; color: #5b5b5b; font-family: 'Open Sans', sans-serif;   vertical-align: top; text-align: left;">
+                      ${t("manager")}, ${Usernames}
+                    </td>
+                      </tr>
+
+                      <tr>
+                      <td style="font-size: 12px; color: ${company_Color}; font-family: 'Open Sans', sans-serif;   vertical-align: top; text-align: left;">
+                      ${location_Spt} ${t("spt")}
+                    </td>
+                      </tr>
+                </tbody>
+              </table>
+              <table width="220" border="0" cellpadding="0" cellspacing="0" align="right" class="col">
+                <tbody>
+                  <tr class="visibleMobile">
+                    <td height="20"></td>
+                  </tr>
+                  <tr>
+                    <td height="5"></td>
+                  </tr>
+                  <tr>
+                    <td style="font-size: 26px; color: ${company_Color}; letter-spacing: 1px; font-family: 'Open Sans', sans-serif; font-weight:bold;  vertical-align: top; text-align: right;">
+                    CUSTOMER RECEIPT
+                    </td>
+                  </tr>
+                  <tr>
+                  <tr class="hiddenMobile">
+                    <td height="50"></td>
+                  </tr>
+                  <tr class="visibleMobile">
+                    <td height="20"></td>
+                  </tr>
+                  <tr>
+                    <td style="font-size: 16px; color: #5b5b5b; font-family: 'Open Sans', sans-serif; line-height: 18px; vertical-align: top; text-align: right;">
+                      <small>${new Date()}</small>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+</table>
+</td>
+</tr>
+</table>
+<!-- /Header -->
+<!-- Order Details -->
+<table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="white" >
+<tbody>
+<tr>
+<td>
+  <table width="800" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="#ffffff">
+    <tbody>
+      <tr>
+      <tr class="hiddenMobile">
+        <td height="60"></td>
+      </tr>
+      <tr class="visibleMobile">
+        <td height="40"></td>
+      </tr>
+      <tr>
+        <td>
+          <table width="600" border="0" cellpadding="0" cellspacing="0" align="center" class="fullPadding">
+            <tbody>
+              <tr>
+                <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 10px 7px 0;" align="left" width="150">
+                ${t("item")}
+                </th>
+              <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="100">
+                ${t("quantity")}
+              </th>
+
+               
+
+                <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="100">
+                 ${t("price")}
+                </th> 
+                
+                <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="150">
+                ${t("paidst")}
+                </th>
+
+                <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="right" width="100">
+                ${t("total")}
+                </th>
+              </tr>
+              <tr height='20px' width="600">
+              <td height="2"  style="border-top:2px solid #e4e4e4; margin-bottom:10px"></td>
+              <td height="2"  style="border-top:2px solid #e4e4e4; margin-bottom:10px"></td>
+              <td height="2"  style="border-top:2px solid #e4e4e4; margin-bottom:10px"></td>
+              <td height="2"  style="border-top:2px solid #e4e4e4; margin-bottom:10px"></td>
+              <td height="2"  style="border-top:2px solid #e4e4e4; margin-bottom:10px"></td>
+              <td height="2"  style="border-top:2px solid #e4e4e4; margin-bottom:10px"></td>
+       
+              </tr>
+              
+              ${table}
+              
+              
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td height="20"></td>
+      </tr>
+    </tbody>
+  </table>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- /Order Details -->
+<!-- Total -->
+<table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="white">
+<tbody>
+<tr>
+<td>
+  <table width="800" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="#ffffff">
+    <tbody>
+      <tr>
+        <td>
+
+          <!-- Table Total -->
+          <table width="600" border="0" cellpadding="0" cellspacing="0" align="center" class="fullPadding">
+            <tbody>
+
+            <!-- 
+              
+            <tr>
+                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #646a6e; line-height: 22px; vertical-align: top; text-align:right; ">
+                  
+                </td>
+                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #646a6e; line-height: 22px; vertical-align: top; text-align:right; white-space:nowrap;" width="80">
+                 
+                </td>
+              </tr>
+              -->
+    </strong>
+                </td>
+                
+              </tr>
+
+              
+              <tr>
+                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
+                </td>
+                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
+                  <strong>${t("total")} ${t(
+      "amount"
+    )}:  ${new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "RWF",
+    }).format(
+      CARTs_array.reduce((sum, obj) => sum + parseInt(obj.total_amount), 0)
+    )}</strong>
+                </td>
+              </tr>
+
+              
+            </tbody>
+          </table>
+          <!-- /Table Total -->
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- /Total -->
+
+<table width="800" border="0" cellpadding="0" cellspacing="0" align="center" class="fullPadding" bgcolor="white">
+            <tbody>
+              <tr>
+                <td>
+<table width="220" border="0" cellpadding="0" cellspacing="0" align="left" class="col" style="margin-left:100px; margin-top:50px;">
+                    <tbody>
+                      <tr class="visibleMobile">
+                        <td height="20"></td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 11px; font-family: 'Open Sans', sans-serif; color: #5b5b5b; line-height: 1; vertical-align: top; ">
+                          <strong>${t("manager")} ${t(
+      "name"
+    )}: ${Usernames}</strong>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="100%" height="20"></td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 11px; font-family: 'Open Sans', sans-serif; font-weight:100; color: #5b5b5b; line-height: 1; vertical-align: top; ">
+                          <strong>${t("stamp")}</strong>
+                        </td>
+                      </tr>
+
+                      <tr height='20px'>
+              <td height="1" colspan="4" style="border-bottom:1px solid #e4e4e4; margin-bottom:10px"></td>
+              </tr>
+                      <tr>
+                        <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #5b5b5b; line-height: 20px; vertical-align: top; ">
+                          <br/>
+                          <br/>
+                          <br/>
+
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table></td></tr></tbody></table>
+
+
+
+
+<!-- Information -->
+<table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="white">
+<tbody>
+<tr>
+<td>
+  <table width="800" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="#ffffff">
+    <tbody>
+      <tr class="visibleMobile">
+        <td height="30">
+      </td>
+      </tr>
+    </tbody>
+  </table>
+</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+<!-- /Information -->
+<table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="white">
+
+<tr>
+<td>
+<table width="800" border="0" cellpadding="0" cellspacing="0" align="center" class="fullTable" bgcolor="#ffffff" style="border-radius: 0 0 10px 10px;">
+  <tr>
+    <td>
+      <table width="600" border="0" cellpadding="0" cellspacing="0" align="center" class="fullPadding">
+        <tbody>
+          <tr>
+            <td style="font-size: 12px; color: #5b5b5b; font-family: 'Open Sans', sans-serif; line-height: 18px; vertical-align: top; text-align: left;">
+      
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  <tr class="spacer">
+    <td height="50"></td>
+  </tr>
+
+</table>
+</td>
+</tr>
+<tr>
+<td height="20"></td>
+</tr>
+</table>
+      </html>
+    `;
+
+    return html;
+  };
+
+  const printToFile = async () => {
+    setPrintLoad(true);
+
+    // On iOS/android prints the given html. On web prints the HTML from the current page.
+    const { uri } = await Print.printToFileAsync({
+      html: createDynamicTable(),
+    });
+
+    console.log("File has been saved to:", uri);
+
+    await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
+
+    setPrintLoad(false);
+  };
+
   //Adding Command
   const Adding_information = async () => {
     setModalVisible3(false);
@@ -619,6 +1075,26 @@ const Shopping = ({ navigation }) => {
               setSaveMsg("SAVE SALE");
             },
           },
+
+          {
+            text: "Receipt",
+            onPress: async () => {
+              // On iOS/android prints the given html. On web prints the HTML from the current page.
+              const { uri } = await Print.printToFileAsync({
+                html: createDynamicTable(),
+              });
+
+              console.log("File has been saved to:", uri);
+
+              await shareAsync(uri, {
+                UTI: ".pdf",
+                mimeType: "application/pdf",
+              });
+
+              setSaveMsg("SAVE SALE");
+              dispatch(clearCart());
+            },
+          },
           {
             text: "Cancel",
             onPress: () => {
@@ -668,7 +1144,7 @@ const Shopping = ({ navigation }) => {
         config
       )
       .then((response) => {
-        //console.log(response); 
+        //console.log(response);
         dispatch(fetchAllCustomersData(currentSpt));
         setFetchedCustomers(all_customers);
         schedulePushNotification();
@@ -676,7 +1152,7 @@ const Shopping = ({ navigation }) => {
         setShowModal(false);
         Vibration.vibrate();
         setIsLoading(false);
-       
+
         setModalVisible3(true);
         setModalVisible5(false);
         setCust_Names("");
@@ -2010,7 +2486,7 @@ const Shopping = ({ navigation }) => {
                     </FormControl>
 
                     <FormControl>
-                    {" "}
+                      {" "}
                       <Input
                         w={{
                           base: "94%",

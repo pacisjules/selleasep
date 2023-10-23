@@ -21,6 +21,7 @@ const initialState = {
   CompanyColors:null,
   currentWebUrl:"https://www.selleasep.shop/",
   UserLanguage:null,
+
 };
 
 export const userInfos = createSlice({
@@ -104,6 +105,8 @@ export const userInfos = createSlice({
       state.error = action.payload;
     },
 
+
+
   },
 });
 
@@ -122,7 +125,8 @@ export const {
   setDataSptLocation,
   setDataCompanyLogo,
   setDataCompanyColors,
-  setUserLanguage
+  setUserLanguage,
+ 
 
 } = userInfos.actions;
 

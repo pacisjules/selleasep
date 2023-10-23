@@ -902,15 +902,74 @@ table[class=col] td { text-align: left !important; }
               
               <tr>
                 <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
+                </td>
+                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
+                  <strong>${t("total")} ${t("paid")} ${t(
+      "amount"
+    )}:  ${new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "RWF",
+    }).format(
+      all_sales
+        .filter((obj) => obj.paid_status === "Paid")
+        .reduce((sum, obj) => sum + parseInt(obj.Total), 0)
+    )}</strong>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
                   
                 </td>
                 <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
-                  <strong>Total Amount:  ${new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "RWF",
-                  }).format(
-                    all_sales.reduce((sum, obj) => sum + parseInt(obj.Total), 0)
-                  )}</strong>
+                  <strong>${t("total")} ${t("no-paid")} ${t(
+      "amount"
+    )}:  ${new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "RWF",
+    }).format(
+      all_sales
+        .filter((obj) => obj.paid_status === "Not Paid")
+        .reduce((sum, obj) => sum + parseInt(obj.Total), 0)
+    )}
+    ${`\n`}
+    <br/>
+    ---------------------------------------------------------
+    <br/><br/>
+    </strong>
+                </td>
+                
+              </tr>
+
+              
+              <tr>
+                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
+                </td>
+                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
+                  <strong>${t("total")} ${t(
+      "amount"
+    )}:  ${new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "RWF",
+    }).format(
+      all_sales.reduce((sum, obj) => sum + parseInt(obj.Total), 0)
+    )}</strong>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
+                  
+                </td>
+                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
+                  <strong>${t("total")} ${t("benefit")} ${t(
+      "amount"
+    )}:  ${new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "RWF",
+    }).format(
+      all_sales.reduce((sum, obj) => sum + parseInt(obj.benefit), 0)
+    )}</strong>
                 </td>
               </tr>
               

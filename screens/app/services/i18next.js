@@ -8,6 +8,7 @@ import pt from '../locales/pt.json';
 import ar from '../locales/ar.json';
 import rw from '../locales/rw.json';
 import es from '../locales/es.json';
+import hi from '../locales/hi.json';
 
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
@@ -20,7 +21,7 @@ export const languageResources = {
   ar: { translation: ar },
   rw: { translation: rw},
   es: { translation: es},
-
+  hi: { translation: hi},
 };
 
 async function initI18n() {

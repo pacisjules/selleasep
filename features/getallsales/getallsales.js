@@ -41,6 +41,11 @@ const initialState = {
   CARTs_array:[],
   CARTError:null,
 
+
+  WEEKDATALoad:null,
+  WEEKDATA_array:[],
+  WEEKDATAError:null,
+
 };
 
 export const getallsales = createSlice({
@@ -242,7 +247,6 @@ export const getallsales = createSlice({
 
 
     //Employees
-
     set_EmpLoad(state, action) {
       state.EmpLoad = true;
       state.EmpError = null;
@@ -256,6 +260,24 @@ export const getallsales = createSlice({
     set_EmpFailed(state, action) {
       state.EmpLoad = false;
       state.EmpError = action.payload;
+    },
+
+
+
+    //wEEK DATA
+    set_WEEKDATALoad(state, action) {
+      state.WEEKDATALoad = true;
+      state.WEEKDATAError = null;
+    },
+
+    set_WEEKDATASuccess(state, action) {
+      state.WEEKDATALoad = false;
+      state.WEEKDATA_array = action.payload;
+    },
+
+    set_WEEKDATAFailed(state, action) {
+      state.WEEKDATALoad = false;
+      state.WEEKDATAError = action.payload;
     },
 
 
@@ -298,7 +320,10 @@ export const {
   removeCartItem,
   increaseCartItem,
   decreaseCartItem,
-  clearCart
+  clearCart,
+  set_WEEKDATALoad,
+  set_WEEKDATASuccess,
+  set_WEEKDATAFailed
 
 } = getallsales.actions;
 
@@ -332,6 +357,28 @@ export const fetchAllSalesData = (currentCompany,currentSpt) => async (dispatch)
     dispatch(set_allsaleDataSuccess(response.data));
   } catch (error) {
     dispatch(set_allsalesDataFailure(error.message));
+  }
+};
+
+
+
+//Fetching week data
+export const fetchAllWeekData = (currentSpt) => async (dispatch) => {
+  dispatch(set_WEEKDATALoad());
+ 
+  try {
+    const response = await axios.get(
+      "https://www.selleasep.shop/functions/sales/weekperformance.php/performance",
+      {
+        params: {
+          spt:currentSpt
+        },
+      }
+    );
+    dispatch(set_WEEKDATASuccess(response.data));
+    
+  } catch (error) {
+    dispatch(set_WEEKDATAFailed(error.message));
   }
 };
 

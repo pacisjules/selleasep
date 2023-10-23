@@ -229,5 +229,15 @@
   "no": "Nej",
   "schange": "System Ändra Försäljningspunkt",
   "askchange": "Är du säker på att du vill ändra försäljningspunkten",
-  "yes":"ja"
+  "yes":"ja",
+  "customer":"Kund",
+  "status":"Status",
+  "weekp":"Veckovis Försäljningsprestation",
+  "monday": "Måndag",
+    "tuesday": "Tisdag",
+    "wednesday": "Onsdag",
+    "thursday": "Torsdag",
+    "friday": "Fredag",
+    "saturday": "Lördag",
+    "sunday": "Söndag"
 }

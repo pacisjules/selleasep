@@ -13,14 +13,9 @@ import {
   Platform,
   Vibration,
   ActivityIndicator,
-  //Modal,
 } from "react-native";
 import * as Font from "expo-font";
 import {
-  MaterialCommunityIcons,
-  AntDesign,
-  MaterialIcons,
-  FontAwesome,
   Ionicons,
   Entypo,
 } from "@expo/vector-icons";
@@ -47,14 +42,19 @@ import { useSelector, useDispatch } from "react-redux";
 
 import {
   fetchAllYesterdaySalesData,
-  fetchSearchYesterdaySalesData,
   fetchYesterdaytotals,
 } from "../../features/getallsales/getallsales";
 
+
+import {
+    fetchAllInventoryData,
+    fetchSearchInventoryData,
+  } from "../../features/getallinventory/getallinventory";
+
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
-import i18next, { languageResources } from "./services/i18next";
-import { useTranslation } from "react-i18next";
+import i18next, {languageResources} from './services/i18next';
+import {useTranslation} from 'react-i18next';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -64,7 +64,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const Yesterday = ({ navigation }) => {
+const Inventoryreport = ({ navigation }) => {
   const dispatch = useDispatch();
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
@@ -84,6 +84,8 @@ const Yesterday = ({ navigation }) => {
   const [currentusertype, setcurrentUsertype] = useState(
     useSelector((state) => state.userInfos.currentUserType)
   );
+
+
 
   //Normal
   const [refreshing, setRefreshing] = useState(false);
@@ -114,15 +116,13 @@ const Yesterday = ({ navigation }) => {
   const responseListener = useRef();
 
   //For search products
-  const [searchQuery, setSearchQuery] = useState("");
-  const { t } = useTranslation();
-  const changeLng = (lng) => {
-    i18next.changeLanguage(lng);
-    setVisible(false);
-  };
-
+  const {t} = useTranslation();
+  const changeLng = lng => {
+      i18next.changeLanguage(lng);
+      setVisible(false);
+    };
+  
   //Sales Data
-
   const { all_sale_error, all_sales, all_sales_isLoading } = useSelector(
     (state) => state.all_sales
   );
@@ -147,9 +147,39 @@ const Yesterday = ({ navigation }) => {
     useSelector((state) => state.userInfos.Companylogo)
   );
 
+
   const [location_Spt, setLocation_Spt] = useState(
     useSelector((state) => state.userInfos.SptLocation)
   );
+
+  //Get All inventory from redux array
+  const { all_inventory_error, all_inventory, all_inventory_isLoading } =
+    useSelector((state) => state.getallinventory);  
+
+  //For search inventory
+  const [searchQuery, setSearchQuery] = useState("");
+  const [fetchedInventory, setFetchedInventory] = useState([useSelector((state) => state.getallinventory.all_inventory)]);
+  
+
+
+  //Functions search
+  const searchFilter = (text) => {
+    if (text) {
+      const newData = fetchedInventory.filter((item) => {
+        const itemData = item.name ? item.name.toUpperCase() : "".toUpperCase();
+
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setFetchedInventory(newData);
+      setSearchQuery(text);
+    } else {
+      setFetchedInventory(all_inventory);
+      setSearchQuery(text);
+    }
+  };
+
+
 
   //Load fonts
   async function loadFonts() {
@@ -161,7 +191,6 @@ const Yesterday = ({ navigation }) => {
       "Poppins-Regular": require("../../assets/fonts/Poppins-Regular.ttf"),
       "Poppins-SemiBold": require("../../assets/fonts/Poppins-SemiBold.ttf"),
     });
-
     setFontsLoaded(true);
   }
 
@@ -175,11 +204,10 @@ const Yesterday = ({ navigation }) => {
 
   useEffect(() => {
     loadFonts();
-    dispatch(fetchAllYesterdaySalesData(currentCompany, currentSpt));
-    dispatch(fetchYesterdaytotals(currentSpt));
+    dispatch(fetchAllInventoryData(currentCompany, currentSpt));
+    setFetchedInventory(all_inventory);
     if (isFocused) {
-      dispatch(fetchAllYesterdaySalesData(currentCompany, currentSpt));
-      dispatch(fetchYesterdaytotals(currentSpt));
+      dispatch(fetchAllInventoryData(currentCompany, currentSpt));
     }
 
     registerForPushNotificationsAsync().then((token) =>
@@ -209,7 +237,7 @@ const Yesterday = ({ navigation }) => {
   async function schedulePushNotification() {
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: `Shami Boutique sales system`,
+        title: `Selleasep sales system`,
         body: `You've add new product ${pro_name}`,
         data: { data: "goes here" },
       },
@@ -268,90 +296,74 @@ const Yesterday = ({ navigation }) => {
       ? "wait 1s, vibrate 2s, wait 3s"
       : "wait 1s, vibrate, wait 2s, vibrate, wait 3s";
 
-  const Item = ({
-    name,
-    id,
-    price,
-    quantity,
-    total,
-    time,
-    remainqty,
-    sid,
-    benefit,
-  }) => (
-    <Center px="1">
-      <View
-        style={[
-          styles.item,
-          {
-            borderColor: currenttheme.secondary,
-            borderStyle: "solid",
-            borderWidth: 2,
-          },
-        ]}
-      >
-        <View
-          style={{
-            width: "70%",
-            padding: 6,
-            borderRadius: 5,
-            backgroundColor: currenttheme.secondary,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 11,
-              color: "white",
-              fontFamily: "Poppins-Bold",
-            }}
+      const Item = ({
+        name,
+        Current_quantity,
+        alert_quantity,
+        last_updated,
+      }) => (
+        <Center px="1">
+          <View
+            style={[
+              styles.item,
+              {
+                borderColor: currenttheme.secondary,
+                borderStyle: "solid",
+                borderWidth: 1,
+              },
+            ]}
           >
-            {name}
-          </Text>
-
-          <Text
-            style={{
-              color: "white",
-              fontSize: 10,
-              fontFamily: "Poppins-Regular",
-            }}
-          >
-            {t("quantity")}: {quantity}
-            {"   "}
-            {t("remain")}:{remainqty} {"   "}{" "}
-          </Text>
-
-          <Text
-            style={{
-              color: "white",
-              fontSize: currentusertype == "BOSS" ? 10 : 0,
-              fontFamily: "Poppins-Regular",
-            }}
-          >
-            {currentusertype == "BOSS" ? "Benefit: " + benefit : ""}
-          </Text>
-        </View>
-
-        <View
-          style={{
-            width: "30%",
-            flexDirection: "column",
-          }}
-        >
-          <Text style={styles.title2}> {price}</Text>
-          <Text
-            style={{
-              fontSize: 10,
-              color: currenttheme.normal,
-              textAlign: "right",
-              fontFamily: "Poppins-Bold",
-            }}
-          >
-            {time}
-          </Text>
-        </View>
-      </View>
-    </Center>
-  );
+            <View
+              style={{
+                width: "70%",
+                padding: 6,
+                borderRadius: 5,
+                backgroundColor: currenttheme.secondary,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 11,
+                  color: "white",
+                  fontFamily: "Poppins-Bold",
+                }}
+              >
+                {name}
+              </Text>
+    
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 10,
+                  fontFamily: "Poppins-Regular",
+                }}
+              >
+                {t('status')}: {(status = 1 ? `${t('active')}` : `${t('no-active')}`)} {"  "}
+                {t('alert')}: {alert_quantity}
+              </Text>
+            </View>
+    
+            <View
+              style={{
+                width: "30%",
+                flexDirection: "column",
+              }}
+            >
+              <Text style={styles.title2}> {Current_quantity} Qty</Text>
+              <Text
+                style={{
+                  fontSize: 9,
+                  color: currenttheme.normal,
+                  textAlign: "right",
+                  fontFamily: "Poppins-Normal",
+                }}
+              >
+                {last_updated}
+              </Text>
+            </View>
+          </View>
+        </Center>
+      );
 
   const deleteSales = async () => {
     setEdit(false);
@@ -449,13 +461,13 @@ const Yesterday = ({ navigation }) => {
     const diffDays = Math.round(diffHours / 24);
 
     if (diffSeconds < 60) {
-      return `${diffSeconds} ${t("secago")}`;
+      return `${diffSeconds} ${t('secago')}`;
     } else if (diffMinutes < 60) {
-      return `${diffMinutes} ${t("minago")}`;
+      return `${diffMinutes} ${t('minago')}`;
     } else if (diffHours < 24) {
-      return `${diffHours} ${t("hago")}`;
+      return `${diffHours} ${t('hago')}`;
     } else {
-      return `${diffDays} ${t("dayago")}`;
+      return `${diffDays} ${t('dayago')}`;
     }
   }
 
@@ -526,43 +538,28 @@ const Yesterday = ({ navigation }) => {
 
   const createDynamicTable = () => {
     let table = "";
-    for (let i = 0; i < all_sales.length; i++) {
-      const item = all_sales[i];
+    for (let i = 0; i < all_inventory.length; i++) {
+      const item = all_inventory[i];
       table += `
         <tr height="35px" >
-        <td style="font-size: 12px;font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: normal;  vertical-align: top; padding: 0 0 7px;" align="left" width="150">${
-          i + 1
-        }. ${item.name}</td>
-        <td style="font-size: 12px;font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: normal;  vertical-align: top; padding: 0 0 7px;" align="left" width="150">${
-          item.quantity
+        <td style="font-size: 12px;font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: normal;  vertical-align: top; padding: 0 0 7px;" align="left" width="150">${i+1}. ${
+          item.name
         }</td>
-        <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: normal;  vertical-align: top; padding: 0 0 7px;" align="left" width="100">${new Intl.NumberFormat(
-          "en-US",
-          {
-            style: "currency",
-            currency: "RWF",
-          }
-        ).format(item.price)}</td>
+        <td style="font-size: 12px;font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: normal;  vertical-align: top; padding: 0 0 7px;" align="left" width="150">${
+          item.Current_quantity
+        }</td>
+        <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: normal;  vertical-align: top; padding: 0 0 7px;" align="left" width="100">${item.alert_quantity}</td>
 
        
         
           <td style="font-size: 12px;font-family: 'Open Sans', sans-serif; color: ${
-            item.paid_status == "Paid" ? "green" : "red"
-          }; font-weight: bold;  vertical-align: top; padding: 0 0 7px;" align="left" width="150">${
-        item.paid_status
-      }</td> 
+            item.status = 1 ? "green" : "red"
+          }; font-weight: bold;  vertical-align: top; padding: 0 0 7px;" align="left" width="150">
+          ${item.status = 1 ? "✔️ Active" : "❌ Inactive"}</td> 
       
       <td style="font-size: 9px; font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: bold;  vertical-align: top; padding: 0 0 7px;" align="right" width="150">${formatDateTime(
-        item.Sales_time
-      )}</td>
-          
-            <td style="font-size: 12px;font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: normal;  vertical-align: top; padding: 0 0 7px;" align="right" width="150">${new Intl.NumberFormat(
-              "en-US",
-              {
-                style: "currency",
-                currency: "RWF",
-              }
-            ).format(item.Total)}</td>
+          item.last_updated
+        )}</td>
         </tr>
 
         <tr height='20px' width="600">
@@ -684,7 +681,7 @@ table[class=col] td { text-align: left !important; }
                   </tr>
                   <tr>
                     <td style="font-size: 26px; color: ${company_Color}; letter-spacing: 1px; font-family: 'Open Sans', sans-serif; font-weight:bold;  vertical-align: top; text-align: right;">
-                    ${t("yest")}.
+                    ${t("remain-in-stock")}.
                     </td>
                   </tr>
                   <tr>
@@ -732,7 +729,7 @@ table[class=col] td { text-align: left !important; }
             <tbody>
               <tr>
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 10px 7px 0;" align="left" width="150">
-                ${t("item")}
+                ${t("product")}
                 </th>
               <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="100">
                 ${t("quantity")}
@@ -741,19 +738,15 @@ table[class=col] td { text-align: left !important; }
                
 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="100">
-                 ${t("price")}
+                 ${t("alertinv")}
                 </th> 
                 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="left" width="150">
-                ${t("paidst")}
+                ${t("status")}
                 </th>
 
                 <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="right" width="150">
                 ${t("time")}
-                </th>
-
-                <th style="font-size: 16px; font-family: 'Open Sans', sans-serif; color: ${company_Color}; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;" align="right" width="100">
-                ${t("total")}
                 </th>
               </tr>
               <tr height='20px' width="600">
@@ -808,79 +801,18 @@ table[class=col] td { text-align: left !important; }
                 </td>
               </tr>
               -->
-
-              <tr>
-                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
-                </td>
-                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
-                  <strong>${t("total")} ${t("paid")} ${t(
-      "amount"
-    )}:  ${new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "RWF",
-    }).format(
-      all_sales
-        .filter((obj) => obj.paid_status === "Paid")
-        .reduce((sum, obj) => sum + parseInt(obj.Total), 0)
-    )}</strong>
-                </td>
-              </tr>
-
-              <tr>
-                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
-                  
-                </td>
-                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
-                  <strong>${t("total")} ${t("no-paid")} ${t(
-      "amount"
-    )}:  ${new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "RWF",
-    }).format(
-      all_sales
-        .filter((obj) => obj.paid_status === "Not Paid")
-        .reduce((sum, obj) => sum + parseInt(obj.Total), 0)
-    )}
-    ${`\n`}
-    <br/>
-    ---------------------------------------------------------
-    <br/><br/>
-    </strong>
-                </td>
-                
-              </tr>
-
               
               <tr>
                 <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
-                </td>
-                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
-                  <strong>${t("total")} ${t(
-      "amount"
-    )}:  ${new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "RWF",
-    }).format(
-      all_sales.reduce((sum, obj) => sum + parseInt(obj.Total), 0)
-    )}</strong>
-                </td>
-              </tr>
-
-              <tr>
-                <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
                   
                 </td>
                 <td style="font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 22px; vertical-align: top; text-align:right; ">
-                  <strong>${t("total")} ${t("benefit")} ${t(
-      "amount"
-    )}:  ${new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "RWF",
-    }).format(
-      all_sales.reduce((sum, obj) => sum + parseInt(obj.benefit), 0)
-    )}</strong>
+                  <strong>${t("total")} ${t("items")}:  ${
+      all_inventory.length
+    }</strong>
                 </td>
               </tr>
+              
             </tbody>
           </table>
           <!-- /Table Total -->
@@ -912,7 +844,7 @@ table[class=col] td { text-align: left !important; }
                         </td>
                       </tr>
                       <tr>
-                        <td width="100%" height="20"></td>
+                        <td width="100%" height="40"></td>
                       </tr>
                       <tr>
                         <td style="font-size: 11px; font-family: 'Open Sans', sans-serif; font-weight:100; color: #5b5b5b; line-height: 1; vertical-align: top; ">
@@ -1006,10 +938,11 @@ table[class=col] td { text-align: left !important; }
       html: createDynamicTable(),
     });
 
+    
     console.log("File has been saved to:", uri);
-
+    
     await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
-
+    
     setPrintLoad(false);
   };
 
@@ -1028,62 +961,6 @@ table[class=col] td { text-align: left !important; }
               hidden={false} // Show the status bar
             />
 
-            <View
-              style={{
-                backgroundColor: "white",
-                height: currentusertype == "BOSS" ? 60 : 26,
-                width: "100%",
-              }}
-            >
-              {daysTotalsload ? (
-                <ActivityIndicator size="small" color="#a8006e" />
-              ) : (
-                all_DayTotals.map((post) => (
-                  <Text
-                    key="1"
-                    style={{
-                      textAlign: "center",
-                      fontSize: 18,
-                      marginLeft: 5,
-                      color: "black",
-                      fontFamily: "Poppins-Bold",
-                    }}
-                  >
-                    {t("total")} {t("sales")}:{" "}
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "RWF",
-                    }).format(post.Totat_sales_Amount)}
-                  </Text>
-                ))
-              )}
-
-              {daysTotalsload ? (
-                <ActivityIndicator size="small" color="#a8006e" />
-              ) : currentusertype == "BOSS" ? (
-                all_DayTotals.map((post) => (
-                  <Text
-                    key="1"
-                    style={{
-                      textAlign: "center",
-                      fontSize: currentusertype == "BOSS" ? 18 : 0,
-                      marginLeft: 5,
-                      color: "black",
-                      fontFamily: "Poppins-Bold",
-                    }}
-                  >
-                    {t("benefit")}:{" "}
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "RWF",
-                    }).format(post.Totat_sales_Benefits)}
-                  </Text>
-                ))
-              ) : (
-                ""
-              )}
-            </View>
-
             <Text
               style={[
                 styles.textTitle2,
@@ -1092,9 +969,8 @@ table[class=col] td { text-align: left !important; }
                 },
               ]}
             >
-              {t("all")} {all_sales.length}{" "}
-              {all_sales.length == 1 ? `${t("sale")}` : `${t("sales")}`}{" "}
-              {t("list")}
+              {t('all')} {all_inventory.length}{" "}
+              {all_inventory.length == 1 ? `${t('item')}` : `${t('items')}`} {t('list')}
             </Text>
 
             <Center>
@@ -1127,21 +1003,17 @@ table[class=col] td { text-align: left !important; }
                       marginLeft: 20,
                     }}
                   >
-                    {t("expdf")}
+                    {t('expdf')}
                   </Text>
                 </View>
               </TouchableOpacity>
+              
               <Input
                 w={{
                   base: "94%",
                   md: "25%",
                 }}
-                onChangeText={(e) => {
-                  setSearchQuery(e);
-                  dispatch(
-                    fetchSearchYesterdaySalesData(currentCompany, currentSpt, e)
-                  );
-                }}
+                onChangeText={(text)=>searchFilter(text)}
                 value={searchQuery}
                 InputLeftElement={
                   <Icon
@@ -1151,17 +1023,18 @@ table[class=col] td { text-align: left !important; }
                     color="muted.600"
                   />
                 }
-                placeholder={t("search")}
+                placeholder= {t('search')}
               />
+            
             </Center>
           </View>
         </ScrollView>
 
-        {all_sales_isLoading ? (
+        {all_inventory_isLoading ? (
           <View>
             <Center>
               <ActivityIndicator size="large" color={currenttheme.secondary} />
-              <Text style={styles.textInGFuc}>{t("loading-wait")}</Text>
+              <Text style={styles.textInGFuc}>{t('loading-wait')}</Text>
             </Center>
           </View>
         ) : (
@@ -1169,37 +1042,21 @@ table[class=col] td { text-align: left !important; }
             style={{
               backgroundColor: "white",
             }}
-            data={all_sales}
+            data={fetchedInventory}
             renderItem={({ item }) => (
-              <TouchableOpacity
-              // onPress={() => {
-              //   setSelectedID(item.sales_id);
-              //   setProductID(item.product_id);
-              //   setSelectedName(item.name);
-              //   setIsOpenAlert(true);
-              // }}
-              >
+                <Center flex={1} px="2">
                 <Item
                   name={item.name}
                   id={item.id}
-                  price={new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "RWF",
-                  }).format(item.Total)}
-                  quantity={item.quantity}
-                  total={new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "RWF",
-                  }).format(item.Total)}
-                  time={timeAgo(item.Sales_time)}
+                  Current_quantity={item.Current_quantity}
+                  alert_quantity={item.alert_quantity}
+                  last_updated={timeAgo(item.last_updated)}
                   remainqty={item.remain_stock}
-                  sid={item.sales_id}
-                  benefit={new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "RWF",
-                  }).format(item.Totalbenefit)}
+                  sales_point_id={item.sales_point_id}
+                  status={item.status}
                 />
-              </TouchableOpacity>
+                </Center>
+             
             )}
             keyExtractor={(item) => item.id}
           />
@@ -1216,10 +1073,10 @@ table[class=col] td { text-align: left !important; }
             >
               <Modal.Content maxWidth="500px" width="340px">
                 <Modal.CloseButton />
-                <Modal.Header>{t("edit")}</Modal.Header>
+                <Modal.Header>{t('edit')}</Modal.Header>
                 <Modal.Body>
                   <FormControl mt="3">
-                    <FormControl.Label>{t("quantity")}</FormControl.Label>
+                    <FormControl.Label>{t('quantity')}</FormControl.Label>
                     <Input
                       value={pro_qty}
                       onChangeText={setPro_qty}
@@ -1238,11 +1095,9 @@ table[class=col] td { text-align: left !important; }
                       }}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>
-                          {t("loading-wait")}
-                        </Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
                     <TouchableOpacity>
@@ -1255,7 +1110,7 @@ table[class=col] td { text-align: left !important; }
                         {isLoading ? (
                           <ActivityIndicator size="small" color="white" />
                         ) : (
-                          <Text style={{ color: "white" }}>{t("edit")}</Text>
+                          <Text style={{ color: "white" }}>{t('edit')}</Text>
                         )}
                       </Button>
                     </TouchableOpacity>
@@ -1271,13 +1126,10 @@ table[class=col] td { text-align: left !important; }
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>
-                  {t("sale-quick-actions")}
-                </AlertDialog.Header>
+                <AlertDialog.Header>{t('sale-quick-actions')}</AlertDialog.Header>
                 <AlertDialog.Body>
                   <Text>
-                    {t("here-are-for-edit-or-remove-selected-sale")}{" "}
-                    {SelectedName}.
+                  {t('here-are-for-edit-or-remove-selected-sale')} {SelectedName}.
                   </Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
@@ -1289,11 +1141,9 @@ table[class=col] td { text-align: left !important; }
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>
-                          {t("loading-wait")}
-                        </Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
 
@@ -1307,7 +1157,7 @@ table[class=col] td { text-align: left !important; }
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>{t("edit")}</Text>
+                        <Text style={{ color: "white" }}>{t('edit')}</Text>
                       )}
                     </Button>
 
@@ -1321,7 +1171,7 @@ table[class=col] td { text-align: left !important; }
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>{t("remove")}</Text>
+                        <Text style={{ color: "white" }}>{t('remove')}</Text>
                       )}
                     </Button>
                   </Button.Group>
@@ -1336,11 +1186,9 @@ table[class=col] td { text-align: left !important; }
             >
               <AlertDialog.Content>
                 <AlertDialog.CloseButton />
-                <AlertDialog.Header>{t("delete")}</AlertDialog.Header>
+                <AlertDialog.Header>{t('delete')}</AlertDialog.Header>
                 <AlertDialog.Body>
-                  <Text>
-                    {t("delsale")} {SelectedName} {t("now")}
-                  </Text>
+                  <Text>{t('delsale')} {SelectedName} {t('now')}</Text>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
                   <Button.Group space={2}>
@@ -1351,18 +1199,16 @@ table[class=col] td { text-align: left !important; }
                       ref={cancelRef}
                     >
                       {isLoading ? (
-                        <Text style={{ color: "gray" }}>
-                          {t("loading-wait")}
-                        </Text>
+                        <Text style={{ color: "gray" }}>{t('loading-wait')}</Text>
                       ) : (
-                        <Text style={{ color: "gray" }}>{t("cancel")}</Text>
+                        <Text style={{ color: "gray" }}>{t('cancel')}</Text>
                       )}
                     </Button>
                     <Button colorScheme="danger" onPress={deleteSales}>
                       {isLoading ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
-                        <Text style={{ color: "white" }}>{t("delete")}</Text>
+                        <Text style={{ color: "white" }}>{t('delete')}</Text>
                       )}
                     </Button>
                   </Button.Group>
@@ -1465,4 +1311,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Yesterday;
+export default Inventoryreport;
