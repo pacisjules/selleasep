@@ -392,15 +392,13 @@ const Shopping = ({ navigation }) => {
           qty: pro_qty,
           price: SwitchType ? Custom_Price : pro_price,
           benefit: SwitchType
-            ? (parseFloat(pro_benefit) / parseFloat(pro_price)) *
-              parseFloat(Custom_Price)
+            ? parseFloat(Custom_Price) - (parseFloat(pro_price) / parseFloat(pro_benefit))              
             : pro_benefit,
           total_amount: SwitchType
             ? parseFloat(Custom_Price) * parseFloat(pro_qty)
             : parseFloat(pro_price) * parseFloat(pro_qty),
           total_benefit: SwitchType
-            ? (parseFloat(pro_benefit) / parseFloat(pro_price)) *
-              parseFloat(Custom_Price) *
+            ? (parseFloat(Custom_Price) - (parseFloat(pro_price) / parseFloat(pro_benefit))) *
               parseFloat(pro_qty)
             : parseFloat(pro_benefit) * parseFloat(pro_qty),
         })
